@@ -1163,14 +1163,36 @@ function showWelcomeBanner() {
 
 // ── Check session on load ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
+
+  // Handle OAuth redirect — Supabase puts tokens in the URL hash
+  if (window.location.hash.includes('access_token')) {
+    const { data: { session }, error } = await sb.auth.getSession();
+    if (session) {
+      const name = session.user?.user_metadata?.full_name?.split(' ')[0]
+                || session.user?.user_metadata?.name?.split(' ')[0]
+                || session.user.email.split('@')[0];
+      updateNavForUser(name);
+      showWelcomeBanner();
+      // Clean the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    return;
+  }
+
+  // Normal page load — check for existing session
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
-    const name = session.user?.user_metadata?.full_name?.split(' ')[0] || session.user.email.split('@')[0];
+    const name = session.user?.user_metadata?.full_name?.split(' ')[0]
+              || session.user?.user_metadata?.name?.split(' ')[0]
+              || session.user.email.split('@')[0];
     updateNavForUser(name);
   }
+
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session) {
-      const name = session.user?.user_metadata?.full_name?.split(' ')[0] || session.user.email.split('@')[0];
+      const name = session.user?.user_metadata?.full_name?.split(' ')[0]
+                || session.user?.user_metadata?.name?.split(' ')[0]
+                || session.user.email.split('@')[0];
       updateNavForUser(name);
     }
     if (event === 'SIGNED_OUT') {
