@@ -3,1075 +3,1230 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WeUp — Dashboard</title>
+<title>WeUp — Take control of your money</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px;scroll-behavior:smooth}
+html{font-size:16px;scroll-behavior:smooth;height:100%}
 :root{
-  --bg:       #FAFAFF;
-  --bg2:      #F0EFFA;
-  --card:     #FFFFFF;
-  --deep:     #0D2B1E;
-  --brand:    #1A5C3A;
-  --accent:   #2E8B57;
-  --glow:     #3DBA7A;
-  --light:    #5FDC9A;
-  --text:     #0F172A;
-  --text2:    #475569;
-  --text3:    #94A3B8;
-  --border:   rgba(15,23,42,0.08);
-  --border2:  rgba(15,23,42,0.14);
-  --income:   #10B981;
-  --income-l: #D1FAE5;
-  --expense:  #EF4444;
-  --expense-l:#FEE2E2;
-  --purple:   #7C3AED;
-  --purple-l: #EDE9FE;
-  --shadow:   0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);
-  --shadow-md:0 4px 20px rgba(46,139,87,0.10),0 1px 4px rgba(0,0,0,0.06);
-  --r:        16px;
-  --r-sm:     10px;
-  --r-xs:     8px;
-  --ff:       'DM Sans',system-ui,sans-serif;
-  --ff-d:     'DM Serif Display',Georgia,serif;
-  --nav-w:    240px;
+  --deep:    #0D2B1E;
+  --mid:     #122E21;
+  --brand:   #1A5C3A;
+  --accent:  #2E8B57;
+  --glow:    #3DBA7A;
+  --light:   #5FDC9A;
+  --soft-bg: #0F2A1C;
+  --w:       #FFFFFF;
+  --w80:     rgba(255,255,255,0.80);
+  --w60:     rgba(255,255,255,0.60);
+  --w50:     rgba(255,255,255,0.50);
+  --w20:     rgba(255,255,255,0.20);
+  --w12:     rgba(255,255,255,0.12);
+  --w08:     rgba(255,255,255,0.08);
+  --w06:     rgba(255,255,255,0.06);
+  --w04:     rgba(255,255,255,0.04);
+  --err:     #F87171;
+  --ff-d:    'DM Serif Display',Georgia,serif;
+  --ff-b:    'DM Sans',system-ui,sans-serif;
+  --r-sm:    8px;
+  --r-md:    14px;
+  --r-lg:    20px;
+  --r-xl:    28px;
 }
-body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-/* ── Auth gate ── */
-#auth-gate{
-  position:fixed;inset:0;z-index:1000;
+body{
+  font-family:var(--ff-b);
   background:var(--deep);
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:16px;
+  color:var(--w);
+  min-height:100vh;
+  overflow-x:hidden;
 }
-#auth-gate .logo{font-family:var(--ff-d);font-size:32px;color:#fff;display:flex;align-items:center;gap:8px}
-#auth-gate .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--light)}
-#auth-gate p{font-size:15px;color:rgba(255,255,255,0.5)}
-#auth-gate a{color:var(--light);text-decoration:none;font-weight:500}
 
-/* ── Layout ── */
-#app{display:none;min-height:100vh}
-.layout{display:flex;min-height:100vh}
+/* ── Softer layered background — not heavy solid green ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at -10% -5%, rgba(46,139,87,0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 110% 100%, rgba(26,92,58,0.20) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 30% at 55% 50%, rgba(61,186,122,0.07) 0%, transparent 60%),
+    linear-gradient(160deg, #0B2418 0%, #0D2B1E 40%, #0A1F16 100%);
+}
 
-/* ── Sidebar ── */
-.sidebar{
-  width:var(--nav-w);flex-shrink:0;
-  background:var(--deep);
-  display:flex;flex-direction:column;
-  position:fixed;top:0;left:0;height:100vh;z-index:100;
-  padding:0 0 24px;
+/* subtle grain */
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
 }
-.sidebar-logo{
-  display:flex;align-items:center;gap:8px;
-  padding:24px 24px 28px;
-  font-family:var(--ff-d);font-size:22px;color:#fff;
-  border-bottom:0.5px solid rgba(255,255,255,0.08);
-  margin-bottom:8px;
-}
-.sidebar-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--light);flex-shrink:0}
-.nav-section{padding:0 12px;margin-bottom:4px}
-.nav-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;padding:8px 12px 6px}
-.nav-item{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 12px;border-radius:var(--r-sm);
-  font-size:14px;font-weight:500;color:rgba(255,255,255,0.55);
-  cursor:pointer;transition:all 0.2s;text-decoration:none;
-  margin-bottom:2px;
-}
-.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.9)}
-.nav-item.active{background:var(--accent);color:#fff}
-.nav-item .icon{width:18px;height:18px;flex-shrink:0;opacity:0.8}
-.nav-item.active .icon{opacity:1}
-.sidebar-footer{
-  margin-top:auto;padding:0 12px;
-  border-top:0.5px solid rgba(255,255,255,0.08);
-  padding-top:16px;
-}
-.user-chip{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;border-radius:var(--r-sm);
-  cursor:pointer;transition:all 0.2s;
-}
-.user-chip:hover{background:rgba(255,255,255,0.07)}
-.user-avatar{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--accent);display:flex;align-items:center;
-  justify-content:center;font-size:12px;font-weight:600;
-  color:#fff;flex-shrink:0;
-}
-.user-name{font-size:13px;font-weight:500;color:rgba(255,255,255,0.8)}
-.user-email{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px}
-.signout-btn{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 12px;margin-top:4px;border-radius:var(--r-sm);
-  font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;
-  transition:all 0.2s;border:none;background:transparent;
-  font-family:var(--ff);width:100%;
-}
-.signout-btn:hover{color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.05)}
 
-/* ── Main ── */
-.main{
-  margin-left:var(--nav-w);flex:1;
-  padding:32px 40px;max-width:1400px;
-}
-.page{display:none}
-.page.active{display:block}
+.page{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
 
-/* ── Top bar ── */
-.topbar{
+/* ── Nav ── */
+nav{
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:32px;
+  padding:18px 56px;
+  border-bottom:0.5px solid var(--w08);
+  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:100;
+  background:rgba(11,36,24,0.72);
 }
-.topbar-left h1{font-size:26px;font-weight:600;letter-spacing:-0.02em;color:var(--text)}
-.topbar-left p{font-size:14px;color:var(--text3);margin-top:3px}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.btn{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:9px 18px;border-radius:var(--r-sm);
-  font-family:var(--ff);font-size:14px;font-weight:500;
-  cursor:pointer;transition:all 0.2s;border:none;
+.nav-logo{
+  font-family:var(--ff-d);font-size:26px;letter-spacing:-0.3px;
+  color:var(--w);text-decoration:none;
+  display:flex;align-items:center;gap:8px;
 }
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:var(--glow);transform:translateY(-1px)}
-.btn-ghost{background:var(--card);color:var(--text2);border:1px solid var(--border2)}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn:active{transform:scale(0.98)}
+.nav-logo .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--light);display:inline-block;flex-shrink:0;
+}
+.nav-center{display:flex;align-items:center;gap:32px}
+.nav-center a{
+  font-size:14px;color:var(--w60);text-decoration:none;
+  transition:color 0.2s;font-weight:400;letter-spacing:0.01em;
+}
+.nav-center a:hover{color:var(--w)}
+.nav-lang{
+  display:flex;gap:2px;background:var(--w06);border-radius:8px;padding:3px;
+}
+.nav-lang button{
+  font-family:var(--ff-b);font-size:12px;font-weight:500;letter-spacing:0.05em;
+  padding:4px 10px;border-radius:6px;border:none;cursor:pointer;
+  background:transparent;color:var(--w50);transition:all 0.2s;
+}
+.nav-lang button.active{background:var(--w20);color:var(--w)}
+.nav-cta{
+  background:var(--accent);color:var(--w);border:none;
+  border-radius:var(--r-sm);padding:10px 22px;
+  font-family:var(--ff-b);font-size:14px;font-weight:500;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;white-space:nowrap;
+}
+.nav-cta:hover{background:var(--glow);transform:translateY(-1px)}
 
-/* ── Cards ── */
-.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.card{background:var(--card);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.card-hero{
-  background:linear-gradient(135deg,var(--brand),var(--accent));
-  color:#fff;border:none;
-  box-shadow:var(--shadow-md);
-}
-.card-label{font-size:12px;font-weight:500;color:var(--text3);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:10px}
-.card-hero .card-label{color:rgba(255,255,255,0.65)}
-.card-value{font-size:28px;font-weight:700;letter-spacing:-0.025em;color:var(--text)}
-.card-hero .card-value{color:#fff;font-size:32px}
-.card-sub{font-size:12px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:4px}
-.card-hero .card-sub{color:rgba(255,255,255,0.6)}
-.badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
-.badge-up{background:var(--income-l);color:var(--income)}
-.badge-down{background:var(--expense-l);color:var(--expense)}
-.card-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px}
-.icon-income{background:var(--income-l)}
-.icon-expense{background:var(--expense-l)}
-.icon-budget{background:#EDE9FE}
-.icon-savings{background:#FEF3C7}
-
-/* ── AI Insight card ── */
-.ai-card{
-  background:linear-gradient(135deg,#0D2B1E,#1A4A2E);
-  border-radius:var(--r);padding:24px;
-  border:1px solid rgba(95,220,154,0.2);
-  box-shadow:0 4px 20px rgba(13,43,30,0.15);
-  margin-bottom:24px;position:relative;overflow:hidden;
-}
-.ai-card::before{
-  content:'';position:absolute;right:-40px;top:-40px;
-  width:180px;height:180px;border-radius:50%;
-  background:rgba(95,220,154,0.06);
-}
-.ai-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.ai-badge{
-  display:flex;align-items:center;gap:6px;
-  background:rgba(95,220,154,0.15);border:0.5px solid rgba(95,220,154,0.3);
-  border-radius:20px;padding:4px 12px;
-  font-size:11px;font-weight:600;color:var(--light);letter-spacing:0.06em;
-}
-.ai-pulse{width:6px;height:6px;border-radius:50%;background:var(--light);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.75)}}
-.ai-insights{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.ai-insight{
-  background:rgba(255,255,255,0.05);border-radius:var(--r-sm);
-  padding:16px;border:0.5px solid rgba(255,255,255,0.08);
-}
-.ai-insight-icon{font-size:20px;margin-bottom:8px}
-.ai-insight-text{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.55}
-.ai-insight-text strong{color:#fff;font-weight:600}
-.ai-insight-cta{
-  font-size:11px;color:var(--light);font-weight:600;
-  margin-top:8px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;
+/* ── Hero ── */
+.hero{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:48px;align-items:center;
+  padding:72px 56px 88px;
+  max-width:1280px;margin:0 auto;width:100%;
 }
 
-/* ── Two col layout ── */
-.two-col{display:grid;grid-template-columns:1fr 380px;gap:24px;margin-bottom:24px}
-
-/* ── Transactions ── */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.section-title{font-size:16px;font-weight:600;color:var(--text)}
-.section-link{font-size:13px;color:var(--accent);text-decoration:none;font-weight:500}
-.tx-list{display:flex;flex-direction:column;gap:2px}
-.tx-item{
-  display:flex;align-items:center;gap:14px;
-  padding:13px 16px;border-radius:var(--r-sm);
-  transition:background 0.15s;cursor:pointer;
+/* left */
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--w06);border:0.5px solid var(--w20);
+  border-radius:20px;padding:6px 14px;margin-bottom:28px;
+  font-size:11px;font-weight:600;color:var(--light);
+  letter-spacing:0.08em;text-transform:uppercase;
 }
-.tx-item:hover{background:var(--bg)}
-.tx-icon{
-  width:38px;height:38px;border-radius:var(--r-sm);
+.pulse{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--light);flex-shrink:0;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.45;transform:scale(0.75)}}
+
+.hero-headline{
+  font-family:var(--ff-d);
+  font-size:clamp(42px,4.8vw,64px);
+  line-height:1.06;letter-spacing:-0.025em;
+  margin-bottom:20px;color:var(--w);
+}
+.hero-headline em{font-style:italic;color:var(--light)}
+
+.hero-sub{
+  font-size:17px;line-height:1.68;color:var(--w60);
+  margin-bottom:36px;max-width:420px;font-weight:300;
+}
+
+.hero-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn-primary{
+  background:var(--accent);color:var(--w);border:none;
+  border-radius:var(--r-md);padding:14px 26px;
+  font-family:var(--ff-b);font-size:15px;font-weight:500;
+  cursor:pointer;transition:all 0.25s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{background:var(--glow);transform:translateY(-2px)}
+.btn-ghost{
+  background:transparent;color:var(--w80);
+  border:0.5px solid var(--w20);border-radius:var(--r-md);
+  padding:14px 26px;font-family:var(--ff-b);font-size:15px;font-weight:400;
+  cursor:pointer;transition:all 0.25s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-ghost:hover{border-color:var(--w50);color:var(--w);background:var(--w06)}
+
+.hero-social{display:flex;align-items:center;gap:14px;margin-top:36px}
+.avatars{display:flex}
+.avatars span{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--deep);
+  background:var(--brand);
   display:flex;align-items:center;justify-content:center;
-  font-size:16px;flex-shrink:0;
+  font-size:10px;font-weight:600;margin-left:-8px;
 }
-.tx-info{flex:1;min-width:0}
-.tx-name{font-size:14px;font-weight:500;color:var(--text)}
-.tx-cat{font-size:12px;color:var(--text3);margin-top:1px}
-.tx-right{text-align:right;flex-shrink:0}
-.tx-amt{font-size:14px;font-weight:600}
-.tx-amt.neg{color:var(--expense)}
-.tx-amt.pos{color:var(--income)}
-.tx-date{font-size:11px;color:var(--text3);margin-top:2px}
+.avatars span:first-child{margin-left:0}
+.hero-social p{font-size:13px;color:var(--w50)}
+.hero-social strong{color:var(--w80);font-weight:500}
 
-/* ── Budget bars ── */
-.budget-list{display:flex;flex-direction:column;gap:16px}
-.budget-item{}
-.budget-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
-.budget-cat{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text)}
-.budget-cat-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
-.budget-amounts{font-size:12px;color:var(--text3)}
-.budget-bar-bg{height:7px;background:var(--bg2);border-radius:4px;overflow:hidden}
-.budget-bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease}
-.bar-safe{background:var(--accent)}
-.bar-warn{background:#F59E0B}
-.bar-over{background:var(--expense)}
+/* ── Phone ── */
+.hero-right{
+  display:flex;justify-content:center;align-items:center;
+  position:relative;
+  padding-bottom:80px;
+  padding-right:48px;
+}
+.phone-frame{
+  width:282px;background:#0A0A0A;border-radius:46px;padding:13px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.10),
+    0 48px 96px rgba(0,0,0,0.55),
+    0 8px 24px rgba(0,0,0,0.35),
+    0 0 40px rgba(61,186,122,0.08);
+  position:relative;z-index:2;
+  animation:float 4.5s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+.phone-screen{
+  background:var(--mid);border-radius:36px;overflow:hidden;
+  min-height:548px;display:flex;flex-direction:column;
+}
+.phone-notch{
+  width:92px;height:28px;background:#0A0A0A;
+  border-radius:0 0 18px 18px;margin:0 auto;
+}
+.phone-status{
+  display:flex;justify-content:space-between;
+  padding:8px 22px 0;font-size:10px;font-weight:600;color:var(--w50);
+}
+.phone-body{padding:14px 18px;flex:1}
+.phone-greeting{font-size:11px;color:var(--w50);margin-bottom:2px}
+.phone-name{font-size:16px;font-weight:600;margin-bottom:18px}
+.phone-bal-card{
+  background:var(--brand);border-radius:18px;padding:18px;
+  margin-bottom:16px;position:relative;overflow:hidden;
+}
+.phone-bal-card::before{
+  content:'';position:absolute;right:-18px;top:-18px;
+  width:110px;height:110px;border-radius:50%;
+  background:rgba(255,255,255,0.06);
+}
+.phone-bal-card::after{
+  content:'';position:absolute;right:16px;bottom:-32px;
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,0.04);
+}
+.phone-bal-label{font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.phone-bal-amount{font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:12px}
+.phone-bal-row{display:flex;gap:18px}
+.phone-bal-item{font-size:10px;color:var(--w50)}
+.phone-bal-item b{display:block;font-size:12px;font-weight:600;color:var(--w80);margin-top:2px}
+.phone-section-title{
+  font-size:10px;font-weight:600;color:var(--w50);
+  margin-bottom:10px;text-transform:uppercase;letter-spacing:0.08em;
+}
+.phone-txs{display:flex;flex-direction:column;gap:8px}
+.phone-tx{
+  display:flex;align-items:center;gap:10px;
+  background:var(--w04);border-radius:12px;padding:10px 12px;
+}
+.phone-tx-icon{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;
+}
+.phone-tx-info{flex:1}
+.phone-tx-name{font-size:12px;font-weight:500}
+.phone-tx-cat{font-size:10px;color:var(--w50);margin-top:1px}
+.phone-tx-amt{font-size:12px;font-weight:600}
+.neg{color:#F87171}.pos{color:var(--light)}
 
-/* ── Chart container ── */
-.chart-wrap{position:relative;height:220px;margin-top:8px}
+/* card behind phone */
+.float-card{
+  position:absolute;bottom:-72px;right:-52px;z-index:3;
+  width:196px;height:118px;
+  background:var(--brand);border-radius:16px;padding:16px 18px;
+  box-shadow:0 24px 48px rgba(0,0,0,0.5),0 0 0 0.5px rgba(255,255,255,0.10);
+  transform:rotate(6deg);
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.card-chip{width:28px;height:20px;background:rgba(255,255,255,0.22);border-radius:4px}
+.card-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+.card-name{font-size:9px;font-weight:500;letter-spacing:0.06em;color:var(--w50);text-transform:uppercase}
+.card-logo-text{font-family:var(--ff-d);font-size:14px;color:var(--w80)}
 
-/* ── Add transaction modal ── */
-.overlay{
+/* ── Stats ── */
+.stats-strip{
+  display:flex;justify-content:center;
+  border-top:0.5px solid var(--w08);
+  background:rgba(255,255,255,0.03);
+}
+.stat{
+  padding:28px 52px;text-align:center;
+  border-right:0.5px solid var(--w08);flex:1;max-width:260px;
+}
+.stat:last-child{border-right:none}
+.stat-num{
+  font-family:var(--ff-d);font-size:28px;color:var(--w);
+  letter-spacing:-0.02em;margin-bottom:4px;
+}
+.stat-label{font-size:12px;color:var(--w50);font-weight:400}
+
+/* ── Modal ── */
+.modal-overlay{
   display:none;position:fixed;inset:0;z-index:200;
-  background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);
+  background:rgba(0,0,0,0.55);backdrop-filter:blur(10px);
   align-items:center;justify-content:center;
 }
-.overlay.open{display:flex}
+.modal-overlay.open{display:flex}
 .modal{
-  background:var(--card);border-radius:20px;padding:32px;
-  width:100%;max-width:440px;box-shadow:0 24px 60px rgba(0,0,0,0.15);
+  background:var(--mid);border:0.5px solid var(--w20);
+  border-radius:var(--r-xl);padding:40px;
+  width:100%;max-width:424px;position:relative;
+  box-shadow:0 48px 96px rgba(0,0,0,0.5);
   animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
-@keyframes slideUp{from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:none}}
-.modal-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px}
-.modal-sub{font-size:14px;color:var(--text3);margin-bottom:24px}
-.type-toggle{display:flex;background:var(--bg);border-radius:var(--r-sm);padding:4px;gap:4px;margin-bottom:20px}
-.type-btn{
-  flex:1;padding:9px;text-align:center;border-radius:var(--r-xs);
-  font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;
-  border:none;background:transparent;color:var(--text3);font-family:var(--ff);
+@keyframes slideUp{from{opacity:0;transform:translateY(22px) scale(0.97)}to{opacity:1;transform:none}}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:var(--w08);border:none;color:var(--w50);
+  width:32px;height:32px;border-radius:50%;cursor:pointer;
+  font-size:17px;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
 }
-.type-btn.active.expense{background:var(--expense);color:#fff}
-.type-btn.active.income{background:var(--income);color:#fff}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:0.02em}
-.form-input,.form-select{
-  width:100%;padding:12px 14px;
-  background:var(--bg);border:1.5px solid var(--border2);
-  border-radius:var(--r-sm);color:var(--text);
-  font-family:var(--ff);font-size:15px;outline:none;transition:all 0.2s;
+.modal-close:hover{background:var(--w20);color:var(--w)}
+.modal-logo{font-family:var(--ff-d);font-size:24px;color:var(--w);margin-bottom:4px}
+.modal-sub{font-size:14px;color:var(--w50);margin-bottom:28px}
+.auth-tabs{
+  display:flex;background:var(--w06);border-radius:10px;
+  padding:4px;margin-bottom:26px;
 }
-.form-input:focus,.form-select:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(46,139,87,0.08)}
-.form-input::placeholder{color:var(--text3)}
-.amount-input{font-size:24px;font-weight:700;letter-spacing:-0.02em;text-align:center;padding:16px}
-.modal-actions{display:flex;gap:10px;margin-top:8px}
-.modal-actions .btn{flex:1;justify-content:center;padding:13px}
+.auth-tab{
+  flex:1;padding:8px;text-align:center;font-size:14px;font-weight:500;
+  border-radius:8px;border:none;background:transparent;
+  color:var(--w50);cursor:pointer;transition:all 0.2s;font-family:var(--ff-b);
+}
+.auth-tab.active{background:var(--brand);color:var(--w)}
+.form-panel{display:none}.form-panel.active{display:block}
+.form-group{margin-bottom:15px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--w80);margin-bottom:6px;letter-spacing:0.03em}
+.form-input{
+  width:100%;padding:13px 16px;
+  background:var(--w06);border:0.5px solid var(--w20);
+  border-radius:var(--r-sm);color:var(--w);
+  font-family:var(--ff-b);font-size:15px;outline:none;
+  transition:border-color 0.2s,background 0.2s;
+}
+.form-input::placeholder{color:var(--w20)}
+.form-input:focus{border-color:var(--light);background:rgba(255,255,255,0.08)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-forgot{text-align:right;margin-top:-6px;margin-bottom:18px}
+.form-forgot a{font-size:12px;color:var(--light);text-decoration:none}
+.btn-submit{
+  width:100%;padding:14px;background:var(--accent);color:var(--w);
+  border:none;border-radius:var(--r-md);
+  font-family:var(--ff-b);font-size:15px;font-weight:600;
+  cursor:pointer;transition:all 0.25s;letter-spacing:0.01em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-submit:hover{background:var(--glow);transform:translateY(-1px)}
+.btn-submit.loading{opacity:0.65;cursor:not-allowed;transform:none}
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:18px 0;font-size:12px;color:var(--w20);
+}
+.divider::before,.divider::after{content:'';flex:1;height:0.5px;background:var(--w20)}
+.btn-social{
+  width:100%;padding:12px;background:var(--w06);
+  border:0.5px solid var(--w20);border-radius:var(--r-sm);
+  color:var(--w80);font-family:var(--ff-b);font-size:14px;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;
+}
+.btn-social:hover{border-color:var(--w50);color:var(--w);background:var(--w08)}
+.modal-footer{margin-top:18px;text-align:center;font-size:13px;color:var(--w50)}
+.modal-footer a{color:var(--light);text-decoration:none;font-weight:500}
+.pw-strength{display:flex;gap:4px;margin-top:8px}
+.pw-bar{flex:1;height:3px;border-radius:2px;background:var(--w08);transition:background 0.3s}
+.pw-bar.weak{background:#F87171}
+.pw-bar.medium{background:#FBBF24}
+.pw-bar.strong{background:var(--light)}
 
-/* ── Empty state ── */
-.empty{text-align:center;padding:48px 24px;color:var(--text3)}
-.empty-icon{font-size:40px;margin-bottom:12px}
-.empty h3{font-size:16px;font-weight:600;color:var(--text2);margin-bottom:6px}
-.empty p{font-size:14px;line-height:1.6}
-
-/* ── Skeleton loader ── */
-.skeleton{background:linear-gradient(90deg,var(--bg) 25%,var(--bg2) 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-/* ── Toast ── */
-.toast{
-  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
-  background:var(--deep);color:#fff;
-  padding:12px 24px;border-radius:12px;font-size:14px;font-weight:500;
-  box-shadow:0 8px 32px rgba(0,0,0,0.25);z-index:500;
-  opacity:0;transition:opacity 0.3s;pointer-events:none;
+/* ── Responsive ── */
+@media(max-width:900px){
+  nav{padding:16px 24px}
+  .hero{grid-template-columns:1fr;padding:48px 24px 64px;gap:56px}
+  .hero-right{padding-bottom:32px}
+  .stats-strip{flex-wrap:wrap}
+  .stat{min-width:140px;padding:20px 24px}
 }
-.toast.show{opacity:1}
 
-/* ── Reports page ── */
-.reports-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+/* ── Shared section styles ── */
+.section{padding:96px 56px}
+.section-dark{background:rgba(255,255,255,0.03);border-top:0.5px solid var(--w08);border-bottom:0.5px solid var(--w08)}
+.section-inner{max-width:1180px;margin:0 auto;width:100%}
+.section-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--w06);border:0.5px solid var(--w20);
+  border-radius:20px;padding:5px 14px;margin-bottom:20px;
+  font-size:11px;font-weight:600;color:var(--light);
+  letter-spacing:0.08em;text-transform:uppercase;
+}
+.section-title{
+  font-family:var(--ff-d);font-size:clamp(32px,3.5vw,48px);
+  line-height:1.1;letter-spacing:-0.02em;color:var(--w);
+  margin-bottom:16px;
+}
+.section-title em{font-style:italic;color:var(--light)}
+.section-sub{font-size:16px;line-height:1.7;color:var(--w60);max-width:560px;font-weight:300}
 
-/* ── Settings page ── */
-.settings-section{margin-bottom:32px}
-.settings-title{font-size:14px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px}
-.settings-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 20px;background:var(--card);border-radius:var(--r-sm);
-  border:1px solid var(--border);margin-bottom:2px;
+/* ── Features ── */
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;margin-top:56px;
 }
-.settings-item-left{display:flex;align-items:center;gap:12px}
-.settings-item-icon{width:36px;height:36px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:16px}
-.settings-label{font-size:14px;font-weight:500;color:var(--text)}
-.settings-desc{font-size:12px;color:var(--text3);margin-top:1px}
-.settings-value{font-size:13px;color:var(--text3);font-weight:500}
+.feat-card{
+  background:var(--w04);border:0.5px solid var(--w12);
+  border-radius:var(--r-lg);padding:28px;
+  transition:border-color 0.2s,background 0.2s;
+}
+.feat-card:hover{background:var(--w06);border-color:var(--w20)}
+.feat-icon{font-size:28px;margin-bottom:16px}
+.feat-title{font-size:16px;font-weight:600;color:var(--w);margin-bottom:10px}
+.feat-desc{font-size:14px;line-height:1.65;color:var(--w50)}
 
-/* ── Mobile bottom nav ── */
-.bottom-nav{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
-  background:var(--deep);border-top:0.5px solid rgba(255,255,255,0.08);
-  padding:8px 16px 20px;
-  grid-template-columns:repeat(5,1fr);
+/* ── About ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.about-stats{display:flex;gap:40px;margin-top:40px}
+.about-stat-num{font-family:var(--ff-d);font-size:36px;color:var(--light);letter-spacing:-0.02em}
+.about-stat-label{font-size:12px;color:var(--w50);margin-top:4px}
+.about-card{
+  background:var(--w06);border:0.5px solid var(--w12);
+  border-radius:var(--r-lg);padding:28px;
 }
-.bottom-nav-item{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  padding:8px 4px;cursor:pointer;font-size:10px;font-weight:500;
-  color:rgba(255,255,255,0.4);transition:color 0.2s;border:none;background:transparent;
-  font-family:var(--ff);
+.about-card-icon{font-size:20px;color:var(--light);margin-bottom:14px}
+.about-quote{font-size:15px;line-height:1.7;color:var(--w80);font-style:italic;margin-bottom:20px}
+.about-author{display:flex;align-items:center;gap:12px}
+.about-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--brand);display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;
 }
-.bottom-nav-item.active{color:var(--light)}
-.bottom-nav-item .bn-icon{font-size:20px}
-.add-fab{
-  width:48px;height:48px;border-radius:50%;
-  background:var(--accent);display:flex;align-items:center;justify-content:center;
-  font-size:24px;color:#fff;margin-top:-24px;
-  box-shadow:0 4px 16px rgba(46,139,87,0.4);
+.about-name{font-size:13px;font-weight:600;color:var(--w)}
+.about-city{font-size:12px;color:var(--w50);margin-top:2px}
+
+/* ── Pricing ── */
+.pricing-toggle{
+  display:flex;align-items:center;gap:12px;
+  margin:32px 0 48px;
 }
+.toggle-label{font-size:14px;color:var(--w60);font-weight:500}
+.toggle-switch{
+  width:44px;height:24px;background:var(--w12);border-radius:12px;
+  position:relative;cursor:pointer;transition:background 0.2s;
+  border:0.5px solid var(--w20);
+}
+.toggle-switch.on{background:var(--accent)}
+.toggle-knob{
+  width:18px;height:18px;border-radius:50%;background:var(--w);
+  position:absolute;top:3px;left:3px;transition:transform 0.2s;
+}
+.toggle-switch.on .toggle-knob{transform:translateX(20px)}
+.toggle-save{
+  font-size:11px;font-weight:600;color:var(--light);
+  background:rgba(95,220,154,0.12);border:0.5px solid rgba(95,220,154,0.25);
+  border-radius:20px;padding:3px 10px;letter-spacing:0.04em;
+}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+.pricing-card{
+  background:var(--w04);border:0.5px solid var(--w12);
+  border-radius:var(--r-xl);padding:32px;position:relative;
+  transition:border-color 0.2s;
+}
+.pricing-card-featured{
+  background:var(--brand);border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent),0 24px 48px rgba(46,139,87,0.2);
+}
+.pricing-badge{
+  display:inline-block;font-size:11px;font-weight:600;
+  color:var(--light);background:rgba(95,220,154,0.15);
+  border:0.5px solid rgba(95,220,154,0.3);
+  border-radius:20px;padding:3px 12px;margin-bottom:20px;
+  letter-spacing:0.06em;text-transform:uppercase;
+}
+.pricing-plan{font-size:13px;font-weight:600;color:var(--w60);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
+.pricing-price{font-family:var(--ff-d);font-size:42px;color:var(--w);letter-spacing:-0.02em;margin-bottom:6px}
+.pricing-period{font-size:16px;color:var(--w50);font-family:var(--ff-b);font-weight:300}
+.pricing-desc{font-size:13px;color:var(--w50);margin-bottom:24px}
+.pricing-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.pricing-features li{
+  font-size:14px;color:var(--w80);padding-left:22px;position:relative;line-height:1.4;
+}
+.pricing-features li::before{
+  content:'✓';position:absolute;left:0;
+  color:var(--light);font-size:12px;font-weight:700;
+}
+.pricing-features li.feat-off{color:var(--w20)}
+.pricing-features li.feat-off::before{content:'–';color:var(--w20)}
+.pricing-cta{
+  display:block;width:100%;text-align:center;
+  background:var(--accent);color:var(--w);
+  border:none;border-radius:var(--r-md);padding:13px;
+  font-family:var(--ff-b);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;
+}
+.pricing-cta:hover{background:var(--glow);transform:translateY(-1px)}
+.pricing-cta-ghost{
+  background:transparent;border:0.5px solid var(--w20);color:var(--w80);
+}
+.pricing-cta-ghost:hover{background:var(--w06);border-color:var(--w50);color:var(--w)}
+
+/* ── Footer ── */
+.footer{
+  border-top:0.5px solid var(--w08);
+  padding:48px 56px;
+  background:rgba(0,0,0,0.15);
+}
+.footer-inner{max-width:1180px;margin:0 auto;text-align:center}
+.footer-logo{
+  font-family:var(--ff-d);font-size:24px;color:var(--w);
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;
+}
+.footer-tagline{font-size:14px;color:var(--w50);margin-bottom:24px}
+.footer-links{display:flex;justify-content:center;gap:28px;margin-bottom:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--w50);text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:var(--light)}
+.footer-copy{font-size:12px;color:var(--w20)}
 
 @media(max-width:900px){
-  .sidebar{display:none}
-  .main{margin-left:0;padding:20px 16px 100px}
-  .bottom-nav{display:grid}
-  .cards-grid{grid-template-columns:repeat(2,1fr)}
-  .two-col{grid-template-columns:1fr}
-  .ai-insights{grid-template-columns:1fr}
-  .reports-grid{grid-template-columns:1fr}
+  .section{padding:64px 24px}
+  .features-grid{grid-template-columns:1fr}
+  .about-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .footer{padding:40px 24px}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- Auth gate -->
-<div id="auth-gate">
-  <div class="logo"><span class="dot"></span>WeUp</div>
-  <p id="gate-msg">Checking your session...</p>
-</div>
+<div class="page">
 
-<!-- App -->
-<div id="app">
-  <div class="layout">
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <span class="dot"></span>WeUp
+    </a>
+    <div class="nav-center">
+      <a href="#features" data-en="Features" data-es="Funciones">Features</a>
+      <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+      <a href="#about" data-en="About" data-es="Nosotros">About</a>
+      <div class="nav-lang">
+        <button class="active" onclick="setLang('en')">EN</button>
+        <button onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+    <a href="#" class="nav-cta" onclick="openModal('login');return false;"
+       data-en="Sign in" data-es="Ingresar">Sign in</a>
+  </nav>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-logo"><span class="dot"></span>WeUp</div>
+  <!-- Hero -->
+  <main class="hero">
 
-      <div class="nav-section">
-        <div class="nav-label" data-en="Main" data-es="Principal">Main</div>
-        <a class="nav-item active" onclick="showPage('home')">
-          <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
-          <span data-en="Home" data-es="Inicio">Home</span>
+    <!-- Left -->
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="pulse"></span>
+        <span data-en="Now available in Colombia & Mexico"
+              data-es="Ya disponible en Colombia y México">Now available in Colombia & Mexico</span>
+      </div>
+
+      <h1 class="hero-headline">
+        <span data-en="Your money,<br><em>finally</em><br>under control."
+              data-es="Tu dinero,<br><em>por fin</em><br>bajo control.">Your money,<br><em>finally</em><br>under control.</span>
+      </h1>
+
+      <p class="hero-sub"
+         data-en="WeUp learns your financial habits and gives you AI-powered insights to save more, spend smarter, and reach your goals faster."
+         data-es="WeUp aprende tus hábitos financieros y te da perspectivas con IA para ahorrar más, gastar mejor y alcanzar tus metas más rápido.">
+        WeUp learns your financial habits and gives you AI-powered insights to save more, spend smarter, and reach your goals faster.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#" class="btn-primary" onclick="openModal('signup');return false;">
+          <span data-en="Get started free" data-es="Comenzar gratis">Get started free</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </a>
-        <a class="nav-item" onclick="showPage('transactions')">
-          <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 9v7a2 2 0 002 2h12a2 2 0 002-2V9H2zm5 3h6v2H7v-2z"/></svg>
-          <span data-en="Transactions" data-es="Transacciones">Transactions</span>
-        </a>
-        <a class="nav-item" onclick="openAddModal()">
-          <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
-          <span data-en="Add" data-es="Agregar">Add</span>
-        </a>
-        <a class="nav-item" onclick="showPage('budgets')">
-          <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
-          <span data-en="Budgets" data-es="Presupuestos">Budgets</span>
-        </a>
-        <a class="nav-item" onclick="showPage('reports')">
-          <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z" clip-rule="evenodd"/></svg>
-          <span data-en="Reports" data-es="Reportes">Reports</span>
+        <a href="#" class="btn-ghost" onclick="openModal('login');return false;">
+          <span data-en="Sign in" data-es="Ingresar">Sign in</span>
         </a>
       </div>
 
-      <div class="nav-section">
-        <div class="nav-label" data-en="Account" data-es="Cuenta">Account</div>
-        <a class="nav-item" onclick="showPage('settings')">
-          <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
-          <span data-en="Settings" data-es="Ajustes">Settings</span>
-        </a>
+      <div class="hero-social">
+        <div class="avatars">
+          <span>MC</span><span>JR</span><span>AS</span><span>+</span>
+        </div>
+        <p>
+          <strong data-en="12,000+ users" data-es="12,000+ usuarios">12,000+ users</strong>
+          <span data-en=" already weup-ing" data-es=" ya usan WeUp"> already weup-ing</span>
+        </p>
       </div>
+    </div>
 
-      <div class="sidebar-footer">
-        <div class="user-chip">
-          <div class="user-avatar" id="sb-avatar">?</div>
-          <div>
-            <div class="user-name" id="sb-name">Loading...</div>
-            <div class="user-email" id="sb-email"></div>
-          </div>
-        </div>
-        <button class="signout-btn" onclick="signOut()">
-          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
-          <span data-en="Sign out" data-es="Cerrar sesión">Sign out</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- Main content -->
-    <main class="main">
-
-      <!-- ── HOME ── -->
-      <div class="page active" id="page-home">
-        <div class="topbar">
-          <div class="topbar-left">
-            <h1 id="home-greeting">Good morning ✦</h1>
-            <p id="home-date"></p>
-          </div>
-          <div class="topbar-right">
-            <button class="btn btn-primary" onclick="openAddModal()">
-              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
-              <span data-en="Add transaction" data-es="Agregar transacción">Add transaction</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Summary cards -->
-        <div class="cards-grid">
-          <div class="card card-hero">
-            <div class="card-label" data-en="Net Balance" data-es="Balance Neto">Net Balance</div>
-            <div class="card-value" id="stat-balance">$0.00</div>
-            <div class="card-sub" data-en="This month" data-es="Este mes">This month</div>
-          </div>
-          <div class="card">
-            <div class="card-icon icon-income">💰</div>
-            <div class="card-label" data-en="Income" data-es="Ingresos">Income</div>
-            <div class="card-value" id="stat-income" style="color:var(--income)">$0.00</div>
-            <div class="card-sub"><span class="badge badge-up" id="income-badge">+0%</span> <span data-en="vs last month" data-es="vs mes anterior">vs last month</span></div>
-          </div>
-          <div class="card">
-            <div class="card-icon icon-expense">💸</div>
-            <div class="card-label" data-en="Expenses" data-es="Gastos">Expenses</div>
-            <div class="card-value" id="stat-expenses" style="color:var(--expense)">$0.00</div>
-            <div class="card-sub"><span class="badge badge-down" id="expense-badge">0%</span> <span data-en="of income" data-es="de ingresos">of income</span></div>
-          </div>
-          <div class="card">
-            <div class="card-icon icon-savings">🎯</div>
-            <div class="card-label" data-en="Saved" data-es="Ahorrado">Saved</div>
-            <div class="card-value" id="stat-saved" style="color:var(--purple)">$0.00</div>
-            <div class="card-sub" id="saved-rate" data-en="savings rate" data-es="tasa de ahorro">0% savings rate</div>
-          </div>
-        </div>
-
-        <!-- AI Insights -->
-        <div class="ai-card">
-          <div class="ai-header">
-            <div class="ai-badge"><span class="ai-pulse"></span><span data-en="AI Insights" data-es="Insights IA">AI Insights</span></div>
-            <span style="font-size:12px;color:rgba(255,255,255,0.35)" data-en="Powered by WeUp AI" data-es="Impulsado por WeUp IA">Powered by WeUp AI</span>
-          </div>
-          <div class="ai-insights" id="ai-insights-container">
-            <div class="ai-insight">
-              <div class="ai-insight-icon">📊</div>
-              <div class="ai-insight-text" id="ai-insight-1">Add your first transactions to get personalized AI insights about your spending habits.</div>
-            </div>
-            <div class="ai-insight">
-              <div class="ai-insight-icon">💡</div>
-              <div class="ai-insight-text" id="ai-insight-2">WeUp AI will analyze patterns in your income and expenses to help you save more.</div>
-            </div>
-            <div class="ai-insight">
-              <div class="ai-insight-icon">🎯</div>
-              <div class="ai-insight-text" id="ai-insight-3">Set up your budget categories to unlock goal tracking and spending alerts.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent transactions + Spending chart -->
-        <div class="two-col">
-          <div class="card">
-            <div class="section-header">
-              <div class="section-title" data-en="Recent transactions" data-es="Transacciones recientes">Recent transactions</div>
-              <a class="section-link" onclick="showPage('transactions')" data-en="View all" data-es="Ver todas">View all</a>
-            </div>
-            <div class="tx-list" id="recent-tx-list">
-              <div class="empty">
-                <div class="empty-icon">💳</div>
-                <h3 data-en="No transactions yet" data-es="Sin transacciones aún">No transactions yet</h3>
-                <p data-en="Add your first income or expense to get started." data-es="Agrega tu primer ingreso o gasto para comenzar.">Add your first income or expense to get started.</p>
+    <!-- Right: phone -->
+    <div class="hero-right">
+      <div style="position:relative;z-index:2">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+            <div class="phone-body">
+              <p class="phone-greeting" id="phone-greeting">Good morning,</p>
+              <p class="phone-name">Ana ✦</p>
+              <div class="phone-bal-card">
+                <div class="phone-bal-label" id="phone-bal-label">Net balance</div>
+                <div class="phone-bal-amount">$4,280<span style="font-size:16px;opacity:0.65">.50</span></div>
+                <div class="phone-bal-row">
+                  <div class="phone-bal-item">
+                    <span id="ph-income">Income</span>
+                    <b>$6,100</b>
+                  </div>
+                  <div class="phone-bal-item">
+                    <span id="ph-expenses">Expenses</span>
+                    <b>$1,820</b>
+                  </div>
+                </div>
+              </div>
+              <div class="phone-section-title" id="ph-recent">Recent</div>
+              <div class="phone-txs">
+                <div class="phone-tx">
+                  <div class="phone-tx-icon" style="background:rgba(95,220,154,0.12)">🛒</div>
+                  <div class="phone-tx-info">
+                    <div class="phone-tx-name">Éxito</div>
+                    <div class="phone-tx-cat" id="ph-food">Food</div>
+                  </div>
+                  <div class="phone-tx-amt neg">−$84</div>
+                </div>
+                <div class="phone-tx">
+                  <div class="phone-tx-icon" style="background:rgba(251,191,36,0.12)">☕</div>
+                  <div class="phone-tx-info">
+                    <div class="phone-tx-name">Juan Valdez</div>
+                    <div class="phone-tx-cat" id="ph-leisure">Leisure</div>
+                  </div>
+                  <div class="phone-tx-amt neg">−$12</div>
+                </div>
+                <div class="phone-tx">
+                  <div class="phone-tx-icon" style="background:rgba(95,220,154,0.12)">💼</div>
+                  <div class="phone-tx-info">
+                    <div class="phone-tx-name">Salary</div>
+                    <div class="phone-tx-cat" id="ph-inc">Income</div>
+                  </div>
+                  <div class="phone-tx-amt pos">+$3,050</div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="section-header">
-              <div class="section-title" data-en="Spending by category" data-es="Gastos por categoría">Spending by category</div>
-            </div>
-            <div class="chart-wrap">
-              <canvas id="donut-chart"></canvas>
-            </div>
+        </div>
+
+        <!-- Card -->
+        <div class="float-card">
+          <div class="card-chip"></div>
+          <div class="card-bottom">
+            <div class="card-name">ANA GARCIA</div>
+            <div class="card-logo-text">WeUp</div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- ── TRANSACTIONS ── -->
-      <div class="page" id="page-transactions">
-        <div class="topbar">
-          <div class="topbar-left">
-            <h1 data-en="Transactions" data-es="Transacciones">Transactions</h1>
-            <p data-en="Your full transaction history" data-es="Tu historial completo de transacciones">Your full transaction history</p>
-          </div>
-          <div class="topbar-right">
-            <button class="btn btn-primary" onclick="openAddModal()">
-              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
-              <span data-en="Add" data-es="Agregar">Add</span>
-            </button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="tx-list" id="all-tx-list">
-            <div class="empty">
-              <div class="empty-icon">💳</div>
-              <h3 data-en="No transactions yet" data-es="Sin transacciones aún">No transactions yet</h3>
-              <p data-en="Add your first income or expense to get started." data-es="Agrega tu primer ingreso o gasto para comenzar.">Add your first income or expense to get started.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+  </main>
 
-      <!-- ── BUDGETS ── -->
-      <div class="page" id="page-budgets">
-        <div class="topbar">
-          <div class="topbar-left">
-            <h1 data-en="Budgets" data-es="Presupuestos">Budgets</h1>
-            <p data-en="Track your spending limits this month" data-es="Controla tus límites de gasto este mes">Track your spending limits this month</p>
-          </div>
-        </div>
-        <div class="two-col">
-          <div class="card">
-            <div class="section-header">
-              <div class="section-title" data-en="Monthly budget" data-es="Presupuesto mensual">Monthly budget</div>
-            </div>
-            <div class="budget-list" id="budget-list">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-          <div class="card">
-            <div class="section-header">
-              <div class="section-title" data-en="Budget health" data-es="Salud del presupuesto">Budget health</div>
-            </div>
-            <div class="chart-wrap"><canvas id="budget-chart"></canvas></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── REPORTS ── -->
-      <div class="page" id="page-reports">
-        <div class="topbar">
-          <div class="topbar-left">
-            <h1 data-en="Reports" data-es="Reportes">Reports</h1>
-            <p data-en="Visual overview of your finances" data-es="Resumen visual de tus finanzas">Visual overview of your finances</p>
-          </div>
-        </div>
-        <div class="reports-grid">
-          <div class="card">
-            <div class="section-header"><div class="section-title" data-en="Income vs Expenses" data-es="Ingresos vs Gastos">Income vs Expenses</div></div>
-            <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="section-header"><div class="section-title" data-en="Spending trend" data-es="Tendencia de gastos">Spending trend</div></div>
-            <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="section-header"><div class="section-title" data-en="Top categories" data-es="Principales categorías">Top categories</div></div>
-            <div class="tx-list" id="category-breakdown"></div>
-          </div>
-          <div class="card">
-            <div class="section-header"><div class="section-title" data-en="Monthly summary" data-es="Resumen mensual">Monthly summary</div></div>
-            <div id="monthly-summary" style="display:flex;flex-direction:column;gap:12px;padding-top:8px"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── SETTINGS ── -->
-      <div class="page" id="page-settings">
-        <div class="topbar">
-          <div class="topbar-left">
-            <h1 data-en="Settings" data-es="Ajustes">Settings</h1>
-            <p data-en="Manage your account and preferences" data-es="Administra tu cuenta y preferencias">Manage your account and preferences</p>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-title" data-en="Profile" data-es="Perfil">Profile</div>
-          <div class="settings-item">
-            <div class="settings-item-left">
-              <div class="settings-item-icon" style="background:#D1FAE5">👤</div>
-              <div><div class="settings-label" id="settings-name">-</div><div class="settings-desc" id="settings-email">-</div></div>
-            </div>
-            <div class="settings-value">Edit</div>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-title" data-en="Preferences" data-es="Preferencias">Preferences</div>
-          <div class="settings-item">
-            <div class="settings-item-left">
-              <div class="settings-item-icon" style="background:#EDE9FE">🌎</div>
-              <div><div class="settings-label" data-en="Language" data-es="Idioma">Language</div><div class="settings-desc" data-en="English / Spanish" data-es="Inglés / Español">English / Spanish</div></div>
-            </div>
-            <div style="display:flex;gap:4px">
-              <button onclick="setLang('en')" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)">EN</button>
-              <button onclick="setLang('es')" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)">ES</button>
-            </div>
-          </div>
-          <div class="settings-item">
-            <div class="settings-item-left">
-              <div class="settings-item-icon" style="background:#FEF3C7">💰</div>
-              <div><div class="settings-label" data-en="Currency" data-es="Moneda">Currency</div><div class="settings-desc">COP / MXN / USD</div></div>
-            </div>
-            <div class="settings-value">COP</div>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-title" data-en="Danger zone" data-es="Zona de peligro">Danger zone</div>
-          <div class="settings-item">
-            <div class="settings-item-left">
-              <div class="settings-item-icon" style="background:#FEE2E2">🚪</div>
-              <div><div class="settings-label" data-en="Sign out" data-es="Cerrar sesión">Sign out</div><div class="settings-desc" data-en="Log out of your WeUp account" data-es="Salir de tu cuenta WeUp">Log out of your WeUp account</div></div>
-            </div>
-            <button class="btn btn-ghost" onclick="signOut()" style="font-size:13px;padding:7px 14px" data-en="Sign out" data-es="Salir">Sign out</button>
-          </div>
-        </div>
-      </div>
-
-    </main>
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-num" data-en="$2.4B+" data-es="$2.4MM+">$2.4B+</div>
+      <div class="stat-label" data-en="Tracked by users" data-es="Gestionado por usuarios">Tracked by users</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12K+</div>
+      <div class="stat-label" data-en="Active users" data-es="Usuarios activos">Active users</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">94%</div>
+      <div class="stat-label" data-en="Save more in 30 days" data-es="Ahorran más en 30 días">Save more in 30 days</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">ES / EN</div>
+      <div class="stat-label" data-en="Fully bilingual" data-es="Totalmente bilingüe">Fully bilingual</div>
+    </div>
   </div>
 
-  <!-- Mobile bottom nav -->
-  <nav class="bottom-nav">
-    <button class="bottom-nav-item active" onclick="showPage('home')"><span class="bn-icon">🏠</span><span data-en="Home" data-es="Inicio">Home</span></button>
-    <button class="bottom-nav-item" onclick="showPage('transactions')"><span class="bn-icon">💳</span><span data-en="Txns" data-es="Movs">Txns</span></button>
-    <button class="bottom-nav-item" onclick="openAddModal()"><div class="add-fab">+</div></button>
-    <button class="bottom-nav-item" onclick="showPage('budgets')"><span class="bn-icon">📊</span><span data-en="Budget" data-es="Ppto">Budget</span></button>
-    <button class="bottom-nav-item" onclick="showPage('reports')"><span class="bn-icon">📈</span><span data-en="Reports" data-es="Rep.">Reports</span></button>
-  </nav>
-</div>
+  <!-- ── Features ── -->
+  <section id="features" class="section">
+    <div class="section-inner">
+      <div class="section-tag" data-en="Features" data-es="Funciones">Features</div>
+      <h2 class="section-title" data-en="Everything you need to<br><em>master your money</em>" data-es="Todo lo que necesitas para<br><em>dominar tu dinero</em>">Everything you need to<br><em>master your money</em></h2>
+      <p class="section-sub" data-en="WeUp brings together tracking, insights, and goals in one beautiful app." data-es="WeUp une el seguimiento, los insights y tus metas en una sola app.">WeUp brings together tracking, insights, and goals in one beautiful app.</p>
 
-<!-- Add Transaction Modal -->
-<div class="overlay" id="add-modal" onclick="handleModalClick(event)">
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon">📊</div>
+          <h3 class="feat-title" data-en="Smart tracking" data-es="Seguimiento inteligente">Smart tracking</h3>
+          <p class="feat-desc" data-en="Log income and expenses in seconds. WeUp auto-categorizes everything so you always know where your money goes." data-es="Registra ingresos y gastos en segundos. WeUp categoriza todo automáticamente para que siempre sepas a dónde va tu dinero.">Log income and expenses in seconds. WeUp auto-categorizes everything so you always know where your money goes.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🤖</div>
+          <h3 class="feat-title" data-en="AI insights" data-es="Insights con IA">AI insights</h3>
+          <p class="feat-desc" data-en="Your personal AI analyzes your habits and gives you personalized tips to save more and spend smarter every month." data-es="Tu IA personal analiza tus hábitos y te da consejos personalizados para ahorrar más y gastar mejor cada mes.">Your personal AI analyzes your habits and gives you personalized tips to save more and spend smarter every month.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🎯</div>
+          <h3 class="feat-title" data-en="Budget & goals" data-es="Presupuesto y metas">Budget & goals</h3>
+          <p class="feat-desc" data-en="Set monthly budgets per category and define savings goals. WeUp tracks your progress and alerts you before you overspend." data-es="Define presupuestos mensuales por categoría y metas de ahorro. WeUp sigue tu progreso y te avisa antes de que te pases.">Set monthly budgets per category and define savings goals. WeUp tracks your progress and alerts you before you overspend.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🏦</div>
+          <h3 class="feat-title" data-en="Bank sync" data-es="Sincronización bancaria">Bank sync</h3>
+          <p class="feat-desc" data-en="Connect your Colombian and Mexican bank accounts. Transactions import automatically — no manual entry needed." data-es="Conecta tus cuentas bancarias colombianas y mexicanas. Las transacciones se importan automáticamente, sin entrada manual.">Connect your Colombian and Mexican bank accounts. Transactions import automatically — no manual entry needed.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📈</div>
+          <h3 class="feat-title" data-en="Visual reports" data-es="Reportes visuales">Visual reports</h3>
+          <p class="feat-desc" data-en="Beautiful charts that show your spending trends, net worth over time, and monthly comparisons at a glance." data-es="Gráficas hermosas que muestran tus tendencias de gasto, patrimonio neto y comparaciones mensuales de un vistazo.">Beautiful charts that show your spending trends, net worth over time, and monthly comparisons at a glance.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🌎</div>
+          <h3 class="feat-title" data-en="Built for LatAm" data-es="Hecho para LatAm">Built for LatAm</h3>
+          <p class="feat-desc" data-en="Fully bilingual in Spanish and English. Supports COP and MXN. Designed for how people in Colombia and Mexico actually bank." data-es="Totalmente bilingüe en español e inglés. Compatible con COP y MXN. Diseñado para la forma en que los colombianos y mexicanos manejan su dinero.">Fully bilingual in Spanish and English. Supports COP and MXN. Designed for how people in Colombia and Mexico actually bank.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── About ── -->
+  <section id="about" class="section section-dark">
+    <div class="section-inner about-grid">
+      <div class="about-left">
+        <div class="section-tag" data-en="About us" data-es="Nosotros">About us</div>
+        <h2 class="section-title" data-en="We believe everyone deserves<br><em>financial freedom</em>" data-es="Creemos que todos merecen<br><em>libertad financiera</em>">We believe everyone deserves<br><em>financial freedom</em></h2>
+        <p class="section-sub" data-en="At WeUp, we're building the financial tools that were only available to the wealthy — and making them accessible to everyone in Latin America." data-es="En WeUp, construimos las herramientas financieras que antes solo tenían los ricos, y las hacemos accesibles para todos en América Latina.">At WeUp, we're building the financial tools that were only available to the wealthy — and making them accessible to everyone in Latin America.</p>
+        <p class="section-sub" style="margin-top:16px" data-en="Our mission: empower people with simple, smart tools so that managing personal finances feels natural — not stressful." data-es="Nuestra misión: empoderar a las personas con herramientas simples e inteligentes para que gestionar las finanzas personales se sienta natural, no estresante.">Our mission: empower people with simple, smart tools so that managing personal finances feels natural — not stressful.</p>
+        <div class="about-stats">
+          <div class="about-stat">
+            <div class="about-stat-num">2</div>
+            <div class="about-stat-label" data-en="Countries" data-es="Países">Countries</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">12K+</div>
+            <div class="about-stat-label" data-en="Users" data-es="Usuarios">Users</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">$2.4B+</div>
+            <div class="about-stat-label" data-en="Tracked" data-es="Gestionado">Tracked</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-right">
+        <div class="about-card">
+          <div class="about-card-icon">✦</div>
+          <p class="about-quote" data-en='"WeUp helped me save my first $1,000 in just 3 months. I never thought I could do it."' data-es='"WeUp me ayudó a ahorrar mi primer millón en solo 3 meses. Nunca pensé que podría lograrlo."'>"WeUp helped me save my first $1,000 in just 3 months. I never thought I could do it."</p>
+          <div class="about-author">
+            <div class="about-avatar">MC</div>
+            <div>
+              <div class="about-name">María C.</div>
+              <div class="about-city" data-en="Bogotá, Colombia" data-es="Bogotá, Colombia">Bogotá, Colombia</div>
+            </div>
+          </div>
+        </div>
+        <div class="about-card" style="margin-top:16px">
+          <div class="about-card-icon">✦</div>
+          <p class="about-quote" data-en='"Finally an app that understands how banking works in Mexico. The AI tips are incredibly accurate."' data-es='"Por fin una app que entiende cómo funciona la banca en México. Los consejos de IA son increíblemente precisos."'>"Finally an app that understands how banking works in Mexico. The AI tips are incredibly accurate."</p>
+          <div class="about-author">
+            <div class="about-avatar">JR</div>
+            <div>
+              <div class="about-name">Jorge R.</div>
+              <div class="about-city" data-en="Ciudad de México" data-es="Ciudad de México">Ciudad de México</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Pricing ── -->
+  <section id="pricing" class="section">
+    <div class="section-inner">
+      <div class="section-tag" data-en="Pricing" data-es="Precios">Pricing</div>
+      <h2 class="section-title" data-en="Simple, honest pricing" data-es="Precios simples y honestos">Simple, honest pricing</h2>
+      <p class="section-sub" data-en="Start free, upgrade when you're ready. No hidden fees, cancel anytime." data-es="Empieza gratis, actualiza cuando quieras. Sin cobros ocultos, cancela cuando quieras.">Start free, upgrade when you're ready. No hidden fees, cancel anytime.</p>
+
+      <!-- Toggle -->
+      <div class="pricing-toggle">
+        <span class="toggle-label" id="tog-monthly" data-en="Monthly" data-es="Mensual">Monthly</span>
+        <div class="toggle-switch" onclick="togglePricing()" id="pricing-toggle">
+          <div class="toggle-knob" id="toggle-knob"></div>
+        </div>
+        <span class="toggle-label" id="tog-yearly" data-en="Yearly" data-es="Anual">Yearly</span>
+        <span class="toggle-save" data-en="Save 35%" data-es="Ahorra 35%">Save 35%</span>
+      </div>
+
+      <div class="pricing-grid">
+
+        <!-- Free -->
+        <div class="pricing-card">
+          <div class="pricing-plan" data-en="Free" data-es="Gratis">Free</div>
+          <div class="pricing-price">$0<span class="pricing-period" data-en="/forever" data-es="/siempre">/forever</span></div>
+          <div class="pricing-desc" data-en="Perfect to get started" data-es="Perfecto para empezar">Perfect to get started</div>
+          <ul class="pricing-features">
+            <li data-en="1 bank account" data-es="1 cuenta bancaria">1 bank account</li>
+            <li data-en="Up to 30 transactions/month" data-es="Hasta 30 transacciones/mes">Up to 30 transactions/month</li>
+            <li data-en="Basic spending categories" data-es="Categorías básicas de gasto">Basic spending categories</li>
+            <li data-en="Monthly summary report" data-es="Reporte mensual resumido">Monthly summary report</li>
+            <li class="feat-off" data-en="AI insights" data-es="Insights con IA">AI insights</li>
+            <li class="feat-off" data-en="Bank sync" data-es="Sincronización bancaria">Bank sync</li>
+            <li class="feat-off" data-en="Savings goals" data-es="Metas de ahorro">Savings goals</li>
+          </ul>
+          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="openModal('signup');return false;" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
+        </div>
+
+        <!-- Pro -->
+        <div class="pricing-card pricing-card-featured">
+          <div class="pricing-badge" data-en="Most popular" data-es="Más popular">Most popular</div>
+          <div class="pricing-plan" data-en="Pro" data-es="Pro">Pro</div>
+          <div class="pricing-price" id="pro-price">$4.99<span class="pricing-period" id="pro-period" data-en="/month" data-es="/mes">/month</span></div>
+          <div class="pricing-desc" id="pro-desc" data-en="Everything you need to take control" data-es="Todo lo que necesitas para tomar el control">Everything you need to take control</div>
+          <ul class="pricing-features">
+            <li data-en="Unlimited accounts" data-es="Cuentas ilimitadas">Unlimited accounts</li>
+            <li data-en="Unlimited transactions" data-es="Transacciones ilimitadas">Unlimited transactions</li>
+            <li data-en="AI-powered insights" data-es="Insights con IA">AI-powered insights</li>
+            <li data-en="Bank sync (CO & MX)" data-es="Sincronización bancaria (CO y MX)">Bank sync (CO & MX)</li>
+            <li data-en="Savings goals & budgets" data-es="Metas de ahorro y presupuestos">Savings goals & budgets</li>
+            <li data-en="Advanced visual reports" data-es="Reportes visuales avanzados">Advanced visual reports</li>
+            <li data-en="Priority support" data-es="Soporte prioritario">Priority support</li>
+          </ul>
+          <a href="#" class="pricing-cta" onclick="openModal('signup');return false;" data-en="Start Pro free 14 days" data-es="Empieza Pro gratis 14 días">Start Pro free 14 days</a>
+        </div>
+
+        <!-- Family -->
+        <div class="pricing-card">
+          <div class="pricing-plan" data-en="Family" data-es="Familiar">Family</div>
+          <div class="pricing-price" id="fam-price">$9.99<span class="pricing-period" id="fam-period" data-en="/month" data-es="/mes">/month</span></div>
+          <div class="pricing-desc" data-en="For the whole household" data-es="Para todo el hogar">For the whole household</div>
+          <ul class="pricing-features">
+            <li data-en="Everything in Pro" data-es="Todo lo de Pro">Everything in Pro</li>
+            <li data-en="Up to 5 members" data-es="Hasta 5 miembros">Up to 5 members</li>
+            <li data-en="Shared household budget" data-es="Presupuesto familiar compartido">Shared household budget</li>
+            <li data-en="Individual privacy per member" data-es="Privacidad individual por miembro">Individual privacy per member</li>
+            <li data-en="Family financial reports" data-es="Reportes financieros familiares">Family financial reports</li>
+            <li data-en="Dedicated support" data-es="Soporte dedicado">Dedicated support</li>
+            <li class="feat-off" data-en="Business features" data-es="Funciones empresariales">Business features</li>
+          </ul>
+          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="openModal('signup');return false;" data-en="Start free 14 days" data-es="Empieza gratis 14 días">Start free 14 days</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span class="dot"></span>WeUp
+      </div>
+      <p class="footer-tagline" data-en="Your money, finally under control." data-es="Tu dinero, por fin bajo control.">Your money, finally under control.</p>
+      <div class="footer-links">
+        <a href="#features" data-en="Features" data-es="Funciones">Features</a>
+        <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+        <a href="#about" data-en="About" data-es="Nosotros">About</a>
+        <a href="#" data-en="Privacy" data-es="Privacidad">Privacy</a>
+        <a href="#" data-en="Terms" data-es="Términos">Terms</a>
+      </div>
+      <p class="footer-copy">© 2026 WeUp. <span data-en="Made with ♥ for Latin America." data-es="Hecho con ♥ para América Latina.">Made with ♥ for Latin America.</span></p>
+    </div>
+  </footer>
+
+</div><!-- .page -->
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
   <div class="modal">
-    <div class="modal-title" data-en="Add transaction" data-es="Agregar transacción">Add transaction</div>
-    <div class="modal-sub" data-en="Record an income or expense" data-es="Registra un ingreso o gasto">Record an income or expense</div>
-    <div class="type-toggle">
-      <button class="type-btn active expense" id="type-expense" onclick="setTxType('expense')" data-en="Expense" data-es="Gasto">Expense</button>
-      <button class="type-btn income" id="type-income" onclick="setTxType('income')" data-en="Income" data-es="Ingreso">Income</button>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">WeUp</div>
+    <p class="modal-sub" id="modal-sub">Welcome back</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')"
+              data-en="Sign in" data-es="Ingresar">Sign in</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')"
+              data-en="Create account" data-es="Crear cuenta">Create account</button>
     </div>
-    <div class="form-group">
-      <input type="number" class="form-input amount-input" id="tx-amount" placeholder="$0.00" min="0" step="0.01">
+
+    <!-- Login panel -->
+    <div class="form-panel active" id="panel-login">
+      <div class="btn-social" onclick="handleSocial('google')">
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        <span data-en="Continue with Google" data-es="Continuar con Google">Continue with Google</span>
+      </div>
+      <div class="divider" data-en="or" data-es="o">or</div>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" data-en="Email address" data-es="Correo electrónico">Email address</label>
+          <input type="email" class="form-input" id="login-email" placeholder="ana@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-en="Password" data-es="Contraseña">Password</label>
+          <input type="password" class="form-input" id="login-pw" placeholder="••••••••" required>
+        </div>
+        <div class="form-forgot">
+          <a href="#" data-en="Forgot password?" data-es="¿Olvidaste tu contraseña?">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn-submit" id="login-btn">
+          <span data-en="Sign in to WeUp" data-es="Ingresar a WeUp">Sign in to WeUp</span>
+        </button>
+      </form>
+      <div class="modal-footer">
+        <span data-en="Don't have an account?" data-es="¿No tienes cuenta?">Don't have an account?</span>
+        <a href="#" onclick="switchTab('signup');return false;"
+           data-en=" Create one free" data-es=" Crear una gratis"> Create one free</a>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label" data-en="Description" data-es="Descripción">Description</label>
-      <input type="text" class="form-input" id="tx-desc" placeholder="e.g. Éxito, Netflix, Salary...">
+
+    <!-- Signup panel -->
+    <div class="form-panel" id="panel-signup">
+      <div class="btn-social" onclick="handleSocial('google')">
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        <span data-en="Sign up with Google" data-es="Registrarse con Google">Sign up with Google</span>
+      </div>
+      <div class="divider" data-en="or" data-es="o">or</div>
+      <form id="signup-form" onsubmit="handleSignup(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-en="First name" data-es="Nombre">First name</label>
+            <input type="text" class="form-input" id="signup-fname" placeholder="Ana" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-en="Last name" data-es="Apellido">Last name</label>
+            <input type="text" class="form-input" id="signup-lname" placeholder="García" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-en="Email address" data-es="Correo electrónico">Email address</label>
+          <input type="email" class="form-input" id="signup-email" placeholder="ana@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-en="Password" data-es="Contraseña">Password</label>
+          <input type="password" class="form-input" id="signup-pw"
+                 placeholder="Min 8 characters" required oninput="checkPwStrength(this.value)">
+          <div class="pw-strength">
+            <div class="pw-bar" id="pwb1"></div>
+            <div class="pw-bar" id="pwb2"></div>
+            <div class="pw-bar" id="pwb3"></div>
+            <div class="pw-bar" id="pwb4"></div>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit" id="signup-btn">
+          <span data-en="Create my account" data-es="Crear mi cuenta">Create my account</span>
+        </button>
+      </form>
+      <div class="modal-footer">
+        <span data-en="Already have an account?" data-es="¿Ya tienes cuenta?">Already have an account?</span>
+        <a href="#" onclick="switchTab('login');return false;"
+           data-en=" Sign in" data-es=" Ingresar"> Sign in</a>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label" data-en="Category" data-es="Categoría">Category</label>
-      <select class="form-select" id="tx-category">
-        <option value="food">🛒 Food & Drinks</option>
-        <option value="transport">🚌 Transport</option>
-        <option value="housing">🏠 Housing</option>
-        <option value="health">💊 Health</option>
-        <option value="entertainment">🎬 Entertainment</option>
-        <option value="shopping">🛍️ Shopping</option>
-        <option value="education">📚 Education</option>
-        <option value="salary">💼 Salary</option>
-        <option value="freelance">💻 Freelance</option>
-        <option value="other">📦 Other</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label" data-en="Date" data-es="Fecha">Date</label>
-      <input type="date" class="form-input" id="tx-date">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeAddModal()" data-en="Cancel" data-es="Cancelar">Cancel</button>
-      <button class="btn btn-primary" onclick="saveTransaction()" id="save-btn" data-en="Save" data-es="Guardar">Save</button>
-    </div>
+
   </div>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-const SUPA_URL = 'https://tnkydfulsrzihlohchhc.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
-
-let currentUser = null;
-let transactions = [];
 let currentLang = 'en';
-let txType = 'expense';
-let donutChart, barChart, lineChart, budgetChart;
+let isYearly = false;
 
-// ── Boot ───────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', async () => {
-  // Set today's date in modal
-  document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+const proMonthly = { en:'$4.99', es:'$4.99' };
+const proYearly  = { en:'$3.24', es:'$3.24' };
+const famMonthly = { en:'$9.99', es:'$9.99' };
+const famYearly  = { en:'$6.49', es:'$6.49' };
+const periodMonth= { en:'/month', es:'/mes' };
+const periodYear = { en:'/month, billed yearly', es:'/mes, cobrado anual' };
 
-  // Handle OAuth hash
-  if (window.location.hash.includes('access_token')) {
-    await sb.auth.getSession();
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
+function togglePricing() {
+  isYearly = !isYearly;
+  const sw = document.getElementById('pricing-toggle');
+  sw.classList.toggle('on', isYearly);
+  document.getElementById('pro-price').childNodes[0].textContent = isYearly ? proYearly[currentLang] : proMonthly[currentLang];
+  document.getElementById('fam-price').childNodes[0].textContent = isYearly ? famYearly[currentLang] : famMonthly[currentLang];
+  document.getElementById('pro-period').textContent = isYearly ? periodYear[currentLang] : periodMonth[currentLang];
+  document.getElementById('fam-period').textContent = isYearly ? periodYear[currentLang] : periodMonth[currentLang];
+}
+const translations = {
+  'modal-sub-login':  { en: 'Welcome back', es: 'Bienvenido de nuevo' },
+  'modal-sub-signup': { en: 'Join WeUp for free', es: 'Únete a WeUp gratis' },
+};
 
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    document.getElementById('gate-msg').innerHTML =
-      'You need to <a href="/">sign in</a> to access your dashboard.';
-    return;
-  }
-
-  currentUser = session.user;
-  bootApp();
-
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') window.location.href = '/';
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.nav-lang button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.nav-lang button:${lang === 'en' ? 'first-child' : 'last-child'}`).classList.add('active');
+  document.querySelectorAll('[data-' + lang + ']').forEach(el => {
+    const val = el.getAttribute('data-' + lang);
+    if (el.tagName === 'INPUT') { el.placeholder = val; }
+    else if (val.includes('<br>') || val.includes('<em>')) { el.innerHTML = val; }
+    else { el.textContent = val; }
   });
-});
-
-async function bootApp() {
-  document.getElementById('auth-gate').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-
-  const name = currentUser.user_metadata?.full_name?.split(' ')[0]
-            || currentUser.user_metadata?.name?.split(' ')[0]
-            || currentUser.email.split('@')[0];
-  const email = currentUser.email;
-  const initials = name.slice(0,2).toUpperCase();
-
-  document.getElementById('sb-avatar').textContent = initials;
-  document.getElementById('sb-name').textContent = name;
-  document.getElementById('sb-email').textContent = email;
-  document.getElementById('settings-name').textContent = name;
-  document.getElementById('settings-email').textContent = email;
-
-  // Greeting
-  const h = new Date().getHours();
-  const greet = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('home-greeting').textContent = `${greet}, ${name} ✦`;
-  document.getElementById('home-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-  await loadTransactions();
-  renderDashboard();
-  initCharts();
+  const ph = {
+    en: { greeting:'Good morning,', bal:'Net balance', income:'Income', expenses:'Expenses', recent:'RECENT', food:'Food', leisure:'Leisure', inc:'Income' },
+    es: { greeting:'Buenos días,', bal:'Balance neto', income:'Ingresos', expenses:'Gastos', recent:'RECIENTES', food:'Alimentación', leisure:'Ocio', inc:'Ingreso' }
+  }[lang];
+  document.getElementById('phone-greeting').textContent = ph.greeting;
+  document.getElementById('phone-bal-label').textContent = ph.bal;
+  document.getElementById('ph-income').textContent = ph.income;
+  document.getElementById('ph-expenses').textContent = ph.expenses;
+  document.getElementById('ph-recent').textContent = ph.recent;
+  document.getElementById('ph-food').textContent = ph.food;
+  document.getElementById('ph-leisure').textContent = ph.leisure;
+  document.getElementById('ph-inc').textContent = ph.inc;
 }
 
-// ── Load data ─────────────────────────────────────────────────────────────────
-async function loadTransactions() {
-  const { data, error } = await sb
-    .from('transactions')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('date', { ascending: false });
-  if (!error) transactions = data || [];
+function openModal(tab = 'login') {
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchTab(tab);
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+  document.getElementById('panel-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('modal-sub').textContent =
+    tab === 'login' ? translations['modal-sub-login'][currentLang]
+                    : translations['modal-sub-signup'][currentLang];
 }
 
-// ── Render dashboard ──────────────────────────────────────────────────────────
-function renderDashboard() {
-  const now = new Date();
-  const thisMonth = transactions.filter(t => {
-    const d = new Date(t.date);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  });
+// ── Supabase client ──────────────────────────────────────────────────────────
+const SUPABASE_URL  = 'https://tnkydfulsrzihlohchhc.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const income   = thisMonth.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount),0);
-  const expenses = thisMonth.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount),0);
-  const balance  = income - expenses;
-  const saved    = income > 0 ? balance : 0;
-  const saveRate = income > 0 ? Math.round((saved/income)*100) : 0;
-  const expRate  = income > 0 ? Math.round((expenses/income)*100) : 0;
-
-  document.getElementById('stat-balance').textContent  = fmt(balance);
-  document.getElementById('stat-income').textContent   = fmt(income);
-  document.getElementById('stat-expenses').textContent = fmt(expenses);
-  document.getElementById('stat-saved').textContent    = fmt(saved);
-  document.getElementById('expense-badge').textContent = expRate + '%';
-  document.getElementById('saved-rate').textContent    = saveRate + '% ' + (currentLang==='es'?'tasa de ahorro':'savings rate');
-
-  // Recent transactions
-  renderTxList('recent-tx-list', transactions.slice(0,8));
-  renderTxList('all-tx-list', transactions);
-
-  // AI insights
-  generateAIInsights(income, expenses, balance, thisMonth);
-
-  // Budgets
-  renderBudgets(thisMonth);
-
-  // Reports
-  renderReports();
-}
-
-function fmt(n) {
-  return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(n);
-}
-
-function renderTxList(containerId, txs) {
-  const el = document.getElementById(containerId);
-  if (!txs.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">💳</div><h3>${currentLang==='es'?'Sin transacciones aún':'No transactions yet'}</h3><p>${currentLang==='es'?'Agrega tu primer ingreso o gasto para comenzar.':'Add your first income or expense to get started.'}</p></div>`;
-    return;
+// ── Auth helpers ──────────────────────────────────────────────────────────────
+function showAuthError(msg) {
+  let el = document.getElementById('auth-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'auth-error';
+    el.style.cssText = 'background:rgba(248,113,113,0.1);border:0.5px solid #F87171;border-radius:10px;padding:10px 14px;font-size:13px;color:#F87171;margin-bottom:14px;';
+    document.querySelector('.form-panel.active').prepend(el);
   }
-  const catIcons = {food:'🛒',transport:'🚌',housing:'🏠',health:'💊',entertainment:'🎬',shopping:'🛍️',education:'📚',salary:'💼',freelance:'💻',other:'📦'};
-  const catColors = {food:'#FEE2E2',transport:'#FEF3C7',housing:'#DBEAFE',health:'#D1FAE5',entertainment:'#EDE9FE',shopping:'#FCE7F3',education:'#E0F2FE',salary:'#D1FAE5',freelance:'#D1FAE5',other:'#F1F5F9'};
-  el.innerHTML = txs.map(t => `
-    <div class="tx-item">
-      <div class="tx-icon" style="background:${catColors[t.category]||'#F1F5F9'}">${catIcons[t.category]||'📦'}</div>
-      <div class="tx-info">
-        <div class="tx-name">${t.description||'Transaction'}</div>
-        <div class="tx-cat">${t.category||'Other'}</div>
-      </div>
-      <div class="tx-right">
-        <div class="tx-amt ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-        <div class="tx-date">${new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
-      </div>
-    </div>`).join('');
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 
-// ── AI Insights ───────────────────────────────────────────────────────────────
-function generateAIInsights(income, expenses, balance, monthTxs) {
-  const insights = [];
+function showAuthSuccess(msg) {
+  let el = document.getElementById('auth-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'auth-error';
+    el.style.cssText = 'border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;';
+    document.querySelector('.form-panel.active').prepend(el);
+  }
+  el.style.background = 'rgba(95,220,154,0.1)';
+  el.style.border = '0.5px solid #5FDC9A';
+  el.style.color = '#5FDC9A';
+  el.textContent = msg;
+  el.style.display = 'block';
+}
 
-  if (monthTxs.length === 0) {
-    insights.push({ icon:'📊', text: currentLang==='es' ? 'Agrega transacciones para recibir insights personalizados de tu IA.' : 'Add transactions to receive personalized AI insights.' });
-    insights.push({ icon:'💡', text: currentLang==='es' ? 'WeUp IA analizará tus patrones de gasto para ayudarte a ahorrar más.' : 'WeUp AI will analyze your spending patterns to help you save more.' });
-    insights.push({ icon:'🎯', text: currentLang==='es' ? 'Configura categorías de presupuesto para desbloquear el seguimiento de metas.' : 'Set up budget categories to unlock goal tracking.' });
+function clearAuthMsg() {
+  const el = document.getElementById('auth-error');
+  if (el) el.style.display = 'none';
+}
+
+function setBtnLoading(btnId, loading, label) {
+  const btn = document.getElementById(btnId);
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+  btn.querySelector('span').textContent = label;
+}
+
+// ── Login ─────────────────────────────────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  clearAuthMsg();
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  const lbl   = currentLang === 'es' ? 'Ingresando...' : 'Signing in...';
+  setBtnLoading('login-btn', true, lbl);
+
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+
+  if (error) {
+    setBtnLoading('login-btn', false, currentLang === 'es' ? 'Ingresar a WeUp' : 'Sign in to WeUp');
+    const msg = error.message.includes('Invalid') 
+      ? (currentLang === 'es' ? 'Email o contraseña incorrectos.' : 'Incorrect email or password.')
+      : error.message;
+    showAuthError(msg);
   } else {
-    const saveRate = income > 0 ? Math.round((balance/income)*100) : 0;
-    const topCat = getTopCategory(monthTxs.filter(t=>t.type==='expense'));
-    const expRatio = income > 0 ? Math.round((expenses/income)*100) : 0;
+    setBtnLoading('login-btn', false, currentLang === 'es' ? '✓ ¡Bienvenido!' : '✓ Welcome back!');
+    setTimeout(() => {
+      closeModal();
+      window.location.href = '/dashboard.html';
+    }, 800);
+  }
+}
 
-    if (saveRate >= 20) insights.push({ icon:'🏆', text: currentLang==='es' ? `¡Excelente! Estás ahorrando el <strong>${saveRate}%</strong> de tus ingresos este mes. Estás por encima del promedio.` : `Excellent! You're saving <strong>${saveRate}%</strong> of your income this month — above average.` });
-    else if (saveRate > 0) insights.push({ icon:'💡', text: currentLang==='es' ? `Estás ahorrando el <strong>${saveRate}%</strong> este mes. El objetivo recomendado es el 20%. ¡Sigue así!` : `You're saving <strong>${saveRate}%</strong> this month. The recommended goal is 20%. Keep going!` });
-    else insights.push({ icon:'⚠️', text: currentLang==='es' ? `Tus gastos superan tus ingresos este mes. Revisa tus categorías para identificar dónde recortar.` : `Your expenses exceed your income this month. Review your categories to identify where to cut.` });
+// ── Signup ────────────────────────────────────────────────────────────────────
+async function handleSignup(e) {
+  e.preventDefault();
+  clearAuthMsg();
+  const fname = document.getElementById('signup-fname').value.trim();
+  const lname = document.getElementById('signup-lname').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pw    = document.getElementById('signup-pw').value;
 
-    if (topCat) insights.push({ icon:'🔍', text: currentLang==='es' ? `Tu mayor categoría de gasto es <strong>${topCat}</strong>. Considera establecer un presupuesto para esta categoría.` : `Your top spending category is <strong>${topCat}</strong>. Consider setting a budget limit for this category.` });
-
-    if (expRatio > 80) insights.push({ icon:'🚨', text: currentLang==='es' ? `Estás gastando el <strong>${expRatio}%</strong> de tus ingresos. Intenta reducir gastos no esenciales.` : `You're spending <strong>${expRatio}%</strong> of your income. Try reducing non-essential expenses.` });
-    else insights.push({ icon:'📈', text: currentLang==='es' ? `Con ${monthTxs.length} transacciones este mes, tu seguimiento financiero está activo. ¡Sigue registrando!` : `With ${monthTxs.length} transactions this month, your financial tracking is active. Keep it up!` });
+  if (pw.length < 8) {
+    showAuthError(currentLang === 'es' ? 'La contraseña debe tener al menos 8 caracteres.' : 'Password must be at least 8 characters.');
+    return;
   }
 
-  document.getElementById('ai-insight-1').innerHTML = insights[0]?.text || '';
-  document.getElementById('ai-insight-2').innerHTML = insights[1]?.text || '';
-  document.getElementById('ai-insight-3').innerHTML = insights[2]?.text || '';
-  document.querySelector('#ai-insights-container .ai-insight:nth-child(1) .ai-insight-icon').textContent = insights[0]?.icon || '📊';
-  document.querySelector('#ai-insights-container .ai-insight:nth-child(2) .ai-insight-icon').textContent = insights[1]?.icon || '💡';
-  document.querySelector('#ai-insights-container .ai-insight:nth-child(3) .ai-insight-icon').textContent = insights[2]?.icon || '🎯';
-}
+  const lbl = currentLang === 'es' ? 'Creando cuenta...' : 'Creating account...';
+  setBtnLoading('signup-btn', true, lbl);
 
-function getTopCategory(expenses) {
-  const cats = {};
-  expenses.forEach(t => { cats[t.category] = (cats[t.category]||0) + parseFloat(t.amount); });
-  return Object.entries(cats).sort((a,b)=>b[1]-a[1])[0]?.[0];
-}
-
-// ── Budgets ───────────────────────────────────────────────────────────────────
-const BUDGETS = { food:500, transport:150, housing:800, entertainment:200, shopping:300, health:100, education:100 };
-const CAT_ICONS = { food:'🛒',transport:'🚌',housing:'🏠',health:'💊',entertainment:'🎬',shopping:'🛍️',education:'📚' };
-
-function renderBudgets(monthTxs) {
-  const spent = {};
-  monthTxs.filter(t=>t.type==='expense').forEach(t => {
-    spent[t.category] = (spent[t.category]||0) + parseFloat(t.amount);
-  });
-
-  const el = document.getElementById('budget-list');
-  el.innerHTML = Object.entries(BUDGETS).map(([cat, limit]) => {
-    const s = spent[cat] || 0;
-    const pct = Math.min(Math.round((s/limit)*100), 100);
-    const cls = pct >= 100 ? 'bar-over' : pct >= 80 ? 'bar-warn' : 'bar-safe';
-    return `<div class="budget-item">
-      <div class="budget-header">
-        <div class="budget-cat"><span style="font-size:14px">${CAT_ICONS[cat]}</span>${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
-        <div class="budget-amounts">${fmt(s)} / ${fmt(limit)}</div>
-      </div>
-      <div class="budget-bar-bg"><div class="budget-bar-fill ${cls}" style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('');
-}
-
-// ── Charts ────────────────────────────────────────────────────────────────────
-function initCharts() {
-  const now = new Date();
-  const months = [];
-  const incomeData = [];
-  const expenseData = [];
-
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    months.push(d.toLocaleDateString('en-US',{month:'short'}));
-    const m = transactions.filter(t => {
-      const td = new Date(t.date);
-      return td.getMonth()===d.getMonth() && td.getFullYear()===d.getFullYear();
-    });
-    incomeData.push(m.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount),0));
-    expenseData.push(m.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount),0));
-  }
-
-  // Donut - spending by category
-  const catSpend = {};
-  const thisMonth = transactions.filter(t => {
-    const d = new Date(t.date);
-    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear() && t.type==='expense';
-  });
-  thisMonth.forEach(t => { catSpend[t.category] = (catSpend[t.category]||0)+parseFloat(t.amount); });
-  const cats = Object.keys(catSpend);
-  const colors = ['#2E8B57','#3DBA7A','#5FDC9A','#10B981','#34D399','#6EE7B7','#A7F3D0'];
-
-  if (donutChart) donutChart.destroy();
-  donutChart = new Chart(document.getElementById('donut-chart'), {
-    type: 'doughnut',
-    data: { labels: cats.length ? cats : ['No data'], datasets: [{ data: cats.length ? Object.values(catSpend) : [1], backgroundColor: cats.length ? colors.slice(0,cats.length) : ['#e2e8f0'], borderWidth: 0 }] },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ font:{size:11}, padding:12 } } } }
-  });
-
-  // Bar chart
-  if (barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById('bar-chart'), {
-    type: 'bar',
-    data: { labels:months, datasets:[
-      { label:'Income', data:incomeData, backgroundColor:'rgba(16,185,129,0.8)', borderRadius:6 },
-      { label:'Expenses', data:expenseData, backgroundColor:'rgba(239,68,68,0.7)', borderRadius:6 }
-    ]},
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:v=>'$'+v}} } }
-  });
-
-  // Line chart
-  if (lineChart) lineChart.destroy();
-  lineChart = new Chart(document.getElementById('line-chart'), {
-    type: 'line',
-    data: { labels:months, datasets:[{ label:'Expenses', data:expenseData, borderColor:'#2E8B57', backgroundColor:'rgba(46,139,87,0.08)', fill:true, tension:0.4, pointBackgroundColor:'#2E8B57', pointRadius:4 }]},
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:v=>'$'+v}} } }
-  });
-
-  // Budget chart
-  const budgetLabels = Object.keys(BUDGETS).map(c=>c.charAt(0).toUpperCase()+c.slice(1));
-  const budgetSpent = Object.keys(BUDGETS).map(cat => {
-    return thisMonth.filter(t=>t.category===cat).reduce((s,t)=>s+parseFloat(t.amount),0);
-  });
-  const budgetLimits = Object.values(BUDGETS);
-  if (budgetChart) budgetChart.destroy();
-  budgetChart = new Chart(document.getElementById('budget-chart'), {
-    type: 'bar',
-    data: { labels:budgetLabels, datasets:[
-      { label:'Spent', data:budgetSpent, backgroundColor:'rgba(46,139,87,0.8)', borderRadius:4 },
-      { label:'Limit', data:budgetLimits, backgroundColor:'rgba(46,139,87,0.15)', borderRadius:4 }
-    ]},
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:v=>'$'+v}} } }
-  });
-
-  // Reports - category breakdown
-  renderReports();
-}
-
-function renderReports() {
-  const now = new Date();
-  const thisMonth = transactions.filter(t => {
-    const d = new Date(t.date);
-    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-  });
-  const catSpend = {};
-  thisMonth.filter(t=>t.type==='expense').forEach(t => { catSpend[t.category]=(catSpend[t.category]||0)+parseFloat(t.amount); });
-  const sorted = Object.entries(catSpend).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const icons = { food:'🛒',transport:'🚌',housing:'🏠',health:'💊',entertainment:'🎬',shopping:'🛍️',education:'📚',other:'📦' };
-  document.getElementById('category-breakdown').innerHTML = sorted.length ? sorted.map(([cat,amt]) =>
-    `<div class="tx-item"><div class="tx-icon" style="background:#D1FAE5">${icons[cat]||'📦'}</div><div class="tx-info"><div class="tx-name">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div></div><div class="tx-right"><div class="tx-amt neg">${fmt(amt)}</div></div></div>`
-  ).join('') : `<div class="empty"><div class="empty-icon">📊</div><p>No expenses this month</p></div>`;
-
-  const income   = thisMonth.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount),0);
-  const expenses = thisMonth.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount),0);
-  document.getElementById('monthly-summary').innerHTML = [
-    { label: currentLang==='es'?'Ingresos totales':'Total income', value:fmt(income), color:'var(--income)' },
-    { label: currentLang==='es'?'Gastos totales':'Total expenses', value:fmt(expenses), color:'var(--expense)' },
-    { label: currentLang==='es'?'Balance neto':'Net balance', value:fmt(income-expenses), color:income>=expenses?'var(--income)':'var(--expense)' },
-    { label: currentLang==='es'?'Transacciones':'Transactions', value:thisMonth.length, color:'var(--text)' },
-  ].map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:14px;color:var(--text2)">${r.label}</span><span style="font-size:15px;font-weight:600;color:${r.color}">${r.value}</span></div>`).join('');
-}
-
-// ── Add transaction ───────────────────────────────────────────────────────────
-function openAddModal() {
-  document.getElementById('add-modal').classList.add('open');
-  document.getElementById('tx-amount').focus();
-}
-function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
-function handleModalClick(e) { if (e.target===document.getElementById('add-modal')) closeAddModal(); }
-function setTxType(type) {
-  txType = type;
-  document.getElementById('type-expense').classList.toggle('active',type==='expense');
-  document.getElementById('type-income').classList.toggle('active',type==='income');
-  document.getElementById('type-expense').className = `type-btn${type==='expense'?' active expense':' expense'}`;
-  document.getElementById('type-income').className  = `type-btn${type==='income'?' active income':' income'}`;
-}
-
-async function saveTransaction() {
-  const amount = parseFloat(document.getElementById('tx-amount').value);
-  const desc   = document.getElementById('tx-desc').value.trim();
-  const cat    = document.getElementById('tx-category').value;
-  const date   = document.getElementById('tx-date').value;
-
-  if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
-  if (!desc) { showToast('Add a description'); return; }
-
-  document.getElementById('save-btn').textContent = currentLang==='es'?'Guardando...':'Saving...';
-
-  const { error } = await sb.from('transactions').insert({
-    user_id: currentUser.id,
-    type: txType,
-    amount,
-    description: desc,
-    category: cat,
-    date
+  const { error } = await sb.auth.signUp({
+    email,
+    password: pw,
+    options: {
+      data: { full_name: `${fname} ${lname}` },
+      emailRedirectTo: window.location.origin
+    }
   });
 
   if (error) {
-    showToast('Error saving: ' + error.message);
+    setBtnLoading('signup-btn', false, currentLang === 'es' ? 'Crear mi cuenta' : 'Create my account');
+    const msg = error.message.includes('already registered')
+      ? (currentLang === 'es' ? 'Este email ya está registrado. ¿Quieres iniciar sesión?' : 'This email is already registered. Want to sign in?')
+      : error.message;
+    showAuthError(msg);
   } else {
-    showToast(currentLang==='es'?'✓ Transacción guardada':'✓ Transaction saved');
-    closeAddModal();
-    // Reset form
-    document.getElementById('tx-amount').value = '';
-    document.getElementById('tx-desc').value = '';
-    document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-    await loadTransactions();
-    renderDashboard();
-    initCharts();
+    setBtnLoading('signup-btn', false, currentLang === 'es' ? '✓ ¡Cuenta creada!' : '✓ Account created!');
+    showAuthSuccess(
+      currentLang === 'es'
+        ? '✓ Revisa tu email para confirmar tu cuenta.'
+        : '✓ Check your email to confirm your account.'
+    );
   }
-  document.getElementById('save-btn').textContent = currentLang==='es'?'Guardar':'Save';
 }
 
-// ── Navigation ────────────────────────────────────────────────────────────────
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.bottom-nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll(`.nav-item`).forEach(n=>{ if(n.getAttribute('onclick')?.includes(id)) n.classList.add('active'); });
-}
-
-// ── Language ──────────────────────────────────────────────────────────────────
-function setLang(lang) {
-  currentLang = lang;
-  document.querySelectorAll('[data-'+lang+']').forEach(el=>{
-    const val = el.getAttribute('data-'+lang);
-    if(el.tagName==='INPUT'){el.placeholder=val}
-    else{el.textContent=val}
+// ── Google OAuth ──────────────────────────────────────────────────────────────
+async function handleSocial(provider) {
+  const redirectTo = window.location.hostname === 'localhost'
+    ? window.location.origin
+    : 'https://weup-one.vercel.app';
+  const { error } = await sb.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo }
   });
+  if (error) showAuthError(error.message);
 }
 
-// ── Sign out ──────────────────────────────────────────────────────────────────
-async function signOut() {
-  await sb.auth.signOut();
-  window.location.href = '/';
+// ── Welcome banner ────────────────────────────────────────────────────────────
+function showWelcomeBanner() {
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:300;background:#1A5C3A;border:0.5px solid #5FDC9A;border-radius:12px;padding:14px 24px;font-size:14px;color:#fff;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);';
+  banner.textContent = currentLang === 'es' ? '✓ Sesión iniciada correctamente' : '✓ Signed in successfully';
+  document.body.appendChild(banner);
+  setTimeout(() => banner.remove(), 3500);
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3000);
+// ── Check session on load ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+
+  // Handle OAuth redirect — Supabase puts tokens in the URL hash
+  if (window.location.hash.includes('access_token')) {
+    const { data: { session }, error } = await sb.auth.getSession();
+    if (session) {
+      const name = session.user?.user_metadata?.full_name?.split(' ')[0]
+                || session.user?.user_metadata?.name?.split(' ')[0]
+                || session.user.email.split('@')[0];
+      updateNavForUser(name);
+      // Redirect to dashboard after Google OAuth
+      setTimeout(() => { window.location.href = '/dashboard.html'; }, 800);
+    }
+    return;
+  }
+
+  // Normal page load — check for existing session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    // Already logged in — go straight to dashboard
+    window.location.href = '/dashboard.html';
+    return;
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const name = session.user?.user_metadata?.full_name?.split(' ')[0]
+                || session.user?.user_metadata?.name?.split(' ')[0]
+                || session.user.email.split('@')[0];
+      updateNavForUser(name);
+    }
+    if (event === 'SIGNED_OUT') {
+      updateNavForGuest();
+    }
+  });
+});
+
+function updateNavForUser(name) {
+  const cta = document.querySelector('.nav-cta');
+  cta.textContent = name;
+  cta.onclick = async (e) => {
+    e.preventDefault();
+    await sb.auth.signOut();
+    updateNavForGuest();
+  };
+  cta.title = currentLang === 'es' ? 'Cerrar sesión' : 'Sign out';
+}
+
+function updateNavForGuest() {
+  const cta = document.querySelector('.nav-cta');
+  cta.textContent = currentLang === 'es' ? 'Ingresar' : 'Sign in';
+  cta.onclick = (e) => { e.preventDefault(); openModal('login'); };
+}
+
+function checkPwStrength(val) {
+  const bars = [1,2,3,4].map(i => document.getElementById('pwb'+i));
+  bars.forEach(b => { b.className = 'pw-bar'; });
+  if (!val) return;
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const cls = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
+  for (let i = 0; i < score; i++) bars[i].classList.add(cls);
 }
 </script>
 </body>
