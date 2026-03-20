@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeUp — Take control of your money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth;height:100%}
+:root{
+  --deep:    #0D2B1E;
+  --mid:     #122E21;
+  --brand:   #1A5C3A;
+  --accent:  #2E8B57;
+  --glow:    #3DBA7A;
+  --light:   #5FDC9A;
+  --soft-bg: #0F2A1C;
+  --w:       #FFFFFF;
+  --w80:     rgba(255,255,255,0.80);
+  --w60:     rgba(255,255,255,0.60);
+  --w50:     rgba(255,255,255,0.50);
+  --w20:     rgba(255,255,255,0.20);
+  --w12:     rgba(255,255,255,0.12);
+  --w08:     rgba(255,255,255,0.08);
+  --w06:     rgba(255,255,255,0.06);
+  --w04:     rgba(255,255,255,0.04);
+  --err:     #F87171;
+  --ff-d:    'DM Serif Display',Georgia,serif;
+  --ff-b:    'DM Sans',system-ui,sans-serif;
+  --r-sm:    8px;
+  --r-md:    14px;
+  --r-lg:    20px;
+  --r-xl:    28px;
+}
+
+body{
+  font-family:var(--ff-b);
+  background:var(--deep);
+  color:var(--w);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── Softer layered background — not heavy solid green ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at -10% -5%, rgba(46,139,87,0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 110% 100%, rgba(26,92,58,0.20) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 30% at 55% 50%, rgba(61,186,122,0.07) 0%, transparent 60%),
+    linear-gradient(160deg, #0B2418 0%, #0D2B1E 40%, #0A1F16 100%);
+}
+
+/* subtle grain */
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+
+.page{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── Nav ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 56px;
+  border-bottom:0.5px solid var(--w08);
+  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:100;
+  background:rgba(11,36,24,0.72);
+}
+.nav-logo{
+  font-family:var(--ff-d);font-size:26px;letter-spacing:-0.3px;
+  color:var(--w);text-decoration:none;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--light);display:inline-block;flex-shrink:0;
+}
+.nav-center{display:flex;align-items:center;gap:32px}
+.nav-center a{
+  font-size:14px;color:var(--w60);text-decoration:none;
+  transition:color 0.2s;font-weight:400;letter-spacing:0.01em;
+}
+.nav-center a:hover{color:var(--w)}
+.nav-lang{
+  display:flex;gap:2px;background:var(--w06);border-radius:8px;padding:3px;
+}
+.nav-lang button{
+  font-family:var(--ff-b);font-size:12px;font-weight:500;letter-spacing:0.05em;
+  padding:4px 10px;border-radius:6px;border:none;cursor:pointer;
+  background:transparent;color:var(--w50);transition:all 0.2s;
+}
+.nav-lang button.active{background:var(--w20);color:var(--w)}
+.nav-cta{
+  background:var(--accent);color:var(--w);border:none;
+  border-radius:var(--r-sm);padding:10px 22px;
+  font-family:var(--ff-b);font-size:14px;font-weight:500;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;white-space:nowrap;
+}
+.nav-cta:hover{background:var(--glow);transform:translateY(-1px)}
+
+/* ── Hero ── */
+.hero{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:48px;align-items:center;
+  padding:72px 56px 88px;
+  max-width:1280px;margin:0 auto;width:100%;
+}
+
+/* left */
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--w06);border:0.5px solid var(--w20);
+  border-radius:20px;padding:6px 14px;margin-bottom:28px;
+  font-size:11px;font-weight:600;color:var(--light);
+  letter-spacing:0.08em;text-transform:uppercase;
+}
+.pulse{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--light);flex-shrink:0;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.45;transform:scale(0.75)}}
+
+.hero-headline{
+  font-family:var(--ff-d);
+  font-size:clamp(42px,4.8vw,64px);
+  line-height:1.06;letter-spacing:-0.025em;
+  margin-bottom:20px;color:var(--w);
+}
+.hero-headline em{font-style:italic;color:var(--light)}
+
+.hero-sub{
+  font-size:17px;line-height:1.68;color:var(--w60);
+  margin-bottom:36px;max-width:420px;font-weight:300;
+}
+
+.hero-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn-primary{
+  background:var(--accent);color:var(--w);border:none;
+  border-radius:var(--r-md);padding:14px 26px;
+  font-family:var(--ff-b);font-size:15px;font-weight:500;
+  cursor:pointer;transition:all 0.25s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{background:var(--glow);transform:translateY(-2px)}
+.btn-ghost{
+  background:transparent;color:var(--w80);
+  border:0.5px solid var(--w20);border-radius:var(--r-md);
+  padding:14px 26px;font-family:var(--ff-b);font-size:15px;font-weight:400;
+  cursor:pointer;transition:all 0.25s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-ghost:hover{border-color:var(--w50);color:var(--w);background:var(--w06)}
+
+.hero-social{display:flex;align-items:center;gap:14px;margin-top:36px}
+.avatars{display:flex}
+.avatars span{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--deep);
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:600;margin-left:-8px;
+}
+.avatars span:first-child{margin-left:0}
+.hero-social p{font-size:13px;color:var(--w50)}
+.hero-social strong{color:var(--w80);font-weight:500}
+
+/* ── Phone ── */
+.hero-right{
+  display:flex;justify-content:center;align-items:center;
+  position:relative;
+  padding-bottom:80px;
+  padding-right:48px;
+}
+.phone-frame{
+  width:282px;background:#0A0A0A;border-radius:46px;padding:13px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.10),
+    0 48px 96px rgba(0,0,0,0.55),
+    0 8px 24px rgba(0,0,0,0.35),
+    0 0 40px rgba(61,186,122,0.08);
+  position:relative;z-index:2;
+  animation:float 4.5s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+.phone-screen{
+  background:var(--mid);border-radius:36px;overflow:hidden;
+  min-height:548px;display:flex;flex-direction:column;
+}
+.phone-notch{
+  width:92px;height:28px;background:#0A0A0A;
+  border-radius:0 0 18px 18px;margin:0 auto;
+}
+.phone-status{
+  display:flex;justify-content:space-between;
+  padding:8px 22px 0;font-size:10px;font-weight:600;color:var(--w50);
+}
+.phone-body{padding:14px 18px;flex:1}
+.phone-greeting{font-size:11px;color:var(--w50);margin-bottom:2px}
+.phone-name{font-size:16px;font-weight:600;margin-bottom:18px}
+.phone-bal-card{
+  background:var(--brand);border-radius:18px;padding:18px;
+  margin-bottom:16px;position:relative;overflow:hidden;
+}
+.phone-bal-card::before{
+  content:'';position:absolute;right:-18px;top:-18px;
+  width:110px;height:110px;border-radius:50%;
+  background:rgba(255,255,255,0.06);
+}
+.phone-bal-card::after{
+  content:'';position:absolute;right:16px;bottom:-32px;
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,0.04);
+}
+.phone-bal-label{font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.phone-bal-amount{font-size:28px;font-weight:700;letter-spacing:-0.03em;margin-bottom:12px}
+.phone-bal-row{display:flex;gap:18px}
+.phone-bal-item{font-size:10px;color:var(--w50)}
+.phone-bal-item b{display:block;font-size:12px;font-weight:600;color:var(--w80);margin-top:2px}
+.phone-section-title{
+  font-size:10px;font-weight:600;color:var(--w50);
+  margin-bottom:10px;text-transform:uppercase;letter-spacing:0.08em;
+}
+.phone-txs{display:flex;flex-direction:column;gap:8px}
+.phone-tx{
+  display:flex;align-items:center;gap:10px;
+  background:var(--w04);border-radius:12px;padding:10px 12px;
+}
+.phone-tx-icon{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;
+}
+.phone-tx-info{flex:1}
+.phone-tx-name{font-size:12px;font-weight:500}
+.phone-tx-cat{font-size:10px;color:var(--w50);margin-top:1px}
+.phone-tx-amt{font-size:12px;font-weight:600}
+.neg{color:#F87171}.pos{color:var(--light)}
+
+/* card behind phone */
+.float-card{
+  position:absolute;bottom:-72px;right:-52px;z-index:3;
+  width:196px;height:118px;
+  background:var(--brand);border-radius:16px;padding:16px 18px;
+  box-shadow:0 24px 48px rgba(0,0,0,0.5),0 0 0 0.5px rgba(255,255,255,0.10);
+  transform:rotate(6deg);
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.card-chip{width:28px;height:20px;background:rgba(255,255,255,0.22);border-radius:4px}
+.card-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+.card-name{font-size:9px;font-weight:500;letter-spacing:0.06em;color:var(--w50);text-transform:uppercase}
+.card-logo-text{font-family:var(--ff-d);font-size:14px;color:var(--w80)}
+
+/* ── Stats ── */
+.stats-strip{
+  display:flex;justify-content:center;
+  border-top:0.5px solid var(--w08);
+  background:rgba(255,255,255,0.03);
+}
+.stat{
+  padding:28px 52px;text-align:center;
+  border-right:0.5px solid var(--w08);flex:1;max-width:260px;
+}
+.stat:last-child{border-right:none}
+.stat-num{
+  font-family:var(--ff-d);font-size:28px;color:var(--w);
+  letter-spacing:-0.02em;margin-bottom:4px;
+}
+.stat-label{font-size:12px;color:var(--w50);font-weight:400}
+
+/* ── Modal ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.55);backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--mid);border:0.5px solid var(--w20);
+  border-radius:var(--r-xl);padding:40px;
+  width:100%;max-width:424px;position:relative;
+  box-shadow:0 48px 96px rgba(0,0,0,0.5);
+  animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(22px) scale(0.97)}to{opacity:1;transform:none}}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:var(--w08);border:none;color:var(--w50);
+  width:32px;height:32px;border-radius:50%;cursor:pointer;
+  font-size:17px;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.modal-close:hover{background:var(--w20);color:var(--w)}
+.modal-logo{font-family:var(--ff-d);font-size:24px;color:var(--w);margin-bottom:4px}
+.modal-sub{font-size:14px;color:var(--w50);margin-bottom:28px}
+.auth-tabs{
+  display:flex;background:var(--w06);border-radius:10px;
+  padding:4px;margin-bottom:26px;
+}
+.auth-tab{
+  flex:1;padding:8px;text-align:center;font-size:14px;font-weight:500;
+  border-radius:8px;border:none;background:transparent;
+  color:var(--w50);cursor:pointer;transition:all 0.2s;font-family:var(--ff-b);
+}
+.auth-tab.active{background:var(--brand);color:var(--w)}
+.form-panel{display:none}.form-panel.active{display:block}
+.form-group{margin-bottom:15px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--w80);margin-bottom:6px;letter-spacing:0.03em}
+.form-input{
+  width:100%;padding:13px 16px;
+  background:var(--w06);border:0.5px solid var(--w20);
+  border-radius:var(--r-sm);color:var(--w);
+  font-family:var(--ff-b);font-size:15px;outline:none;
+  transition:border-color 0.2s,background 0.2s;
+}
+.form-input::placeholder{color:var(--w20)}
+.form-input:focus{border-color:var(--light);background:rgba(255,255,255,0.08)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-forgot{text-align:right;margin-top:-6px;margin-bottom:18px}
+.form-forgot a{font-size:12px;color:var(--light);text-decoration:none}
+.btn-submit{
+  width:100%;padding:14px;background:var(--accent);color:var(--w);
+  border:none;border-radius:var(--r-md);
+  font-family:var(--ff-b);font-size:15px;font-weight:600;
+  cursor:pointer;transition:all 0.25s;letter-spacing:0.01em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-submit:hover{background:var(--glow);transform:translateY(-1px)}
+.btn-submit.loading{opacity:0.65;cursor:not-allowed;transform:none}
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:18px 0;font-size:12px;color:var(--w20);
+}
+.divider::before,.divider::after{content:'';flex:1;height:0.5px;background:var(--w20)}
+.btn-social{
+  width:100%;padding:12px;background:var(--w06);
+  border:0.5px solid var(--w20);border-radius:var(--r-sm);
+  color:var(--w80);font-family:var(--ff-b);font-size:14px;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;
+}
+.btn-social:hover{border-color:var(--w50);color:var(--w);background:var(--w08)}
+.modal-footer{margin-top:18px;text-align:center;font-size:13px;color:var(--w50)}
+.modal-footer a{color:var(--light);text-decoration:none;font-weight:500}
+.pw-strength{display:flex;gap:4px;margin-top:8px}
+.pw-bar{flex:1;height:3px;border-radius:2px;background:var(--w08);transition:background 0.3s}
+.pw-bar.weak{background:#F87171}
+.pw-bar.medium{background:#FBBF24}
+.pw-bar.strong{background:var(--light)}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  nav{padding:16px 24px}
+  .hero{grid-template-columns:1fr;padding:48px 24px 64px;gap:56px}
+  .hero-right{padding-bottom:32px}
+  .stats-strip{flex-wrap:wrap}
+  .stat{min-width:140px;padding:20px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <span class="dot"></span>WeUp
+    </a>
+    <div class="nav-center">
+      <a href="#" data-en="Features" data-es="Funciones">Features</a>
+      <a href="#" data-en="Pricing" data-es="Precios">Pricing</a>
+      <a href="#" data-en="About" data-es="Nosotros">About</a>
+      <div class="nav-lang">
+        <button class="active" onclick="setLang('en')">EN</button>
+        <button onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+    <a href="#" class="nav-cta" onclick="openModal('login');return false;"
+       data-en="Sign in" data-es="Ingresar">Sign in</a>
+  </nav>
+
+  <!-- Hero -->
+  <main class="hero">
+
+    <!-- Left -->
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="pulse"></span>
+        <span data-en="Now available in Colombia & Mexico"
+              data-es="Ya disponible en Colombia y México">Now available in Colombia & Mexico</span>
+      </div>
+
+      <h1 class="hero-headline">
+        <span data-en="Your money,<br><em>finally</em><br>under control."
+              data-es="Tu dinero,<br><em>por fin</em><br>bajo control.">Your money,<br><em>finally</em><br>under control.</span>
+      </h1>
+
+      <p class="hero-sub"
+         data-en="WeUp learns your financial habits and gives you AI-powered insights to save more, spend smarter, and reach your goals faster."
+         data-es="WeUp aprende tus hábitos financieros y te da perspectivas con IA para ahorrar más, gastar mejor y alcanzar tus metas más rápido.">
+        WeUp learns your financial habits and gives you AI-powered insights to save more, spend smarter, and reach your goals faster.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#" class="btn-primary" onclick="openModal('signup');return false;">
+          <span data-en="Get started free" data-es="Comenzar gratis">Get started free</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#" class="btn-ghost" onclick="openModal('login');return false;">
+          <span data-en="Sign in" data-es="Ingresar">Sign in</span>
+        </a>
+      </div>
+
+      <div class="hero-social">
+        <div class="avatars">
+          <span>MC</span><span>JR</span><span>AS</span><span>+</span>
+        </div>
+        <p>
+          <strong data-en="12,000+ users" data-es="12,000+ usuarios">12,000+ users</strong>
+          <span data-en=" already weup-ing" data-es=" ya usan WeUp"> already weup-ing</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Right: phone -->
+    <div class="hero-right">
+      <div style="position:relative;z-index:2">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+            <div class="phone-body">
+              <p class="phone-greeting" id="phone-greeting">Good morning,</p>
+              <p class="phone-name">Ana ✦</p>
+              <div class="phone-bal-card">
+                <div class="phone-bal-label" id="phone-bal-label">Net balance</div>
+                <div class="phone-bal-amount">$4,280<span style="font-size:16px;opacity:0.65">.50</span></div>
+                <div class="phone-bal-row">
+                  <div class="phone-bal-item">
+                    <span id="ph-income">Income</span>
+                    <b>$6,100</b>
+                  </div>
+                  <div class="phone-bal-item">
+                    <span id="ph-expenses">Expenses</span>
+                    <b>$1,820</b>
+                  </div>
+                </div>
+              </div>
+              <div class="phone-section-title" id="ph-recent">Recent</div>
+              <div class="phone-txs">
+                <div class="phone-tx">
+                  <div class="phone-tx-icon" style="background:rgba(95,220,154,0.12)">🛒</div>
+                  <div class="phone-tx-info">
+                    <div class="phone-tx-name">Éxito</div>
+                    <div class="phone-tx-cat" id="ph-food">Food</div>
+                  </div>
+                  <div class="phone-tx-amt neg">−$84</div>
+                </div>
+                <div class="phone-tx">
+                  <div class="phone-tx-icon" style="background:rgba(251,191,36,0.12)">☕</div>
+                  <div class="phone-tx-info">
+                    <div class="phone-tx-name">Juan Valdez</div>
+                    <div class="phone-tx-cat" id="ph-leisure">Leisure</div>
+                  </div>
+                  <div class="phone-tx-amt neg">−$12</div>
+                </div>
+                <div class="phone-tx">
+                  <div class="phone-tx-icon" style="background:rgba(95,220,154,0.12)">💼</div>
+                  <div class="phone-tx-info">
+                    <div class="phone-tx-name">Salary</div>
+                    <div class="phone-tx-cat" id="ph-inc">Income</div>
+                  </div>
+                  <div class="phone-tx-amt pos">+$3,050</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card -->
+        <div class="float-card">
+          <div class="card-chip"></div>
+          <div class="card-bottom">
+            <div class="card-name">ANA GARCIA</div>
+            <div class="card-logo-text">WeUp</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-num" data-en="$2.4B+" data-es="$2.4MM+">$2.4B+</div>
+      <div class="stat-label" data-en="Tracked by users" data-es="Gestionado por usuarios">Tracked by users</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12K+</div>
+      <div class="stat-label" data-en="Active users" data-es="Usuarios activos">Active users</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">94%</div>
+      <div class="stat-label" data-en="Save more in 30 days" data-es="Ahorran más en 30 días">Save more in 30 days</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">ES / EN</div>
+      <div class="stat-label" data-en="Fully bilingual" data-es="Totalmente bilingüe">Fully bilingual</div>
+    </div>
+  </div>
+
+</div><!-- .page -->
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">WeUp</div>
+    <p class="modal-sub" id="modal-sub">Welcome back</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')"
+              data-en="Sign in" data-es="Ingresar">Sign in</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')"
+              data-en="Create account" data-es="Crear cuenta">Create account</button>
+    </div>
+
+    <!-- Login panel -->
+    <div class="form-panel active" id="panel-login">
+      <div class="btn-social" onclick="handleSocial('google')">
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        <span data-en="Continue with Google" data-es="Continuar con Google">Continue with Google</span>
+      </div>
+      <div class="divider" data-en="or" data-es="o">or</div>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" data-en="Email address" data-es="Correo electrónico">Email address</label>
+          <input type="email" class="form-input" id="login-email" placeholder="ana@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-en="Password" data-es="Contraseña">Password</label>
+          <input type="password" class="form-input" id="login-pw" placeholder="••••••••" required>
+        </div>
+        <div class="form-forgot">
+          <a href="#" data-en="Forgot password?" data-es="¿Olvidaste tu contraseña?">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn-submit" id="login-btn">
+          <span data-en="Sign in to WeUp" data-es="Ingresar a WeUp">Sign in to WeUp</span>
+        </button>
+      </form>
+      <div class="modal-footer">
+        <span data-en="Don't have an account?" data-es="¿No tienes cuenta?">Don't have an account?</span>
+        <a href="#" onclick="switchTab('signup');return false;"
+           data-en=" Create one free" data-es=" Crear una gratis"> Create one free</a>
+      </div>
+    </div>
+
+    <!-- Signup panel -->
+    <div class="form-panel" id="panel-signup">
+      <div class="btn-social" onclick="handleSocial('google')">
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        <span data-en="Sign up with Google" data-es="Registrarse con Google">Sign up with Google</span>
+      </div>
+      <div class="divider" data-en="or" data-es="o">or</div>
+      <form id="signup-form" onsubmit="handleSignup(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-en="First name" data-es="Nombre">First name</label>
+            <input type="text" class="form-input" id="signup-fname" placeholder="Ana" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-en="Last name" data-es="Apellido">Last name</label>
+            <input type="text" class="form-input" id="signup-lname" placeholder="García" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-en="Email address" data-es="Correo electrónico">Email address</label>
+          <input type="email" class="form-input" id="signup-email" placeholder="ana@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-en="Password" data-es="Contraseña">Password</label>
+          <input type="password" class="form-input" id="signup-pw"
+                 placeholder="Min 8 characters" required oninput="checkPwStrength(this.value)">
+          <div class="pw-strength">
+            <div class="pw-bar" id="pwb1"></div>
+            <div class="pw-bar" id="pwb2"></div>
+            <div class="pw-bar" id="pwb3"></div>
+            <div class="pw-bar" id="pwb4"></div>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit" id="signup-btn">
+          <span data-en="Create my account" data-es="Crear mi cuenta">Create my account</span>
+        </button>
+      </form>
+      <div class="modal-footer">
+        <span data-en="Already have an account?" data-es="¿Ya tienes cuenta?">Already have an account?</span>
+        <a href="#" onclick="switchTab('login');return false;"
+           data-en=" Sign in" data-es=" Ingresar"> Sign in</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let currentLang = 'en';
+const translations = {
+  'modal-sub-login':  { en: 'Welcome back', es: 'Bienvenido de nuevo' },
+  'modal-sub-signup': { en: 'Join WeUp for free', es: 'Únete a WeUp gratis' },
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.nav-lang button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.nav-lang button:${lang === 'en' ? 'first-child' : 'last-child'}`).classList.add('active');
+  document.querySelectorAll('[data-' + lang + ']').forEach(el => {
+    const val = el.getAttribute('data-' + lang);
+    if (el.tagName === 'INPUT') { el.placeholder = val; }
+    else if (val.includes('<br>') || val.includes('<em>')) { el.innerHTML = val; }
+    else { el.textContent = val; }
+  });
+  const ph = {
+    en: { greeting:'Good morning,', bal:'Net balance', income:'Income', expenses:'Expenses', recent:'RECENT', food:'Food', leisure:'Leisure', inc:'Income' },
+    es: { greeting:'Buenos días,', bal:'Balance neto', income:'Ingresos', expenses:'Gastos', recent:'RECIENTES', food:'Alimentación', leisure:'Ocio', inc:'Ingreso' }
+  }[lang];
+  document.getElementById('phone-greeting').textContent = ph.greeting;
+  document.getElementById('phone-bal-label').textContent = ph.bal;
+  document.getElementById('ph-income').textContent = ph.income;
+  document.getElementById('ph-expenses').textContent = ph.expenses;
+  document.getElementById('ph-recent').textContent = ph.recent;
+  document.getElementById('ph-food').textContent = ph.food;
+  document.getElementById('ph-leisure').textContent = ph.leisure;
+  document.getElementById('ph-inc').textContent = ph.inc;
+}
+
+function openModal(tab = 'login') {
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchTab(tab);
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+  document.getElementById('panel-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('modal-sub').textContent =
+    tab === 'login' ? translations['modal-sub-login'][currentLang]
+                    : translations['modal-sub-signup'][currentLang];
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  btn.classList.add('loading');
+  btn.querySelector('span').textContent = currentLang === 'es' ? 'Ingresando...' : 'Signing in...';
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    btn.querySelector('span').textContent = currentLang === 'es' ? '✓ Ingresado' : '✓ Signed in';
+    setTimeout(() => {
+      btn.querySelector('span').textContent = currentLang === 'es' ? 'Ingresar a WeUp' : 'Sign in to WeUp';
+    }, 2000);
+  }, 1200);
+}
+
+function handleSignup(e) {
+  e.preventDefault();
+  const btn = document.getElementById('signup-btn');
+  btn.classList.add('loading');
+  btn.querySelector('span').textContent = currentLang === 'es' ? 'Creando cuenta...' : 'Creating account...';
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    btn.querySelector('span').textContent = currentLang === 'es' ? '✓ ¡Cuenta creada!' : '✓ Account created!';
+    setTimeout(() => {
+      btn.querySelector('span').textContent = currentLang === 'es' ? 'Crear mi cuenta' : 'Create my account';
+    }, 2000);
+  }, 1400);
+}
+
+function handleSocial(provider) { console.log('OAuth:', provider); }
+
+function checkPwStrength(val) {
+  const bars = [1,2,3,4].map(i => document.getElementById('pwb'+i));
+  bars.forEach(b => { b.className = 'pw-bar'; });
+  if (!val) return;
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const cls = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
+  for (let i = 0; i < score; i++) bars[i].classList.add(cls);
+}
+</script>
+</body>
+</html>
