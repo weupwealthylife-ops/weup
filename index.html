@@ -1142,9 +1142,12 @@ async function handleSignup(e) {
 
 // ── Google OAuth ──────────────────────────────────────────────────────────────
 async function handleSocial(provider) {
+  const redirectTo = window.location.hostname === 'localhost'
+    ? window.location.origin
+    : 'https://weup-one.vercel.app';
   const { error } = await sb.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: window.location.origin }
+    options: { redirectTo }
   });
   if (error) showAuthError(error.message);
 }
