@@ -508,6 +508,7 @@ nav{
   .footer{padding:40px 24px}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1025,35 +1026,172 @@ function switchTab(tab) {
                     : translations['modal-sub-signup'][currentLang];
 }
 
-function handleLogin(e) {
-  e.preventDefault();
-  const btn = document.getElementById('login-btn');
-  btn.classList.add('loading');
-  btn.querySelector('span').textContent = currentLang === 'es' ? 'Ingresando...' : 'Signing in...';
-  setTimeout(() => {
-    btn.classList.remove('loading');
-    btn.querySelector('span').textContent = currentLang === 'es' ? '✓ Ingresado' : '✓ Signed in';
-    setTimeout(() => {
-      btn.querySelector('span').textContent = currentLang === 'es' ? 'Ingresar a WeUp' : 'Sign in to WeUp';
-    }, 2000);
-  }, 1200);
+// ── Supabase client ──────────────────────────────────────────────────────────
+const SUPABASE_URL  = 'https://tnkydfulsrzihlohchhc.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Auth helpers ──────────────────────────────────────────────────────────────
+function showAuthError(msg) {
+  let el = document.getElementById('auth-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'auth-error';
+    el.style.cssText = 'background:rgba(248,113,113,0.1);border:0.5px solid #F87171;border-radius:10px;padding:10px 14px;font-size:13px;color:#F87171;margin-bottom:14px;';
+    document.querySelector('.form-panel.active').prepend(el);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 
-function handleSignup(e) {
-  e.preventDefault();
-  const btn = document.getElementById('signup-btn');
-  btn.classList.add('loading');
-  btn.querySelector('span').textContent = currentLang === 'es' ? 'Creando cuenta...' : 'Creating account...';
-  setTimeout(() => {
-    btn.classList.remove('loading');
-    btn.querySelector('span').textContent = currentLang === 'es' ? '✓ ¡Cuenta creada!' : '✓ Account created!';
-    setTimeout(() => {
-      btn.querySelector('span').textContent = currentLang === 'es' ? 'Crear mi cuenta' : 'Create my account';
-    }, 2000);
-  }, 1400);
+function showAuthSuccess(msg) {
+  let el = document.getElementById('auth-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'auth-error';
+    el.style.cssText = 'border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;';
+    document.querySelector('.form-panel.active').prepend(el);
+  }
+  el.style.background = 'rgba(95,220,154,0.1)';
+  el.style.border = '0.5px solid #5FDC9A';
+  el.style.color = '#5FDC9A';
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 
-function handleSocial(provider) { console.log('OAuth:', provider); }
+function clearAuthMsg() {
+  const el = document.getElementById('auth-error');
+  if (el) el.style.display = 'none';
+}
+
+function setBtnLoading(btnId, loading, label) {
+  const btn = document.getElementById(btnId);
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+  btn.querySelector('span').textContent = label;
+}
+
+// ── Login ─────────────────────────────────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  clearAuthMsg();
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  const lbl   = currentLang === 'es' ? 'Ingresando...' : 'Signing in...';
+  setBtnLoading('login-btn', true, lbl);
+
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+
+  if (error) {
+    setBtnLoading('login-btn', false, currentLang === 'es' ? 'Ingresar a WeUp' : 'Sign in to WeUp');
+    const msg = error.message.includes('Invalid') 
+      ? (currentLang === 'es' ? 'Email o contraseña incorrectos.' : 'Incorrect email or password.')
+      : error.message;
+    showAuthError(msg);
+  } else {
+    setBtnLoading('login-btn', false, currentLang === 'es' ? '✓ ¡Bienvenido!' : '✓ Welcome back!');
+    setTimeout(() => {
+      closeModal();
+      showWelcomeBanner();
+    }, 800);
+  }
+}
+
+// ── Signup ────────────────────────────────────────────────────────────────────
+async function handleSignup(e) {
+  e.preventDefault();
+  clearAuthMsg();
+  const fname = document.getElementById('signup-fname').value.trim();
+  const lname = document.getElementById('signup-lname').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pw    = document.getElementById('signup-pw').value;
+
+  if (pw.length < 8) {
+    showAuthError(currentLang === 'es' ? 'La contraseña debe tener al menos 8 caracteres.' : 'Password must be at least 8 characters.');
+    return;
+  }
+
+  const lbl = currentLang === 'es' ? 'Creando cuenta...' : 'Creating account...';
+  setBtnLoading('signup-btn', true, lbl);
+
+  const { error } = await sb.auth.signUp({
+    email,
+    password: pw,
+    options: {
+      data: { full_name: `${fname} ${lname}` },
+      emailRedirectTo: window.location.origin
+    }
+  });
+
+  if (error) {
+    setBtnLoading('signup-btn', false, currentLang === 'es' ? 'Crear mi cuenta' : 'Create my account');
+    const msg = error.message.includes('already registered')
+      ? (currentLang === 'es' ? 'Este email ya está registrado. ¿Quieres iniciar sesión?' : 'This email is already registered. Want to sign in?')
+      : error.message;
+    showAuthError(msg);
+  } else {
+    setBtnLoading('signup-btn', false, currentLang === 'es' ? '✓ ¡Cuenta creada!' : '✓ Account created!');
+    showAuthSuccess(
+      currentLang === 'es'
+        ? '✓ Revisa tu email para confirmar tu cuenta.'
+        : '✓ Check your email to confirm your account.'
+    );
+  }
+}
+
+// ── Google OAuth ──────────────────────────────────────────────────────────────
+async function handleSocial(provider) {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: window.location.origin }
+  });
+  if (error) showAuthError(error.message);
+}
+
+// ── Welcome banner ────────────────────────────────────────────────────────────
+function showWelcomeBanner() {
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:300;background:#1A5C3A;border:0.5px solid #5FDC9A;border-radius:12px;padding:14px 24px;font-size:14px;color:#fff;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);';
+  banner.textContent = currentLang === 'es' ? '✓ Sesión iniciada correctamente' : '✓ Signed in successfully';
+  document.body.appendChild(banner);
+  setTimeout(() => banner.remove(), 3500);
+}
+
+// ── Check session on load ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    const name = session.user?.user_metadata?.full_name?.split(' ')[0] || session.user.email.split('@')[0];
+    updateNavForUser(name);
+  }
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const name = session.user?.user_metadata?.full_name?.split(' ')[0] || session.user.email.split('@')[0];
+      updateNavForUser(name);
+    }
+    if (event === 'SIGNED_OUT') {
+      updateNavForGuest();
+    }
+  });
+});
+
+function updateNavForUser(name) {
+  const cta = document.querySelector('.nav-cta');
+  cta.textContent = name;
+  cta.onclick = async (e) => {
+    e.preventDefault();
+    await sb.auth.signOut();
+    updateNavForGuest();
+  };
+  cta.title = currentLang === 'es' ? 'Cerrar sesión' : 'Sign out';
+}
+
+function updateNavForGuest() {
+  const cta = document.querySelector('.nav-cta');
+  cta.textContent = currentLang === 'es' ? 'Ingresar' : 'Sign in';
+  cta.onclick = (e) => { e.preventDefault(); openModal('login'); };
+}
 
 function checkPwStrength(val) {
   const bars = [1,2,3,4].map(i => document.getElementById('pwb'+i));
