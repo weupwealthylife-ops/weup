@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeUp — Auth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+:root{
+  --deep:   #0D2B1E;
+  --mid:    #122E21;
+  --brand:  #1A5C3A;
+  --accent: #2E8B57;
+  --glow:   #3DBA7A;
+  --light:  #5FDC9A;
+  --w:      #FFFFFF;
+  --w80:    rgba(255,255,255,0.80);
+  --w60:    rgba(255,255,255,0.60);
+  --w50:    rgba(255,255,255,0.50);
+  --w20:    rgba(255,255,255,0.20);
+  --w10:    rgba(255,255,255,0.10);
+  --w08:    rgba(255,255,255,0.08);
+  --w06:    rgba(255,255,255,0.06);
+  --err:    #F87171;
+  --ff-d:   'DM Serif Display',Georgia,serif;
+  --ff:     'DM Sans',system-ui,sans-serif;
+  --r:      16px;
+  --r-sm:   12px;
+  --r-xs:   8px;
+}
+body{
+  font-family:var(--ff);
+  background:var(--deep);
+  color:var(--w);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  overflow-x:hidden;
+}
+
+/* ── Background ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at -10% -5%,rgba(46,139,87,0.28) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 110% 100%,rgba(26,92,58,0.20) 0%,transparent 55%),
+    linear-gradient(160deg,#0B2418 0%,#0D2B1E 40%,#0A1F16 100%);
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.3;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+
+/* ── Layout ── */
+.page{display:none;position:relative;z-index:1;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;padding:40px 20px}
+.page.active{display:flex}
+
+/* ── Logo ── */
+.logo{
+  font-family:var(--ff-d);font-size:26px;color:var(--w);
+  display:flex;align-items:center;gap:8px;
+  text-decoration:none;margin-bottom:40px;
+}
+.logo .dot{width:7px;height:7px;border-radius:50%;background:var(--light);flex-shrink:0}
+
+/* ── Card ── */
+.card{
+  background:var(--mid);border:0.5px solid var(--w20);
+  border-radius:24px;padding:40px;
+  width:100%;max-width:420px;
+  box-shadow:0 48px 96px rgba(0,0,0,0.4);
+}
+
+/* ── Icon circle ── */
+.icon-circle{
+  width:72px;height:72px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 24px;
+}
+.icon-success{background:rgba(95,220,154,0.15);border:1px solid rgba(95,220,154,0.3)}
+.icon-error{background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25)}
+.icon-info{background:rgba(46,139,87,0.15);border:1px solid rgba(46,139,87,0.3)}
+.icon-lock{background:rgba(95,220,154,0.12);border:1px solid rgba(95,220,154,0.25)}
+
+/* ── Typography ── */
+.card-title{font-family:var(--ff-d);font-size:26px;color:var(--w);text-align:center;margin-bottom:10px;letter-spacing:-0.02em}
+.card-sub{font-size:15px;color:var(--w60);text-align:center;line-height:1.6;margin-bottom:28px}
+.card-sub strong{color:var(--light);font-weight:500}
+
+/* ── Form ── */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--w80);margin-bottom:7px;letter-spacing:0.03em}
+.form-input{
+  width:100%;padding:14px 16px;
+  background:var(--w06);border:0.5px solid var(--w20);
+  border-radius:var(--r-xs);color:var(--w);
+  font-family:var(--ff);font-size:15px;outline:none;
+  transition:all 0.2s;
+}
+.form-input:focus{border-color:var(--light);background:rgba(255,255,255,0.08);box-shadow:0 0 0 4px rgba(95,220,154,0.08)}
+.form-input::placeholder{color:var(--w20)}
+.form-input.error{border-color:var(--err)}
+
+/* Password strength */
+.pw-strength{display:flex;gap:4px;margin-top:8px}
+.pw-bar{flex:1;height:3px;border-radius:2px;background:var(--w08);transition:background 0.3s}
+.pw-bar.weak{background:#F87171}
+.pw-bar.medium{background:#FBBF24}
+.pw-bar.strong{background:var(--light)}
+.pw-label{font-size:11px;color:var(--w50);margin-top:6px;text-align:right}
+
+/* ── Buttons ── */
+.btn-primary{
+  width:100%;padding:14px;
+  background:var(--accent);color:var(--w);border:none;
+  border-radius:var(--r-sm);font-family:var(--ff);
+  font-size:15px;font-weight:600;cursor:pointer;
+  transition:all 0.25s;letter-spacing:0.01em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:4px;
+}
+.btn-primary:hover{background:var(--glow);transform:translateY(-1px)}
+.btn-primary:active{transform:scale(0.98)}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.btn-ghost{
+  width:100%;padding:13px;
+  background:transparent;color:var(--w80);
+  border:0.5px solid var(--w20);border-radius:var(--r-sm);
+  font-family:var(--ff);font-size:15px;font-weight:400;
+  cursor:pointer;transition:all 0.2s;margin-top:10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-ghost:hover{border-color:var(--w50);color:var(--w);background:var(--w06)}
+
+/* ── Alert boxes ── */
+.alert{border-radius:var(--r-xs);padding:12px 16px;font-size:13px;margin-bottom:16px;display:none}
+.alert.show{display:block}
+.alert-error{background:rgba(248,113,113,0.10);border:0.5px solid var(--err);color:var(--err)}
+.alert-success{background:rgba(95,220,154,0.10);border:0.5px solid var(--light);color:var(--light)}
+
+/* ── Steps indicator ── */
+.steps{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:28px}
+.step{width:8px;height:8px;border-radius:50%;background:var(--w10);transition:all 0.3s}
+.step.active{background:var(--light);width:24px;border-radius:4px}
+.step.done{background:var(--accent)}
+
+/* ── Divider ── */
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:12px;color:var(--w20)}
+.divider::before,.divider::after{content:'';flex:1;height:0.5px;background:var(--w20)}
+
+/* ── Footer link ── */
+.footer-link{margin-top:20px;text-align:center;font-size:13px;color:var(--w50)}
+.footer-link a{color:var(--light);text-decoration:none;font-weight:500}
+.footer-link a:hover{text-decoration:underline}
+
+/* ── Email preview chip ── */
+.email-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--w06);border:0.5px solid var(--w20);
+  border-radius:20px;padding:6px 14px;
+  font-size:13px;color:var(--w80);margin:0 auto 24px;
+}
+.email-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--light);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.75)}}
+
+/* ── Resend timer ── */
+.resend-wrap{text-align:center;margin-top:16px;font-size:13px;color:var(--w50)}
+.resend-btn{background:none;border:none;color:var(--light);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)}
+.resend-btn:disabled{color:var(--w30);cursor:not-allowed}
+
+/* ── Checklist ── */
+.checklist{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.check-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--w60)}
+.check-item.done{color:var(--w80)}
+.check-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--w20);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.3s}
+.check-item.done .check-dot{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── Responsive ── */
+@media(max-width:480px){
+  .card{padding:28px 20px;border-radius:20px}
+  .card-title{font-size:22px}
+  .logo{margin-bottom:28px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 1: Email Confirmation Sent
+══════════════════════════════════════════════ -->
+<div class="page" id="page-confirm-sent">
+  <a href="/" class="logo"><span class="dot"></span>WeUp</a>
+  <div class="card">
+    <div class="icon-circle icon-info">✉️</div>
+    <h1 class="card-title" data-en="Check your email" data-es="Revisa tu correo">Check your email</h1>
+    <p class="card-sub" data-en="We sent a confirmation link to" data-es="Enviamos un enlace de confirmación a">We sent a confirmation link to</p>
+    <div style="text-align:center">
+      <div class="email-chip">
+        <span class="email-chip-dot"></span>
+        <span id="confirm-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b32243e390b2e262a222765282426">[email&#160;protected]</a></span>
+      </div>
+    </div>
+    <div class="checklist">
+      <div class="check-item done">
+        <div class="check-dot">✓</div>
+        <span data-en="Account created" data-es="Cuenta creada">Account created</span>
+      </div>
+      <div class="check-item" id="check-confirmed">
+        <div class="check-dot"></div>
+        <span data-en="Email confirmed — waiting..." data-es="Email confirmado — esperando...">Email confirmed — waiting...</span>
+      </div>
+      <div class="check-item" id="check-dashboard">
+        <div class="check-dot"></div>
+        <span data-en="Access dashboard" data-es="Acceder al dashboard">Access dashboard</span>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--w50);text-align:center;line-height:1.6;margin-top:8px" data-en="Click the link in the email to activate your account. Check your spam folder if you don't see it." data-es="Haz clic en el enlace del email para activar tu cuenta. Revisa tu carpeta de spam si no lo encuentras.">Click the link in the email to activate your account. Check your spam folder if you don't see it.</p>
+    <div class="resend-wrap">
+      <span data-en="Didn't receive it? " data-es="¿No lo recibiste? ">Didn't receive it? </span>
+      <button class="resend-btn" id="resend-btn" onclick="resendEmail()">
+        <span data-en="Resend email" data-es="Reenviar email">Resend email</span>
+      </button>
+      <span id="resend-timer" style="display:none"> (<span id="timer-count">60</span>s)</span>
+    </div>
+  </div>
+  <div class="footer-link">
+    <a href="/" data-en="← Back to WeUp" data-es="← Volver a WeUp">← Back to WeUp</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 2: Email Confirmed Successfully
+══════════════════════════════════════════════ -->
+<div class="page" id="page-confirm-success">
+  <a href="/" class="logo"><span class="dot"></span>WeUp</a>
+  <div class="card">
+    <div class="icon-circle icon-success">✅</div>
+    <h1 class="card-title" data-en="Email confirmed!" data-es="¡Email confirmado!">Email confirmed!</h1>
+    <p class="card-sub" data-en="Your account is now active. You're ready to take control of your finances." data-es="Tu cuenta ya está activa. Estás listo para tomar el control de tus finanzas.">Your account is now active. You're ready to take control of your finances.</p>
+    <button class="btn-primary" onclick="window.location.href='/dashboard.html'">
+      <span data-en="Go to dashboard" data-es="Ir al dashboard">Go to dashboard</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3: Invalid / Expired Link
+══════════════════════════════════════════════ -->
+<div class="page" id="page-invalid-link">
+  <a href="/" class="logo"><span class="dot"></span>WeUp</a>
+  <div class="card">
+    <div class="icon-circle icon-error">🔗</div>
+    <h1 class="card-title" data-en="Link expired" data-es="Enlace expirado">Link expired</h1>
+    <p class="card-sub" data-en="This confirmation link is no longer valid. Links expire after 24 hours for security." data-es="Este enlace de confirmación ya no es válido. Los enlaces expiran después de 24 horas por seguridad.">This confirmation link is no longer valid. Links expire after 24 hours for security.</p>
+    <button class="btn-primary" onclick="showPage('page-forgot')">
+      <span data-en="Request a new link" data-es="Solicitar nuevo enlace">Request a new link</span>
+    </button>
+    <a href="/" class="btn-ghost" data-en="Back to home" data-es="Volver al inicio">Back to home</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 4: Forgot Password
+══════════════════════════════════════════════ -->
+<div class="page" id="page-forgot">
+  <a href="/" class="logo"><span class="dot"></span>WeUp</a>
+  <div class="card">
+    <div class="icon-circle icon-lock">🔑</div>
+    <h1 class="card-title" data-en="Forgot password?" data-es="¿Olvidaste tu contraseña?">Forgot password?</h1>
+    <p class="card-sub" data-en="No problem. Enter your email and we'll send you a reset link." data-es="Sin problema. Ingresa tu email y te enviaremos un enlace para restablecerla.">No problem. Enter your email and we'll send you a reset link.</p>
+
+    <div class="alert alert-error" id="forgot-error"></div>
+    <div class="alert alert-success" id="forgot-success"></div>
+
+    <form id="forgot-form" onsubmit="sendResetEmail(event)">
+      <div class="form-group">
+        <label class="form-label" data-en="Email address" data-es="Correo electrónico">Email address</label>
+        <input type="email" class="form-input" id="forgot-email" placeholder="ana@example.com" required>
+      </div>
+      <button type="submit" class="btn-primary" id="forgot-btn">
+        <span data-en="Send reset link" data-es="Enviar enlace">Send reset link</span>
+      </button>
+    </form>
+    <a href="/" class="btn-ghost" data-en="← Back to sign in" data-es="← Volver a iniciar sesión">← Back to sign in</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 5: Reset Link Sent
+══════════════════════════════════════════════ -->
+<div class="page" id="page-reset-sent">
+  <a href="/" class="logo"><span class="dot"></span>WeUp</a>
+  <div class="card">
+    <div class="icon-circle icon-info">📨</div>
+    <h1 class="card-title" data-en="Check your inbox" data-es="Revisa tu bandeja">Check your inbox</h1>
+    <p class="card-sub">
+      <span data-en="We sent a password reset link to" data-es="Enviamos un enlace para restablecer tu contraseña a">We sent a password reset link to</span>
+      <br><strong id="reset-email-display"></strong>
+    </p>
+    <p style="font-size:12px;color:var(--w50);text-align:center;line-height:1.6;margin-bottom:20px" data-en="The link expires in 1 hour. Check your spam folder if you don't see it." data-es="El enlace expira en 1 hora. Revisa tu carpeta de spam si no lo encuentras.">The link expires in 1 hour. Check your spam folder if you don't see it.</p>
+    <button class="btn-primary" onclick="showPage('page-forgot')">
+      <span data-en="Try a different email" data-es="Intentar con otro email">Try a different email</span>
+    </button>
+    <a href="/" class="btn-ghost" data-en="Back to sign in" data-es="Volver a iniciar sesión">Back to sign in</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 6: Reset Password (new password form)
+══════════════════════════════════════════════ -->
+<div class="page" id="page-reset">
+  <a href="/" class="logo"><span class="dot"></span>WeUp</a>
+  <div class="card">
+    <div class="icon-circle icon-lock">🔐</div>
+    <h1 class="card-title" data-en="Set new password" data-es="Establecer nueva contraseña">Set new password</h1>
+    <p class="card-sub" data-en="Choose a strong password for your WeUp account." data-es="Elige una contraseña segura para tu cuenta WeUp.">Choose a strong password for your WeUp account.</p>
+
+    <div class="alert alert-error" id="reset-error"></div>
+    <div class="alert alert-success" id="reset-success"></div>
+
+    <form id="reset-form" onsubmit="updatePassword(event)">
+      <div class="form-group">
+        <label class="form-label" data-en="New password" data-es="Nueva contraseña">New password</label>
+        <input type="password" class="form-input" id="new-pw"
+          placeholder="Min 8 characters" required
+          oninput="checkStrength(this.value)">
+        <div class="pw-strength">
+          <div class="pw-bar" id="pb1"></div>
+          <div class="pw-bar" id="pb2"></div>
+          <div class="pw-bar" id="pb3"></div>
+          <div class="pw-bar" id="pb4"></div>
+        </div>
+        <div class="pw-label" id="pw-label"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-en="Confirm password" data-es="Confirmar contraseña">Confirm password</label>
+        <input type="password" class="form-input" id="confirm-pw"
+          placeholder="Repeat your password" required>
+      </div>
+      <button type="submit" class="btn-primary" id="reset-btn">
+        <span data-en="Update password" data-es="Actualizar contraseña">Update password</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 7: Password Updated Successfully
+══════════════════════════════════════════════ -->
+<div class="page" id="page-reset-success">
+  <a href="/" class="logo"><span class="dot"></span>WeUp</a>
+  <div class="card">
+    <div class="icon-circle icon-success">🎉</div>
+    <h1 class="card-title" data-en="Password updated!" data-es="¡Contraseña actualizada!">Password updated!</h1>
+    <p class="card-sub" data-en="Your password has been changed successfully. You can now sign in with your new password." data-es="Tu contraseña se cambió correctamente. Ahora puedes iniciar sesión con tu nueva contraseña.">Your password has been changed successfully. You can now sign in with your new password.</p>
+    <button class="btn-primary" onclick="window.location.href='/'">
+      <span data-en="Sign in to WeUp" data-es="Iniciar sesión en WeUp">Sign in to WeUp</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const SUPA_URL = 'https://tnkydfulsrzihlohchhc.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let resendInterval = null;
+let pendingEmail = '';
+let currentLang = 'en';
+
+// ── Router — detect which page to show based on URL ──────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  const hash   = window.location.hash;
+  const params = new URLSearchParams(hash.replace('#','?'));
+  const type   = params.get('type');
+  const token  = params.get('access_token');
+  const error  = params.get('error_description') || params.get('error');
+  const search = new URLSearchParams(window.location.search);
+
+  // Handle Supabase auth callback in URL hash
+  if (hash.includes('access_token') || hash.includes('error')) {
+    if (error) {
+      showPage('page-invalid-link');
+      return;
+    }
+    if (type === 'recovery') {
+      // Password reset flow — exchange token then show reset form
+      const { error: sessionErr } = await sb.auth.getSession();
+      if (!sessionErr) showPage('page-reset');
+      else showPage('page-invalid-link');
+      return;
+    }
+    if (type === 'signup' || type === 'email_change') {
+      // Email confirmation success
+      showPage('page-confirm-success');
+      return;
+    }
+  }
+
+  // Manual page param (?p=forgot, ?p=reset, etc.)
+  const p = search.get('p');
+  if (p) { showPage('page-' + p); return; }
+
+  // Default — show confirm-sent if coming from signup
+  const email = sessionStorage.getItem('weup_pending_email');
+  if (email) {
+    pendingEmail = email;
+    document.getElementById('confirm-email').textContent = email;
+    showPage('page-confirm-sent');
+    startResendTimer();
+  } else {
+    // No context — redirect to home
+    window.location.href = '/';
+  }
+});
+
+// ── Page router ───────────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+// ── Forgot password ───────────────────────────────────────────────────────────
+async function sendResetEmail(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgot-email').value.trim();
+  const btn   = document.getElementById('forgot-btn');
+  const errEl = document.getElementById('forgot-error');
+  const sucEl = document.getElementById('forgot-success');
+
+  errEl.classList.remove('show');
+  sucEl.classList.remove('show');
+  btn.disabled = true;
+  btn.querySelector('span').textContent = currentLang === 'es' ? 'Enviando...' : 'Sending...';
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/auth.html`
+  });
+
+  btn.disabled = false;
+  btn.querySelector('span').textContent = currentLang === 'es' ? 'Enviar enlace' : 'Send reset link';
+
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.classList.add('show');
+  } else {
+    document.getElementById('reset-email-display').textContent = email;
+    showPage('page-reset-sent');
+  }
+}
+
+// ── Update password ───────────────────────────────────────────────────────────
+async function updatePassword(e) {
+  e.preventDefault();
+  const pw1   = document.getElementById('new-pw').value;
+  const pw2   = document.getElementById('confirm-pw').value;
+  const btn   = document.getElementById('reset-btn');
+  const errEl = document.getElementById('reset-error');
+
+  errEl.classList.remove('show');
+
+  if (pw1.length < 8) {
+    errEl.textContent = currentLang === 'es' ? 'Mínimo 8 caracteres.' : 'Minimum 8 characters.';
+    errEl.classList.add('show'); return;
+  }
+  if (pw1 !== pw2) {
+    errEl.textContent = currentLang === 'es' ? 'Las contraseñas no coinciden.' : 'Passwords do not match.';
+    errEl.classList.add('show'); return;
+  }
+
+  btn.disabled = true;
+  btn.querySelector('span').textContent = currentLang === 'es' ? 'Actualizando...' : 'Updating...';
+
+  const { error } = await sb.auth.updateUser({ password: pw1 });
+
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.querySelector('span').textContent = currentLang === 'es' ? 'Actualizar contraseña' : 'Update password';
+  } else {
+    showPage('page-reset-success');
+  }
+}
+
+// ── Resend confirmation ───────────────────────────────────────────────────────
+async function resendEmail() {
+  if (!pendingEmail) return;
+  const btn = document.getElementById('resend-btn');
+  btn.disabled = true;
+
+  const { error } = await sb.auth.resend({
+    type: 'signup',
+    email: pendingEmail,
+    options: { emailRedirectTo: `${window.location.origin}/auth.html` }
+  });
+
+  if (!error) startResendTimer();
+  else { btn.disabled = false; }
+}
+
+function startResendTimer() {
+  let count = 60;
+  const btn    = document.getElementById('resend-btn');
+  const timer  = document.getElementById('resend-timer');
+  const counter= document.getElementById('timer-count');
+  btn.disabled = true;
+  timer.style.display = 'inline';
+  counter.textContent = count;
+  if (resendInterval) clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    count--;
+    counter.textContent = count;
+    if (count <= 0) {
+      clearInterval(resendInterval);
+      btn.disabled = false;
+      timer.style.display = 'none';
+    }
+  }, 1000);
+}
+
+// ── Password strength ─────────────────────────────────────────────────────────
+function checkStrength(val) {
+  const bars = [1,2,3,4].map(i => document.getElementById('pb'+i));
+  const lbl  = document.getElementById('pw-label');
+  bars.forEach(b => b.className = 'pw-bar');
+  if (!val) { lbl.textContent = ''; return; }
+  let score = 0;
+  if (val.length >= 8)        score++;
+  if (/[A-Z]/.test(val))      score++;
+  if (/[0-9]/.test(val))      score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const cls   = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
+  const labels = { weak: currentLang==='es'?'Débil':'Weak', medium: currentLang==='es'?'Regular':'Fair', strong: currentLang==='es'?'Fuerte':'Strong' };
+  for (let i = 0; i < score; i++) bars[i].classList.add(cls);
+  lbl.textContent = labels[cls];
+  lbl.style.color = cls === 'weak' ? '#F87171' : cls === 'medium' ? '#FBBF24' : '#5FDC9A';
+}
+
+// ── Language ──────────────────────────────────────────────────────────────────
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-'+lang+']').forEach(el => {
+    const val = el.getAttribute('data-'+lang);
+    if (el.tagName === 'IN
