@@ -1401,9 +1401,14 @@ async function handleLogin(e) {
     showAuthError(msg);
   } else {
     setBtnLoading('login-btn', false, currentLang === 'es' ? '✓ ¡Bienvenido!' : '✓ Welcome back!');
-    setTimeout(() => {
+    setTimeout(async () => {
       closeModal();
-      window.location.href = '/dashboard.html';
+      // Check if onboarding done
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        const { data: profile } = await sb.from('profiles').select('lang').eq('id', session.user.id).single();
+        window.location.href = profile?.lang === 'done' ? '/dashboard.html' : '/onboarding.html';
+      }
     }, 800);
   }
 }
@@ -1443,6 +1448,7 @@ async function handleSignup(e) {
   } else {
     // Store email so auth.html can show it
     sessionStorage.setItem('weup_pending_email', email);
+    sessionStorage.setItem('weup_new_user', 'true');
     setBtnLoading('signup-btn', false, currentLang === 'es' ? '✓ ¡Revisa tu email!' : '✓ Check your email!');
     setTimeout(() => { window.location.href = '/auth.html'; }, 800);
   }
@@ -1480,8 +1486,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                 || session.user?.user_metadata?.name?.split(' ')[0]
                 || session.user.email.split('@')[0];
       updateNavForUser(name);
-      // Redirect to dashboard after Google OAuth
-      setTimeout(() => { window.location.href = '/dashboard.html'; }, 800);
+      // Check onboarding
+      const { data: profile } = await sb.from('profiles').select('lang').eq('id', session.user.id).single();
+      setTimeout(() => {
+        window.location.href = profile?.lang === 'done' ? '/dashboard.html' : '/onboarding.html';
+      }, 800);
     }
     return;
   }

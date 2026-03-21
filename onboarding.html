@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeUp — Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+:root{
+  --deep:  #0D2B1E;
+  --mid:   #122E21;
+  --brand: #1A5C3A;
+  --acc:   #2E8B57;
+  --glow:  #3DBA7A;
+  --light: #5FDC9A;
+  --w:     #FFFFFF;
+  --w80:   rgba(255,255,255,.80);
+  --w60:   rgba(255,255,255,.60);
+  --w50:   rgba(255,255,255,.50);
+  --w20:   rgba(255,255,255,.20);
+  --w10:   rgba(255,255,255,.10);
+  --w08:   rgba(255,255,255,.08);
+  --w06:   rgba(255,255,255,.06);
+  --err:   #F87171;
+  --ff-d:  'DM Serif Display',Georgia,serif;
+  --ff:    'DM Sans',system-ui,sans-serif;
+  --r:     16px;
+  --r-sm:  12px;
+  --r-xs:  8px;
+}
+body{
+  font-family:var(--ff);
+  background:var(--deep);
+  color:var(--w);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at -10% -5%,rgba(46,139,87,.28) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 110% 100%,rgba(26,92,58,.20) 0%,transparent 55%),
+    linear-gradient(160deg,#0B2418 0%,#0D2B1E 40%,#0A1F16 100%);
+}
+
+/* ── Auth gate ── */
+#auth-gate{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--deep);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:16px;
+}
+#auth-gate .logo{font-family:var(--ff-d);font-size:32px;color:#fff;display:flex;align-items:center;gap:8px}
+#auth-gate .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--light)}
+#auth-gate p{font-size:15px;color:rgba(255,255,255,.5)}
+#auth-gate a{color:var(--light);text-decoration:none;font-weight:500}
+
+/* ── App shell ── */
+#app{display:none;position:relative;z-index:1;min-height:100vh}
+
+/* ── Progress bar ── */
+.progress-bar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:3px;background:var(--w10);
+}
+.progress-fill{
+  height:100%;background:var(--light);
+  transition:width .4s ease;border-radius:0 2px 2px 0;
+}
+
+/* ── Top nav ── */
+.onboard-nav{
+  position:fixed;top:3px;left:0;right:0;z-index:99;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;
+  background:rgba(11,36,24,.8);
+  backdrop-filter:blur(16px);
+  border-bottom:.5px solid var(--w08);
+}
+.nav-logo{font-family:var(--ff-d);font-size:22px;color:var(--w);display:flex;align-items:center;gap:7px;text-decoration:none}
+.nav-logo .dot{width:6px;height:6px;border-radius:50%;background:var(--light);flex-shrink:0}
+.nav-steps{display:flex;align-items:center;gap:6px}
+.nav-step{
+  width:28px;height:4px;border-radius:2px;
+  background:var(--w10);transition:all .3s;
+}
+.nav-step.done{background:var(--acc)}
+.nav-step.active{background:var(--light);width:40px}
+.nav-skip{font-size:13px;color:var(--w50);text-decoration:none;font-weight:500;cursor:pointer;border:none;background:none;font-family:var(--ff)}
+.nav-skip:hover{color:var(--w80)}
+
+/* ── Page container ── */
+.pages{padding-top:72px;min-height:100vh}
+.step-page{
+  display:none;
+  min-height:calc(100vh - 72px);
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 24px 80px;
+  animation:fadeUp .4s ease;
+}
+.step-page.active{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ── Step inner card ── */
+.step-inner{width:100%;max-width:520px}
+
+/* ── Step header ── */
+.step-emoji{font-size:48px;margin-bottom:20px;display:block;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.step-title{
+  font-family:var(--ff-d);
+  font-size:clamp(28px,5vw,40px);
+  line-height:1.08;letter-spacing:-.025em;
+  color:var(--w);margin-bottom:12px;
+}
+.step-title em{font-style:italic;color:var(--light)}
+.step-sub{font-size:16px;line-height:1.65;color:var(--w60);margin-bottom:36px;font-weight:300}
+
+/* ── Range chips ── */
+.range-chips{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.range-chip{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;
+  background:var(--w06);border:1.5px solid var(--w10);
+  border-radius:var(--r);cursor:pointer;transition:all .2s;
+}
+.range-chip:hover{background:var(--w08);border-color:var(--w20)}
+.range-chip.selected{background:rgba(46,139,87,.15);border-color:var(--acc)}
+.range-chip-left{display:flex;align-items:center;gap:12px}
+.range-chip-icon{font-size:20px}
+.range-chip-label{font-size:15px;font-weight:500;color:var(--w)}
+.range-chip-sub{font-size:12px;color:var(--w50);margin-top:2px}
+.range-chip-check{
+  width:22px;height:22px;border-radius:50%;
+  border:1.5px solid var(--w20);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;flex-shrink:0;transition:all .2s;
+}
+.range-chip.selected .range-chip-check{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* ── Goal cards ── */
+.goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px}
+.goal-card{
+  padding:20px 16px;
+  background:var(--w06);border:1.5px solid var(--w10);
+  border-radius:var(--r);cursor:pointer;transition:all .2s;
+  text-align:center;
+}
+.goal-card:hover{background:var(--w08);border-color:var(--w20);transform:translateY(-2px)}
+.goal-card.selected{background:rgba(46,139,87,.15);border-color:var(--acc)}
+.goal-icon{font-size:32px;margin-bottom:10px;display:block}
+.goal-label{font-size:14px;font-weight:600;color:var(--w);margin-bottom:4px}
+.goal-desc{font-size:12px;color:var(--w50);line-height:1.4}
+
+/* ── Category chips ── */
+.cat-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px}
+.cat-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 16px;
+  background:var(--w06);border:1.5px solid var(--w10);
+  border-radius:30px;cursor:pointer;transition:all .2s;
+  font-size:14px;font-weight:500;color:var(--w80);
+}
+.cat-chip:hover{background:var(--w08);border-color:var(--w20)}
+.cat-chip.selected{background:rgba(46,139,87,.15);border-color:var(--acc);color:var(--w)}
+.cat-chip-icon{font-size:16px}
+
+/* ── Plan cards ── */
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:32px}
+.plan-card{
+  padding:24px 20px;
+  background:var(--w06);border:1.5px solid var(--w10);
+  border-radius:var(--r);cursor:pointer;transition:all .2s;
+  position:relative;
+}
+.plan-card:hover{border-color:var(--w20);transform:translateY(-2px)}
+.plan-card.selected{background:rgba(46,139,87,.15);border-color:var(--acc)}
+.plan-card.featured{border-color:var(--acc);background:rgba(46,139,87,.10)}
+.plan-badge{
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  background:var(--acc);color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.08em;
+  padding:3px 12px;border-radius:20px;white-space:nowrap;
+}
+.plan-name{font-size:13px;font-weight:600;color:var(--w60);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.plan-price{font-family:var(--ff-d);font-size:36px;color:var(--w);letter-spacing:-.02em;margin-bottom:4px}
+.plan-period{font-size:13px;color:var(--w50);font-weight:300}
+.plan-trial{font-size:12px;color:var(--light);margin-bottom:14px;font-weight:500}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:7px}
+.plan-features li{font-size:13px;color:var(--w70);padding-left:18px;position:relative;line-height:1.4}
+.plan-features li::before{content:'✓';position:absolute;left:0;color:var(--light);font-size:11px;font-weight:700}
+.plan-features li.off{color:var(--w20)}
+.plan-features li.off::before{content:'–';color:var(--w20)}
+
+/* ── Primary button ── */
+.btn-primary{
+  width:100%;padding:16px;
+  background:var(--acc);color:var(--w);border:none;
+  border-radius:var(--r-sm);font-family:var(--ff);
+  font-size:16px;font-weight:600;cursor:pointer;
+  transition:all .25s;display:flex;align-items:center;
+  justify-content:center;gap:8px;
+}
+.btn-primary:hover{background:var(--glow);transform:translateY(-1px)}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-back{
+  width:100%;padding:13px;margin-top:10px;
+  background:transparent;color:var(--w60);
+  border:.5px solid var(--w20);border-radius:var(--r-sm);
+  font-family:var(--ff);font-size:15px;cursor:pointer;
+  transition:all .2s;
+}
+.btn-back:hover{color:var(--w80);border-color:var(--w50)}
+
+/* ── Welcome step special ── */
+.welcome-content{text-align:center}
+.welcome-avatar{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--brand);display:flex;align-items:center;
+  justify-content:center;font-size:28px;font-weight:700;
+  margin:0 auto 24px;border:3px solid rgba(95,220,154,.3);
+}
+.welcome-features{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:12px;margin:32px 0;
+}
+.welcome-feat{
+  background:var(--w06);border:.5px solid var(--w10);
+  border-radius:var(--r-sm);padding:16px 12px;text-align:center;
+}
+.welcome-feat-icon{font-size:24px;margin-bottom:8px}
+.welcome-feat-label{font-size:12px;font-weight:500;color:var(--w80);line-height:1.4}
+
+/* ── Completion step ── */
+.completion-content{text-align:center}
+.completion-circle{
+  width:100px;height:100px;border-radius:50%;
+  background:rgba(95,220,154,.15);
+  border:2px solid rgba(95,220,154,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;margin:0 auto 28px;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.summary-card{
+  background:var(--w06);border:.5px solid var(--w10);
+  border-radius:var(--r);padding:20px;
+  margin:24px 0;text-align:left;
+}
+.summary-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:.5px solid var(--w08);
+  font-size:14px;
+}
+.summary-row:last-child{border-bottom:none}
+.summary-label{color:var(--w50)}
+.summary-value{color:var(--w);font-weight:500;display:flex;align-items:center;gap:6px}
+
+/* ── Currency badge ── */
+.currency-row{display:flex;gap:10px;margin-bottom:24px}
+.currency-btn{
+  flex:1;padding:12px;border-radius:var(--r-sm);
+  background:var(--w06);border:1.5px solid var(--w10);
+  color:var(--w60);font-family:var(--ff);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.currency-btn.active{background:rgba(46,139,87,.15);border-color:var(--acc);color:var(--w)}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  background:var(--mid);border:.5px solid var(--w20);
+  color:var(--w);padding:12px 24px;border-radius:12px;
+  font-size:14px;font-weight:500;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);z-index:500;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.toast.show{opacity:1}
+
+/* ── Responsive ── */
+@media(max-width:480px){
+  .goal-grid{grid-template-columns:1fr 1fr}
+  .plan-grid{grid-template-columns:1fr}
+  .welcome-features{grid-template-columns:1fr 1fr}
+  .step-page{padding:32px 16px 80px}
+  .step-title{font-size:28px}
+}
+@media(max-width:360px){
+  .goal-grid{grid-template-columns:1fr}
+  .welcome-features{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Auth gate -->
+<div id="auth-gate">
+  <div class="logo"><span class="dot"></span>WeUp</div>
+  <p id="gate-msg">Setting things up...</p>
+</div>
+
+<!-- App -->
+<div id="app">
+
+  <!-- Progress -->
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <!-- Nav -->
+  <nav class="onboard-nav">
+    <a href="/" class="nav-logo"><span class="dot"></span>WeUp</a>
+    <div class="nav-steps">
+      <div class="nav-step active" id="ns1"></div>
+      <div class="nav-step" id="ns2"></div>
+      <div class="nav-step" id="ns3"></div>
+      <div class="nav-step" id="ns4"></div>
+      <div class="nav-step" id="ns5"></div>
+    </div>
+    <button class="nav-skip" onclick="skipOnboarding()" data-en="Skip setup" data-es="Omitir">Skip setup</button>
+  </nav>
+
+  <div class="pages">
+
+    <!-- ═══════════════════════════════
+         STEP 1 — WELCOME
+    ═══════════════════════════════ -->
+    <div class="step-page active" id="step-1">
+      <div class="step-inner welcome-content">
+        <div class="welcome-avatar" id="welcome-avatar">?</div>
+        <h1 class="step-title">
+          <span data-en="Welcome," data-es="Bienvenido,">Welcome,</span><br>
+          <em id="welcome-name">there</em> ✦
+        </h1>
+        <p class="step-sub" data-en="Let's set up your finances in 2 minutes so WeUp AI can start working for you from day one." data-es="Configuremos tus finanzas en 2 minutos para que WeUp IA empiece a trabajar para ti desde el primer día.">Let's set up your finances in 2 minutes so WeUp AI can start working for you from day one.</p>
+
+        <div class="welcome-features">
+          <div class="welcome-feat">
+            <div class="welcome-feat-icon">🤖</div>
+            <div class="welcome-feat-label" data-en="AI insights from day 1" data-es="IA desde el día 1">AI insights from day 1</div>
+          </div>
+          <div class="welcome-feat">
+            <div class="welcome-feat-icon">🎯</div>
+            <div class="welcome-feat-label" data-en="Goal tracking" data-es="Seguimiento de metas">Goal tracking</div>
+          </div>
+          <div class="welcome-feat">
+            <div class="welcome-feat-icon">📊</div>
+            <div class="welcome-feat-label" data-en="Smart budgets" data-es="Presupuestos inteligentes">Smart budgets</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="goToStep(2)">
+          <span data-en="Set up my finances" data-es="Configurar mis finanzas">Set up my finances</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 2 — INCOME
+    ═══════════════════════════════ -->
+    <div class="step-page" id="step-2">
+      <div class="step-inner">
+        <span class="step-emoji">💰</span>
+        <h1 class="step-title" data-en="What's your monthly <em>income</em>?" data-es="¿Cuál es tu <em>ingreso</em> mensual?">What's your monthly <em>income</em>?</h1>
+        <p class="step-sub" data-en="This helps WeUp AI calibrate your budget and savings suggestions. Approximate is fine." data-es="Esto ayuda a la IA de WeUp a calibrar tu presupuesto y sugerencias de ahorro. Aproximado está bien.">This helps WeUp AI calibrate your budget and savings suggestions. Approximate is fine.</p>
+
+        <!-- Currency toggle -->
+        <div class="currency-row">
+          <button class="currency-btn active" id="cur-cop" onclick="setCurrency('COP')">🇨🇴 COP</button>
+          <button class="currency-btn" id="cur-mxn" onclick="setCurrency('MXN')">🇲🇽 MXN</button>
+          <button class="currency-btn" id="cur-usd" onclick="setCurrency('USD')">🇺🇸 USD</button>
+        </div>
+
+        <div class="range-chips" id="income-chips">
+          <!-- Populated by JS -->
+        </div>
+
+        <button class="btn-primary" id="income-next" onclick="goToStep(3)" disabled>
+          <span data-en="Continue" data-es="Continuar">Continue</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn-back" onclick="goToStep(1)" data-en="← Back" data-es="← Atrás">← Back</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 3 — GOALS
+    ═══════════════════════════════ -->
+    <div class="step-page" id="step-3">
+      <div class="step-inner">
+        <span class="step-emoji">🎯</span>
+        <h1 class="step-title" data-en="What's your main <em>financial goal</em>?" data-es="¿Cuál es tu <em>meta financiera</em> principal?">What's your main <em>financial goal</em>?</h1>
+        <p class="step-sub" data-en="WeUp AI will personalize every insight around your goal. You can change this anytime." data-es="WeUp IA personalizará cada insight según tu meta. Puedes cambiarlo cuando quieras.">WeUp AI will personalize every insight around your goal. You can change this anytime.</p>
+
+        <div class="goal-grid">
+          <div class="goal-card" onclick="selectGoal(this,'save')">
+            <span class="goal-icon">💰</span>
+            <div class="goal-label" data-en="Save more" data-es="Ahorrar más">Save more</div>
+            <div class="goal-desc" data-en="Build my savings and emergency fund" data-es="Construir mis ahorros y fondo de emergencia">Build my savings and emergency fund</div>
+          </div>
+          <div class="goal-card" onclick="selectGoal(this,'debt')">
+            <span class="goal-icon">💳</span>
+            <div class="goal-label" data-en="Pay off debt" data-es="Pagar deudas">Pay off debt</div>
+            <div class="goal-desc" data-en="Get debt-free as fast as possible" data-es="Liberarme de deudas lo más rápido posible">Get debt-free as fast as possible</div>
+          </div>
+          <div class="goal-card" onclick="selectGoal(this,'track')">
+            <span class="goal-icon">📊</span>
+            <div class="goal-label" data-en="Track spending" data-es="Controlar gastos">Track spending</div>
+            <div class="goal-desc" data-en="Know exactly where my money goes" data-es="Saber exactamente a dónde va mi dinero">Know exactly where my money goes</div>
+          </div>
+          <div class="goal-card" onclick="selectGoal(this,'purchase')">
+            <span class="goal-icon">🏠</span>
+            <div class="goal-label" data-en="Big purchase" data-es="Gran compra">Big purchase</div>
+            <div class="goal-desc" data-en="Save for a house, car, or trip" data-es="Ahorrar para casa, carro o viaje">Save for a house, car, or trip</div>
+          </div>
+          <div class="goal-card" onclick="selectGoal(this,'invest')">
+            <span class="goal-icon">📈</span>
+            <div class="goal-label" data-en="Invest" data-es="Invertir">Invest</div>
+            <div class="goal-desc" data-en="Start investing and grow my wealth" data-es="Empezar a invertir y crecer mi patrimonio">Start investing and grow my wealth</div>
+          </div>
+          <div class="goal-card" onclick="selectGoal(this,'budget')">
+            <span class="goal-icon">🧮</span>
+            <div class="goal-label" data-en="Budget better" data-es="Presupuestar mejor">Budget better</div>
+            <div class="goal-desc" data-en="Stop overspending each month" data-es="Dejar de gastar de más cada mes">Stop overspending each month</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="goal-next" onclick="goToStep(4)" disabled>
+          <span data-en="Continue" data-es="Continuar">Continue</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn-back" onclick="goToStep(2)" data-en="← Back" data-es="← Atrás">← Back</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 4 — CATEGORIES
+    ═══════════════════════════════ -->
+    <div class="step-page" id="step-4">
+      <div class="step-inner">
+        <span class="step-emoji">📦</span>
+        <h1 class="step-title" data-en="Which categories <em>matter</em> to you?" data-es="¿Qué categorías <em>importan</em> para ti?">Which categories <em>matter</em> to you?</h1>
+        <p class="step-sub" data-en="Select all that apply. WeUp will track and budget these for you automatically." data-es="Selecciona todas las que apliquen. WeUp las rastreará y presupuestará automáticamente.">Select all that apply. WeUp will track and budget these for you automatically.</p>
+
+        <div class="cat-chips">
+          <div class="cat-chip selected" onclick="toggleCat(this,'food')"><span class="cat-chip-icon">🛒</span><span data-en="Food & Drinks" data-es="Alimentación">Food & Drinks</span></div>
+          <div class="cat-chip selected" onclick="toggleCat(this,'transport')"><span class="cat-chip-icon">🚌</span><span data-en="Transport" data-es="Transporte">Transport</span></div>
+          <div class="cat-chip selected" onclick="toggleCat(this,'housing')"><span class="cat-chip-icon">🏠</span><span data-en="Housing" data-es="Vivienda">Housing</span></div>
+          <div class="cat-chip" onclick="toggleCat(this,'health')"><span class="cat-chip-icon">💊</span><span data-en="Health" data-es="Salud">Health</span></div>
+          <div class="cat-chip selected" onclick="toggleCat(this,'entertainment')"><span class="cat-chip-icon">🎬</span><span data-en="Entertainment" data-es="Entretenimiento">Entertainment</span></div>
+          <div class="cat-chip" onclick="toggleCat(this,'shopping')"><span class="cat-chip-icon">🛍️</span><span data-en="Shopping" data-es="Compras">Shopping</span></div>
+          <div class="cat-chip" onclick="toggleCat(this,'education')"><span class="cat-chip-icon">📚</span><span data-en="Education" data-es="Educación">Education</span></div>
+          <div class="cat-chip" onclick="toggleCat(this,'subscriptions')"><span class="cat-chip-icon">📱</span><span data-en="Subscriptions" data-es="Suscripciones">Subscriptions</span></div>
+          <div class="cat-chip" onclick="toggleCat(this,'savings')"><span class="cat-chip-icon">🏦</span><span data-en="Savings" data-es="Ahorros">Savings</span></div>
+          <div class="cat-chip" onclick="toggleCat(this,'pets')"><span class="cat-chip-icon">🐾</span><span data-en="Pets" data-es="Mascotas">Pets</span></div>
+        </div>
+
+        <button class="btn-primary" onclick="goToStep(5)">
+          <span data-en="Continue" data-es="Continuar">Continue</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn-back" onclick="goToStep(3)" data-en="← Back" data-es="← Atrás">← Back</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 5 — PLAN
+    ═══════════════════════════════ -->
+    <div class="step-page" id="step-5">
+      <div class="step-inner">
+        <span class="step-emoji">🚀</span>
+        <h1 class="step-title" data-en="Choose your <em>plan</em>" data-es="Elige tu <em>plan</em>">Choose your <em>plan</em></h1>
+        <p class="step-sub" data-en="Start free, upgrade anytime. No credit card required for the trial." data-es="Empieza gratis, actualiza cuando quieras. No se requiere tarjeta para la prueba.">Start free, upgrade anytime. No credit card required for the trial.</p>
+
+        <div class="plan-grid">
+          <div class="plan-card selected" id="plan-free" onclick="selectPlan('free')">
+            <div class="plan-name">Free</div>
+            <div class="plan-price">$0</div>
+            <div class="plan-period" data-en="forever" data-es="siempre">forever</div>
+            <div style="height:24px"></div>
+            <ul class="plan-features">
+              <li data-en="1 account" data-es="1 cuenta">1 account</li>
+              <li data-en="30 transactions/month" data-es="30 transacciones/mes">30 transactions/month</li>
+              <li data-en="Basic reports" data-es="Reportes básicos">Basic reports</li>
+              <li class="off" data-en="AI insights" data-es="Insights IA">AI insights</li>
+              <li class="off" data-en="Bank sync" data-es="Sincronización bancaria">Bank sync</li>
+            </ul>
+          </div>
+          <div class="plan-card featured" id="plan-pro" onclick="selectPlan('pro')">
+            <div class="plan-badge" data-en="14-day free trial" data-es="14 días gratis">14-day free trial</div>
+            <div class="plan-name" style="margin-top:8px">Pro</div>
+            <div class="plan-price">$4.99</div>
+            <div class="plan-period" data-en="/month after trial" data-es="/mes después de la prueba">/month after trial</div>
+            <div class="plan-trial" data-en="No credit card needed" data-es="Sin tarjeta de crédito">No credit card needed</div>
+            <ul class="plan-features">
+              <li data-en="Unlimited accounts" data-es="Cuentas ilimitadas">Unlimited accounts</li>
+              <li data-en="Unlimited transactions" data-es="Transacciones ilimitadas">Unlimited transactions</li>
+              <li data-en="AI-powered insights" data-es="Insights con IA">AI-powered insights</li>
+              <li data-en="Bank sync (CO & MX)" data-es="Sincronización bancaria">Bank sync (CO & MX)</li>
+              <li data-en="Advanced reports" data-es="Reportes avanzados">Advanced reports</li>
+            </ul>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="finish-btn" onclick="finishOnboarding()">
+          <span id="finish-label" data-en="Start with Free" data-es="Empezar gratis">Start with Free</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn-back" onclick="goToStep(4)" data-en="← Back" data-es="← Atrás">← Back</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 6 — COMPLETION
+    ═══════════════════════════════ -->
+    <div class="step-page" id="step-6">
+      <div class="step-inner completion-content">
+        <div class="completion-circle">🎉</div>
+        <h1 class="step-title" data-en="You're all set!" data-es="¡Todo listo!">You're all set!</h1>
+        <p class="step-sub" data-en="WeUp AI has everything it needs to start working for you. Here's your financial profile:" data-es="WeUp IA tiene todo lo que necesita para empezar a trabajar para ti. Aquí está tu perfil financiero:">WeUp AI has everything it needs to start working for you. Here's your financial profile:</p>
+
+        <div class="summary-card" id="summary-card">
+          <!-- Populated by JS -->
+        </div>
+
+        <button class="btn-primary" onclick="window.location.href='/dashboard.html'">
+          <span data-en="Go to my dashboard" data-es="Ir a mi dashboard">Go to my dashboard</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL = 'https://tnkydfulsrzihlohchhc.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let currentStep = 1;
+let selectedIncome = null;
+let selectedGoal   = null;
+let selectedCats   = ['food','transport','housing','entertainment'];
+let selectedPlan   = 'free';
+let selectedCurrency = 'COP';
+let currentLang = 'en';
+
+const INCOME_RANGES = {
+  COP: [
+    { label: 'Under $1M',    sub: 'Less than 1,000,000 COP/mo',   icon: '🌱', value: 'under_1m' },
+    { label: '$1M – $3M',    sub: '1,000,000 – 3,000,000 COP/mo', icon: '💼', value: '1m_3m' },
+    { label: '$3M – $6M',    sub: '3,000,000 – 6,000,000 COP/mo', icon: '📈', value: '3m_6m' },
+    { label: '$6M – $15M',   sub: '6,000,000 – 15,000,000 COP/mo',icon: '🏆', value: '6m_15m' },
+    { label: 'Over $15M',    sub: 'More than 15,000,000 COP/mo',  icon: '💎', value: 'over_15m' },
+  ],
+  MXN: [
+    { label: 'Under $5K',    sub: 'Less than 5,000 MXN/mo',       icon: '🌱', value: 'under_5k' },
+    { label: '$5K – $15K',   sub: '5,000 – 15,000 MXN/mo',        icon: '💼', value: '5k_15k' },
+    { label: '$15K – $30K',  sub: '15,000 – 30,000 MXN/mo',       icon: '📈', value: '15k_30k' },
+    { label: '$30K – $80K',  sub: '30,000 – 80,000 MXN/mo',       icon: '🏆', value: '30k_80k' },
+    { label: 'Over $80K',    sub: 'More than 80,000 MXN/mo',      icon: '💎', value: 'over_80k' },
+  ],
+  USD: [
+    { label: 'Under $500',   sub: 'Less than $500/mo',             icon: '🌱', value: 'under_500' },
+    { label: '$500 – $2K',   sub: '$500 – $2,000/mo',              icon: '💼', value: '500_2k' },
+    { label: '$2K – $5K',    sub: '$2,000 – $5,000/mo',            icon: '📈', value: '2k_5k' },
+    { label: '$5K – $15K',   sub: '$5,000 – $15,000/mo',           icon: '🏆', value: '5k_15k' },
+    { label: 'Over $15K',    sub: 'More than $15,000/mo',          icon: '💎', value: 'over_15k' },
+  ]
+};
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  if (window.location.hash.includes('access_token')) {
+    await sb.auth.getSession();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    document.getElementById('gate-msg').innerHTML = 'Please <a href="/">sign in</a> first.';
+    return;
+  }
+
+  currentUser = session.user;
+
+  // Check if already onboarded
+  const { data: profile } = await sb.from('profiles').select('lang').eq('id', currentUser.id).single();
+  if (profile?.lang === 'done') {
+    window.location.href = '/dashboard.html';
+    return;
+  }
+
+  // Detect language
+  const lang = navigator.language?.startsWith('es') ? 'es' : 'en';
+  setLang(lang);
+
+  // Boot app
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  // Set user info
+  const name = currentUser.user_metadata?.full_name?.split(' ')[0]
+            || currentUser.user_metadata?.name?.split(' ')[0]
+            || currentUser.email.split('@')[0];
+  const initials = name.slice(0,2).toUpperCase();
+  document.getElementById('welcome-name').textContent = name;
+  document.getElementById('welcome-avatar').textContent = initials;
+
+  // Detect currency from browser locale
+  if (navigator.language?.includes('MX')) setCurrency('MXN');
+  else setCurrency('COP');
+
+  renderIncomeChips();
+  updateProgress();
+});
+
+// ── Language ──────────────────────────────────────────────────────────────────
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-'+lang+']').forEach(el => {
+    const val = el.getAttribute('data-'+lang);
+    if (el.tagName === 'INPUT') el.placeholder = val;
+    else if (val.includes('<em>')) el.innerHTML = val;
+    else el.textContent = val;
+  });
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function goToStep(n) {
+  document.getElementById('step-'+currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step-'+n).classList.add('active');
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateProgress() {
+  const totalSteps = 5;
+  const pct = ((currentStep - 1) / totalSteps) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('ns'+i);
+    if (!el) continue;
+    el.className = 'nav-step';
+    if (i < currentStep) el.classList.add('done');
+    else if (i === currentStep) el.classList.add('active');
+  }
+}
+
+// ── Currency ──────────────────────────────────────────────────────────────────
+function setCurrency(cur) {
+  selectedCurrency = cur;
+  selectedIncome = null;
+  document.getElementById('income-next').disabled = true;
+  ['cop','mxn','usd'].forEach(c => document.getElementById('cur-'+c).classList.remove('active'));
+  document.getElementById('cur-'+cur.toLowerCase()).classList.add('active');
+  renderIncomeChips();
+}
+
+function renderIncomeChips() {
+  const ranges = INCOME_RANGES[selectedCurrency];
+  const container = document.getElementById('income-chips');
+  container.innerHTML = ranges.map(r => `
+    <div class="range-chip" onclick="selectIncome(this,'${r.value}','${r.label}')">
+      <div class="range-chip-left">
+        <span class="range-chip-icon">${r.icon}</span>
+        <div>
+          <div class="range-chip-label">${r.label} ${selectedCurrency}/mo</div>
+          <div class="range-chip-sub">${r.sub}</div>
+        </div>
+      </div>
+      <div class="range-chip-check"></div>
+    </div>`).join('');
+}
+
+// ── Selections ────────────────────────────────────────────────────────────────
+function selectIncome(el, value, label) {
+  document.querySelectorAll('.range-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedIncome = { value, label, currency: selectedCurrency };
+  document.getElementById('income-next').disabled = false;
+}
+
+function selectGoal(el, value) {
+  document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedGoal = value;
+  document.getElementById('goal-next').disabled = false;
+}
+
+function toggleCat(el, cat) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!selectedCats.includes(cat)) selectedCats.push(cat);
+  } else {
+    selectedCats = selectedCats.filter(c => c !== cat);
+  }
+}
+
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.getElementById('plan-free').classList.toggle('selected', plan === 'free');
+  document.getElementById('plan-pro').classList.toggle('selected', plan === 'pro');
+  const lbl = document.getElementById('finish-label');
+  if (plan === 'free') {
+    lbl.textContent = currentLang === 'es' ? 'Empezar gratis' : 'Start with Free';
+  } else {
+    lbl.textContent = currentLang === 'es' ? 'Empezar prueba de 14 días' : 'Start 14-day trial';
+  }
+}
+
+// ── Finish ────────────────────────────────────────────────────────────────────
+async function finishOnboarding() {
+  const btn = document.getElementById('finish-btn');
+  btn.disabled = true;
+  btn.querySelector('span').textContent = currentLang === 'es' ? 'Guardando...' : 'Saving...';
+
+  // Save to Supabase profiles
+  const { error } = await sb.from('profiles').upsert({
+    id: currentUser.id,
+    currency: selectedCurrency,
+    lang: 'done',
+    full_name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || ''
+  });
+
+  if (error) {
+    showToast('Error saving: ' + error.message);
+    btn.disabled = false;
+    return;
+  }
+
+  // Save onboarding data to a metadata table (store in profile as JSON)
+  await sb.from('profiles').update({
+    currency: selectedCurrency
+  }).eq('id', currentUser.id);
+
+  // Build summary
+  const goalLabels = {
+    save:'Save more', debt:'Pay off debt', track:'Track spending',
+    purchase:'Big purchase', invest:'Invest', budget:'Budget better'
+  };
+  const goalLabelsEs = {
+    save:'Ahorrar más', debt:'Pagar deudas', track:'Controlar gastos',
+    purchase:'Gran compra', invest:'Invertir', budget:'Presupuestar mejor'
+  };
+
+  document.getElementById('summary-card').innerHTML = [
+    { label: currentLang==='es'?'Ingresos mensuales':'Monthly income',
+      value: selectedIncome ? selectedIncome.label + ' ' + selectedCurrency : '—' },
+    { label: currentLang==='es'?'Meta principal':'Main goal',
+      value: selectedGoal ? (currentLang==='es'?goalLabelsEs:goalLabels)[selectedGoal] : '—' },
+    { label: currentLang==='es'?'Categorías activas':'Active categories',
+      value: selectedCats.length + (currentLang==='es'?' categorías':' categories') },
+    { label: currentLang==='es'?'Tu plan':'Your plan',
+      value: selectedPlan === 'pro'
+        ? '⭐ Pro (14-day trial)'
+        : currentLang==='es'?'✓ Gratis':'✓ Free' },
+    { label: currentLang==='es'?'Moneda':'Currency',
+      value: selectedCurrency }
+  ].map(r => `
+    <div class="summary-row">
+      <span class="summary-label">${r.label}</span>
+      <span class="summary-value">${r.value}</span>
+    </div>`).join('');
+
+  goToStep(6);
+  // Update progress to 100%
+  document.getElementById('progress-fill').style.width = '100%';
+}
+
+async function skipOnboarding() {
+  await sb.from('profiles').upsert({
+    id: currentUser.id,
+    lang: 'done'
+  });
+  window.location.href = '/dashboard.html';
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
