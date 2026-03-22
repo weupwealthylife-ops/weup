@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeUp — Terms & Conditions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+:root{
+  --deep:  #0D2B1E;
+  --mid:   #122E21;
+  --brand: #1A5C3A;
+  --acc:   #2E8B57;
+  --glow:  #3DBA7A;
+  --light: #5FDC9A;
+  --w:     #FFFFFF;
+  --w80:   rgba(255,255,255,.80);
+  --w70:   rgba(255,255,255,.70);
+  --w60:   rgba(255,255,255,.60);
+  --w50:   rgba(255,255,255,.50);
+  --w30:   rgba(255,255,255,.30);
+  --w20:   rgba(255,255,255,.20);
+  --w10:   rgba(255,255,255,.10);
+  --w08:   rgba(255,255,255,.08);
+  --w06:   rgba(255,255,255,.06);
+  --ff-d:  'DM Serif Display',Georgia,serif;
+  --ff:    'DM Sans',system-ui,sans-serif;
+  --r:     16px;
+  --r-sm:  12px;
+}
+body{
+  font-family:var(--ff);
+  background:var(--deep);
+  color:var(--w);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at -10% -5%,rgba(46,139,87,.20) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 110% 100%,rgba(26,92,58,.15) 0%,transparent 55%),
+    linear-gradient(160deg,#0B2418 0%,#0D2B1E 40%,#0A1F16 100%);
+}
+
+/* ── Nav ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 48px;
+  background:rgba(11,36,24,.85);
+  backdrop-filter:blur(16px);
+  border-bottom:.5px solid var(--w08);
+}
+.nav-logo{font-family:var(--ff-d);font-size:24px;color:var(--w);text-decoration:none;display:flex;align-items:center;gap:8px}
+.nav-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--light)}
+.nav-lang{display:flex;gap:2px;background:var(--w06);border-radius:8px;padding:3px}
+.nav-lang button{font-family:var(--ff);font-size:12px;font-weight:500;letter-spacing:.05em;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;background:transparent;color:var(--w50);transition:all .2s}
+.nav-lang button.active{background:var(--w20);color:var(--w)}
+.nav-back{font-size:14px;color:var(--light);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:6px}
+.nav-back:hover{color:var(--w)}
+
+/* ── Layout ── */
+.page{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:64px 32px 96px}
+
+/* ── Header ── */
+.policy-header{margin-bottom:48px}
+.policy-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--w06);border:.5px solid var(--w20);
+  border-radius:20px;padding:6px 14px;margin-bottom:20px;
+  font-size:11px;font-weight:600;color:var(--light);
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.policy-title{
+  font-family:var(--ff-d);
+  font-size:clamp(36px,5vw,52px);
+  line-height:1.08;letter-spacing:-.025em;
+  color:var(--w);margin-bottom:16px;
+}
+.policy-title em{font-style:italic;color:var(--light)}
+.policy-meta{font-size:14px;color:var(--w50);line-height:1.6}
+.policy-meta strong{color:var(--w70);font-weight:500}
+
+/* ── Summary ── */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:36px 0}
+.summary-card{background:var(--w06);border:.5px solid var(--w10);border-radius:var(--r);padding:20px 16px;text-align:center}
+.summary-icon{font-size:28px;margin-bottom:10px}
+.summary-label{font-size:13px;font-weight:600;color:var(--w);margin-bottom:4px}
+.summary-desc{font-size:12px;color:var(--w50);line-height:1.5}
+
+/* ── TOC ── */
+.toc{background:var(--w06);border:.5px solid var(--w10);border-radius:var(--r);padding:24px;margin-bottom:48px}
+.toc-title{font-size:13px;font-weight:600;color:var(--w60);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.toc-list{display:flex;flex-direction:column;gap:6px}
+.toc-list a{font-size:14px;color:var(--w60);text-decoration:none;padding:4px 0;transition:color .2s;display:flex;align-items:center;gap:8px}
+.toc-list a:hover{color:var(--light)}
+.toc-num{font-size:12px;color:var(--w30);font-weight:600;min-width:20px}
+
+/* ── Sections ── */
+.policy-section{margin-bottom:48px;padding-top:16px}
+.section-num{font-size:12px;font-weight:600;color:var(--light);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.section-title{font-family:var(--ff-d);font-size:24px;color:var(--w);margin-bottom:16px;letter-spacing:-.01em}
+.section-body{font-size:15px;line-height:1.75;color:var(--w70);font-weight:300}
+.section-body p{margin-bottom:14px}
+.section-body p:last-child{margin-bottom:0}
+.section-body strong{color:var(--w80);font-weight:500}
+.section-body a{color:var(--light);text-decoration:none}
+.section-body a:hover{text-decoration:underline}
+
+/* ── Highlight ── */
+.highlight{background:rgba(46,139,87,.10);border:.5px solid rgba(95,220,154,.25);border-radius:var(--r-sm);padding:16px 20px;margin:16px 0}
+.highlight p{margin-bottom:0;color:var(--w80)}
+.highlight-warn{background:rgba(248,113,113,.08);border:.5px solid rgba(248,113,113,.25);border-radius:var(--r-sm);padding:16px 20px;margin:16px 0}
+.highlight-warn p{margin-bottom:0;color:rgba(248,113,113,.9)}
+
+/* ── List ── */
+.policy-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.policy-list li{font-size:15px;color:var(--w70);padding-left:20px;position:relative;line-height:1.6;font-weight:300}
+.policy-list li::before{content:'✓';position:absolute;left:0;color:var(--light);font-size:12px;font-weight:700;top:2px}
+.policy-list li.bullet::before{content:'•';color:var(--w50);font-size:16px;top:0}
+.policy-list li.no::before{content:'✗';color:#F87171}
+
+/* ── Divider ── */
+.section-divider{height:.5px;background:var(--w08);margin:8px 0 48px}
+
+/* ── Plan table ── */
+.plan-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.plan-table th{text-align:left;padding:10px 14px;background:var(--w08);color:var(--w60);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-bottom:.5px solid var(--w10)}
+.plan-table td{padding:12px 14px;color:var(--w70);border-bottom:.5px solid var(--w08);vertical-align:top;line-height:1.5}
+.plan-table tr:last-child td{border-bottom:none}
+.plan-table td:first-child{color:var(--w80);font-weight:500}
+
+/* ── Contact card ── */
+.contact-card{background:var(--brand);border-radius:var(--r);padding:32px;text-align:center;margin-top:48px}
+.contact-card h3{font-family:var(--ff-d);font-size:24px;color:var(--w);margin-bottom:8px}
+.contact-card p{font-size:15px;color:var(--w80);margin-bottom:20px;line-height:1.6}
+.contact-card a{display:inline-flex;align-items:center;gap:8px;background:var(--w);color:var(--brand);padding:12px 24px;border-radius:var(--r-sm);font-weight:600;font-size:14px;text-decoration:none;transition:all .2s}
+.contact-card a:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+
+/* ── Footer ── */
+.policy-footer{text-align:center;margin-top:64px;padding-top:32px;border-top:.5px solid var(--w08)}
+.footer-logo{font-family:var(--ff-d);font-size:20px;color:var(--w);display:inline-flex;align-items:center;gap:7px;margin-bottom:12px}
+.footer-logo .dot{width:6px;height:6px;border-radius:50%;background:var(--light)}
+.footer-links{display:flex;justify-content:center;gap:24px;margin-bottom:16px;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--w50);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--light)}
+.footer-copy{font-size:12px;color:var(--w20)}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .page{padding:40px 20px 80px}
+  .summary-grid{grid-template-columns:1fr}
+  .plan-table{font-size:13px}
+  .plan-table th,.plan-table td{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="/" class="nav-logo"><span class="dot"></span>WeUp</a>
+  <div style="display:flex;align-items:center;gap:20px">
+    <div class="nav-lang">
+      <button class="active" onclick="setLang('en')">EN</button>
+      <button onclick="setLang('es')">ES</button>
+    </div>
+    <a href="/" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-en="Back to WeUp" data-es="Volver a WeUp">Back to WeUp</span>
+    </a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="policy-header">
+    <div class="policy-badge">📋 <span data-en="Terms & Conditions" data-es="Términos y Condiciones">Terms & Conditions</span></div>
+    <h1 class="policy-title" data-en="Terms of <em>service</em>" data-es="Términos de <em>servicio</em>">Terms of <em>service</em></h1>
+    <p class="policy-meta">
+      <span data-en="Last updated:" data-es="Última actualización:">Last updated:</span>
+      <strong> March 21, 2026</strong> &nbsp;·&nbsp;
+      <span data-en="Effective:" data-es="Vigente desde:">Effective:</span>
+      <strong> March 21, 2026</strong>
+    </p>
+    <p class="policy-meta" style="margin-top:10px" data-en="Please read these Terms carefully before using WeUp. By creating an account or using the service, you agree to be bound by these Terms." data-es="Lee estos Términos cuidadosamente antes de usar WeUp. Al crear una cuenta o usar el servicio, aceptas estar sujeto a estos Términos.">Please read these Terms carefully before using WeUp. By creating an account or using the service, you agree to be bound by these Terms.</p>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-icon">📱</div>
+      <div class="summary-label" data-en="Personal use only" data-es="Solo uso personal">Personal use only</div>
+      <div class="summary-desc" data-en="WeUp is for personal finance tracking, not professional financial advice." data-es="WeUp es para seguimiento financiero personal, no asesoría financiera profesional.">WeUp is for personal finance tracking, not professional financial advice.</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">💳</div>
+      <div class="summary-label" data-en="Subscription billing" data-es="Facturación por suscripción">Subscription billing</div>
+      <div class="summary-desc" data-en="Pro plan billed monthly or annually. Cancel anytime with no penalty." data-es="Plan Pro facturado mensual o anualmente. Cancela cuando quieras sin penalidad.">Pro plan billed monthly or annually. Cancel anytime with no penalty.</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">⚖️</div>
+      <div class="summary-label" data-en="Fair use" data-es="Uso justo">Fair use</div>
+      <div class="summary-desc" data-en="Use WeUp responsibly. We may suspend accounts that violate these terms." data-es="Usa WeUp responsablemente. Podemos suspender cuentas que violen estos términos.">Use WeUp responsibly. We may suspend accounts that violate these terms.</div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title" data-en="Table of Contents" data-es="Tabla de Contenidos">Table of Contents</div>
+    <div class="toc-list">
+      <a href="#t1"><span class="toc-num">01</span><span data-en="Acceptance of terms" data-es="Aceptación de términos">Acceptance of terms</span></a>
+      <a href="#t2"><span class="toc-num">02</span><span data-en="Description of service" data-es="Descripción del servicio">Description of service</span></a>
+      <a href="#t3"><span class="toc-num">03</span><span data-en="Account registration" data-es="Registro de cuenta">Account registration</span></a>
+      <a href="#t4"><span class="toc-num">04</span><span data-en="Subscription & payments" data-es="Suscripción y pagos">Subscription & payments</span></a>
+      <a href="#t5"><span class="toc-num">05</span><span data-en="Acceptable use" data-es="Uso aceptable">Acceptable use</span></a>
+      <a href="#t6"><span class="toc-num">06</span><span data-en="Financial disclaimer" data-es="Descargo financiero">Financial disclaimer</span></a>
+      <a href="#t7"><span class="toc-num">07</span><span data-en="Intellectual property" data-es="Propiedad intelectual">Intellectual property</span></a>
+      <a href="#t8"><span class="toc-num">08</span><span data-en="Limitation of liability" data-es="Limitación de responsabilidad">Limitation of liability</span></a>
+      <a href="#t9"><span class="toc-num">09</span><span data-en="Termination" data-es="Terminación">Termination</span></a>
+      <a href="#t10"><span class="toc-num">10</span><span data-en="Governing law" data-es="Ley aplicable">Governing law</span></a>
+      <a href="#t11"><span class="toc-num">11</span><span data-en="Contact" data-es="Contacto">Contact</span></a>
+    </div>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="policy-section" id="t1">
+    <div class="section-num">01</div>
+    <h2 class="section-title" data-en="Acceptance of terms" data-es="Aceptación de términos">Acceptance of terms</h2>
+    <div class="section-body">
+      <p data-en="By accessing or using WeUp (the 'Service'), you confirm that you are at least 18 years old, have the legal capacity to enter into these Terms, and agree to be bound by them." data-es="Al acceder o usar WeUp (el 'Servicio'), confirmas que tienes al menos 18 años, tienes capacidad legal para aceptar estos Términos y aceptas estar sujeto a ellos.">By accessing or using WeUp (the "Service"), you confirm that you are at least 18 years old, have the legal capacity to enter into these Terms, and agree to be bound by them.</p>
+      <p data-en="If you are using WeUp on behalf of a company or organization, you represent that you have the authority to bind that entity to these Terms." data-es="Si usas WeUp en nombre de una empresa u organización, declaras que tienes autoridad para vincular a esa entidad con estos Términos.">If you are using WeUp on behalf of a company or organization, you represent that you have the authority to bind that entity to these Terms.</p>
+      <div class="highlight">
+        <p data-en="These Terms constitute a legally binding agreement between you and WeUp. If you do not agree to these Terms, do not use the Service." data-es="Estos Términos constituyen un acuerdo legalmente vinculante entre tú y WeUp. Si no estás de acuerdo con estos Términos, no uses el Servicio.">These Terms constitute a legally binding agreement between you and WeUp. If you do not agree to these Terms, do not use the Service.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 2 -->
+  <div class="policy-section" id="t2">
+    <div class="section-num">02</div>
+    <h2 class="section-title" data-en="Description of service" data-es="Descripción del servicio">Description of service</h2>
+    <div class="section-body">
+      <p data-en="WeUp is a personal finance management platform that allows users to:" data-es="WeUp es una plataforma de gestión de finanzas personales que permite a los usuarios:">WeUp is a personal finance management platform that allows users to:</p>
+      <ul class="policy-list">
+        <li data-en="Manually record income and expenses" data-es="Registrar ingresos y gastos manualmente">Manually record income and expenses</li>
+        <li data-en="Categorize and track spending habits" data-es="Categorizar y rastrear hábitos de gasto">Categorize and track spending habits</li>
+        <li data-en="Set budgets and financial goals" data-es="Establecer presupuestos y metas financieras">Set budgets and financial goals</li>
+        <li data-en="Receive AI-powered financial insights (Pro plan)" data-es="Recibir insights financieros con IA (plan Pro)">Receive AI-powered financial insights (Pro plan)</li>
+        <li data-en="Connect bank accounts for automatic transaction import (Pro plan)" data-es="Conectar cuentas bancarias para importación automática de transacciones (plan Pro)">Connect bank accounts for automatic transaction import (Pro plan)</li>
+        <li data-en="View visual reports and spending analytics" data-es="Ver reportes visuales y análisis de gastos">View visual reports and spending analytics</li>
+      </ul>
+      <p style="margin-top:14px" data-en="WeUp reserves the right to modify, suspend, or discontinue any aspect of the Service at any time with reasonable notice." data-es="WeUp se reserva el derecho de modificar, suspender o discontinuar cualquier aspecto del Servicio en cualquier momento con aviso razonable.">WeUp reserves the right to modify, suspend, or discontinue any aspect of the Service at any time with reasonable notice.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 3 -->
+  <div class="policy-section" id="t3">
+    <div class="section-num">03</div>
+    <h2 class="section-title" data-en="Account registration" data-es="Registro de cuenta">Account registration</h2>
+    <div class="section-body">
+      <p data-en="To use WeUp you must create an account. You agree to:" data-es="Para usar WeUp debes crear una cuenta. Aceptas:">To use WeUp you must create an account. You agree to:</p>
+      <ul class="policy-list">
+        <li data-en="Provide accurate, current, and complete information during registration" data-es="Proporcionar información precisa, actual y completa durante el registro">Provide accurate, current, and complete information during registration</li>
+        <li data-en="Maintain and update your account information as needed" data-es="Mantener y actualizar tu información de cuenta según sea necesario">Maintain and update your account information as needed</li>
+        <li data-en="Keep your password secure and confidential" data-es="Mantener tu contraseña segura y confidencial">Keep your password secure and confidential</li>
+        <li data-en="Not share your account with any other person" data-es="No compartir tu cuenta con ninguna otra persona">Not share your account with any other person</li>
+        <li data-en="Notify us immediately of any unauthorized access at legal@weup.app" data-es="Notificarnos inmediatamente de cualquier acceso no autorizado en legal@weup.app">Notify us immediately of any unauthorized access at legal@weup.app</li>
+      </ul>
+      <p style="margin-top:14px" data-en="You are responsible for all activity that occurs under your account. WeUp will not be liable for any loss resulting from unauthorized use of your account." data-es="Eres responsable de toda la actividad que ocurra bajo tu cuenta. WeUp no será responsable por ninguna pérdida derivada del uso no autorizado de tu cuenta.">You are responsible for all activity that occurs under your account. WeUp will not be liable for any loss resulting from unauthorized use of your account.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 4 -->
+  <div class="policy-section" id="t4">
+    <div class="section-num">04</div>
+    <h2 class="section-title" data-en="Subscription & payments" data-es="Suscripción y pagos">Subscription & payments</h2>
+    <div class="section-body">
+      <p data-en="WeUp offers the following plans:" data-es="WeUp ofrece los siguientes planes:">WeUp offers the following plans:</p>
+
+      <table class="plan-table">
+        <thead>
+          <tr>
+            <th data-en="Plan" data-es="Plan">Plan</th>
+            <th data-en="Price" data-es="Precio">Price</th>
+            <th data-en="Features" data-es="Funciones">Features</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Free</td>
+            <td data-en="$0 forever" data-es="$0 siempre">$0 forever</td>
+            <td data-en="1 account, 30 transactions/month, basic reports" data-es="1 cuenta, 30 transacciones/mes, reportes básicos">1 account, 30 transactions/month, basic reports</td>
+          </tr>
+          <tr>
+            <td>Pro</td>
+            <td data-en="$4.99/month or $39/year" data-es="$4.99/mes o $39/año">$4.99/month or $39/year</td>
+            <td data-en="Unlimited everything, AI insights, bank sync, advanced reports" data-es="Todo ilimitado, insights IA, sincronización bancaria, reportes avanzados">Unlimited everything, AI insights, bank sync, advanced reports</td>
+          </tr>
+          <tr>
+            <td>Family</td>
+            <td data-en="$9.99/month or $79/year" data-es="$9.99/mes o $79/año">$9.99/month or $79/year</td>
+            <td data-en="Everything in Pro, up to 5 members, shared household budget" data-es="Todo en Pro, hasta 5 miembros, presupuesto familiar compartido">Everything in Pro, up to 5 members, shared household budget</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:16px"><strong data-en="Billing:" data-es="Facturación:">Billing:</strong> <span data-en="Subscriptions are billed automatically at the start of each billing period. All prices are in USD unless otherwise stated." data-es="Las suscripciones se facturan automáticamente al inicio de cada período de facturación. Todos los precios son en USD salvo que se indique lo contrario.">Subscriptions are billed automatically at the start of each billing period. All prices are in USD unless otherwise stated.</span></p>
+
+      <p><strong data-en="Free trial:" data-es="Prueba gratuita:">Free trial:</strong> <span data-en="Pro plan includes a 14-day free trial. No credit card required. You will only be charged if you choose to continue after the trial." data-es="El plan Pro incluye una prueba gratuita de 14 días. No se requiere tarjeta de crédito. Solo se te cobrará si decides continuar después de la prueba.">Pro plan includes a 14-day free trial. No credit card required. You will only be charged if you choose to continue after the trial.</span></p>
+
+      <p><strong data-en="Cancellation:" data-es="Cancelación:">Cancellation:</strong> <span data-en="You may cancel your subscription at any time from Settings. Your access continues until the end of the current billing period. No refunds for partial periods." data-es="Puedes cancelar tu suscripción en cualquier momento desde Ajustes. Tu acceso continúa hasta el final del período de facturación actual. Sin reembolsos por períodos parciales.">You may cancel your subscription at any time from Settings. Your access continues until the end of the current billing period. No refunds for partial periods.</span></p>
+
+      <p><strong data-en="Refunds:" data-es="Reembolsos:">Refunds:</strong> <span data-en="If you experience a technical issue caused by WeUp that prevents you from using the service, contact us within 7 days for a full refund consideration." data-es="Si experimentas un problema técnico causado por WeUp que te impide usar el servicio, contáctanos dentro de 7 días para una consideración de reembolso completo.">If you experience a technical issue caused by WeUp that prevents you from using the service, contact us within 7 days for a full refund consideration.</span></p>
+
+      <div class="highlight">
+        <p data-en="Price changes will be communicated at least 30 days in advance via email. Your continued use of the service after the price change constitutes acceptance." data-es="Los cambios de precio se comunicarán con al menos 30 días de anticipación por email. El uso continuado del servicio después del cambio de precio constituye aceptación.">Price changes will be communicated at least 30 days in advance via email. Your continued use of the service after the price change constitutes acceptance.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 5 -->
+  <div class="policy-section" id="t5">
+    <div class="section-num">05</div>
+    <h2 class="section-title" data-en="Acceptable use" data-es="Uso aceptable">Acceptable use</h2>
+    <div class="section-body">
+      <p data-en="You agree to use WeUp only for lawful purposes. You must NOT:" data-es="Aceptas usar WeUp solo para propósitos legales. NO debes:">You agree to use WeUp only for lawful purposes. You must NOT:</p>
+      <ul class="policy-list">
+        <li class="no" data-en="Use the service for money laundering or any illegal financial activity" data-es="Usar el servicio para lavado de dinero o cualquier actividad financiera ilegal">Use the service for money laundering or any illegal financial activity</li>
+        <li class="no" data-en="Attempt to gain unauthorized access to any part of the Service" data-es="Intentar obtener acceso no autorizado a cualquier parte del Servicio">Attempt to gain unauthorized access to any part of the Service</li>
+        <li class="no" data-en="Reverse engineer, decompile, or disassemble the Service" data-es="Realizar ingeniería inversa, descompilar o desensamblar el Servicio">Reverse engineer, decompile, or disassemble the Service</li>
+        <li class="no" data-en="Use automated bots or scrapers to extract data from WeUp" data-es="Usar bots automatizados o scrapers para extraer datos de WeUp">Use automated bots or scrapers to extract data from WeUp</li>
+        <li class="no" data-en="Upload malicious code, viruses, or any harmful content" data-es="Subir código malicioso, virus o cualquier contenido dañino">Upload malicious code, viruses, or any harmful content</li>
+        <li class="no" data-en="Impersonate another person or create accounts under false identities" data-es="Suplantar a otra persona o crear cuentas bajo identidades falsas">Impersonate another person or create accounts under false identities</li>
+        <li class="no" data-en="Resell or commercially exploit the Service without written permission" data-es="Revender o explotar comercialmente el Servicio sin permiso escrito">Resell or commercially exploit the Service without written permission</li>
+      </ul>
+      <p style="margin-top:14px" data-en="Violation of this section may result in immediate account suspension or termination without refund." data-es="La violación de esta sección puede resultar en suspensión o terminación inmediata de la cuenta sin reembolso.">Violation of this section may result in immediate account suspension or termination without refund.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 6 -->
+  <div class="policy-section" id="t6">
+    <div class="section-num">06</div>
+    <h2 class="section-title" data-en="Financial disclaimer" data-es="Descargo financiero">Financial disclaimer</h2>
+    <div class="section-body">
+      <div class="highlight-warn">
+        <p><strong data-en="WeUp is NOT a financial advisor." data-es="WeUp NO es un asesor financiero.">WeUp is NOT a financial advisor.</strong> <span data-en="The AI insights, reports, and suggestions provided by WeUp are for informational and educational purposes only. They do not constitute financial, investment, tax, or legal advice." data-es="Los insights de IA, reportes y sugerencias proporcionados por WeUp son solo para propósitos informativos y educativos. No constituyen asesoría financiera, de inversión, fiscal ni legal.">The AI insights, reports, and suggestions provided by WeUp are for informational and educational purposes only. They do not constitute financial, investment, tax, or legal advice.</span></p>
+      </div>
+      <p data-en="You should always consult a qualified financial professional before making significant financial decisions. WeUp is not responsible for any financial decisions you make based on information provided by the Service." data-es="Siempre debes consultar a un profesional financiero calificado antes de tomar decisiones financieras importantes. WeUp no es responsable de ninguna decisión financiera que tomes basada en la información proporcionada por el Servicio.">You should always consult a qualified financial professional before making significant financial decisions. WeUp is not responsible for any financial decisions you make based on information provided by the Service.</p>
+      <p data-en="The accuracy of your financial data depends entirely on the information you enter. WeUp does not verify the accuracy of manually entered transactions." data-es="La precisión de tus datos financieros depende completamente de la información que ingresas. WeUp no verifica la precisión de las transacciones ingresadas manualmente.">The accuracy of your financial data depends entirely on the information you enter. WeUp does not verify the accuracy of manually entered transactions.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 7 -->
+  <div class="policy-section" id="t7">
+    <div class="section-num">07</div>
+    <h2 class="section-title" data-en="Intellectual property" data-es="Propiedad intelectual">Intellectual property</h2>
+    <div class="section-body">
+      <p data-en="All content, features, and functionality of the WeUp Service — including but not limited to the design, text, graphics, logos, AI models, and code — are owned by WeUp and protected by applicable intellectual property laws." data-es="Todo el contenido, funciones y funcionalidades del Servicio WeUp — incluyendo pero no limitado al diseño, texto, gráficos, logotipos, modelos de IA y código — son propiedad de WeUp y están protegidos por las leyes de propiedad intelectual aplicables.">All content, features, and functionality of the WeUp Service — including but not limited to the design, text, graphics, logos, AI models, and code — are owned by WeUp and protected by applicable intellectual property laws.</p>
+      <p data-en="You retain full ownership of all financial data you enter into WeUp. By using the Service, you grant WeUp a limited license to process your data solely to provide the Service to you." data-es="Conservas la propiedad total de todos los datos financieros que ingresas en WeUp. Al usar el Servicio, otorgas a WeUp una licencia limitada para procesar tus datos únicamente para prestarte el Servicio.">You retain full ownership of all financial data you enter into WeUp. By using the Service, you grant WeUp a limited license to process your data solely to provide the Service to you.</p>
+      <p data-en="You may not copy, modify, distribute, sell, or lease any part of our Service without prior written permission from WeUp." data-es="No puedes copiar, modificar, distribuir, vender ni arrendar ninguna parte de nuestro Servicio sin permiso previo por escrito de WeUp.">You may not copy, modify, distribute, sell, or lease any part of our Service without prior written permission from WeUp.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 8 -->
+  <div class="policy-section" id="t8">
+    <div class="section-num">08</div>
+    <h2 class="section-title" data-en="Limitation of liability" data-es="Limitación de responsabilidad">Limitation of liability</h2>
+    <div class="section-body">
+      <p data-en="To the maximum extent permitted by law, WeUp and its officers, directors, employees, and agents shall not be liable for:" data-es="En la máxima medida permitida por la ley, WeUp y sus directivos, directores, empleados y agentes no serán responsables por:">To the maximum extent permitted by law, WeUp and its officers, directors, employees, and agents shall not be liable for:</p>
+      <ul class="policy-list">
+        <li class="bullet" data-en="Any indirect, incidental, special, or consequential damages" data-es="Cualquier daño indirecto, incidental, especial o consecuente">Any indirect, incidental, special, or consequential damages</li>
+        <li class="bullet" data-en="Loss of profits, data, goodwill, or other intangible losses" data-es="Pérdida de ganancias, datos, buena voluntad u otras pérdidas intangibles">Loss of profits, data, goodwill, or other intangible losses</li>
+        <li class="bullet" data-en="Financial decisions made based on WeUp insights or reports" data-es="Decisiones financieras tomadas basadas en insights o reportes de WeUp">Financial decisions made based on WeUp insights or reports</li>
+        <li class="bullet" data-en="Service interruptions, bugs, or errors in the platform" data-es="Interrupciones del servicio, errores o fallos en la plataforma">Service interruptions, bugs, or errors in the platform</li>
+        <li class="bullet" data-en="Unauthorized access to your account by third parties" data-es="Acceso no autorizado a tu cuenta por terceros">Unauthorized access to your account by third parties</li>
+      </ul>
+      <p style="margin-top:14px" data-en="Our total liability to you for any claim arising from these Terms or your use of the Service shall not exceed the amount you paid to WeUp in the 12 months preceding the claim." data-es="Nuestra responsabilidad total ante ti por cualquier reclamación derivada de estos Términos o tu uso del Servicio no excederá el monto que pagaste a WeUp en los 12 meses anteriores a la reclamación.">Our total liability to you for any claim arising from these Terms or your use of the Service shall not exceed the amount you paid to WeUp in the 12 months preceding the claim.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 9 -->
+  <div class="policy-section" id="t9">
+    <div class="section-num">09</div>
+    <h2 class="section-title" data-en="Termination" data-es="Terminación">Termination</h2>
+    <div class="section-body">
+      <p><strong data-en="By you:" data-es="Por ti:">By you:</strong> <span data-en="You may delete your account at any time from Settings → Danger Zone. Upon deletion, all your data will be permanently removed within 30 days." data-es="Puedes eliminar tu cuenta en cualquier momento desde Ajustes → Zona de peligro. Tras la eliminación, todos tus datos se eliminarán permanentemente dentro de 30 días.">You may delete your account at any time from Settings → Danger Zone. Upon deletion, all your data will be permanently removed within 30 days.</span></p>
+      <p><strong data-en="By WeUp:" data-es="Por WeUp:">By WeUp:</strong> <span data-en="We may suspend or terminate your account immediately if you violate these Terms, engage in fraudulent activity, or if required by law. We will notify you by email when possible." data-es="Podemos suspender o terminar tu cuenta de inmediato si violas estos Términos, participas en actividad fraudulenta, o si la ley lo requiere. Te notificaremos por email cuando sea posible.">We may suspend or terminate your account immediately if you violate these Terms, engage in fraudulent activity, or if required by law. We will notify you by email when possible.</span></p>
+      <p data-en="Upon termination, your right to use the Service ceases immediately. All provisions of these Terms that by their nature should survive termination shall survive." data-es="Tras la terminación, tu derecho a usar el Servicio cesa de inmediato. Todas las disposiciones de estos Términos que por su naturaleza deben sobrevivir a la terminación, sobrevivirán.">Upon termination, your right to use the Service ceases immediately. All provisions of these Terms that by their nature should survive termination shall survive.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 10 -->
+  <div class="policy-section" id="t10">
+    <div class="section-num">10</div>
+    <h2 class="section-title" data-en="Governing law" data-es="Ley aplicable">Governing law</h2>
+    <div class="section-body">
+      <p data-en="These Terms shall be governed by and construed in accordance with the laws of the Republic of Colombia, without regard to its conflict of law provisions." data-es="Estos Términos se regirán e interpretarán de acuerdo con las leyes de la República de Colombia, sin tener en cuenta sus disposiciones sobre conflictos de leyes.">These Terms shall be governed by and construed in accordance with the laws of the Republic of Colombia, without regard to its conflict of law provisions.</p>
+      <p data-en="For users in Mexico, to the extent required by local law, Mexican consumer protection regulations (Ley Federal de Protección al Consumidor) also apply." data-es="Para usuarios en México, en la medida requerida por la ley local, también aplican las regulaciones mexicanas de protección al consumidor (Ley Federal de Protección al Consumidor).">For users in Mexico, to the extent required by local law, Mexican consumer protection regulations (Ley Federal de Protección al Consumidor) also apply.</p>
+      <p data-en="Any disputes arising from these Terms shall first be attempted to be resolved through good-faith negotiation. If unresolved within 30 days, disputes shall be submitted to binding arbitration in Bogotá, Colombia." data-es="Cualquier disputa derivada de estos Términos se intentará resolver primero mediante negociación de buena fe. Si no se resuelve en 30 días, las disputas se someterán a arbitraje vinculante en Bogotá, Colombia.">Any disputes arising from these Terms shall first be attempted to be resolved through good-faith negotiation. If unresolved within 30 days, disputes shall be submitted to binding arbitration in Bogotá, Colombia.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 11 -->
+  <div class="policy-section" id="t11">
+    <div class="section-num">11</div>
+    <h2 class="section-title" data-en="Contact" data-es="Contacto">Contact</h2>
+    <div class="section-body">
+      <p data-en="If you have any questions about these Terms, please contact us:" data-es="Si tienes preguntas sobre estos Términos, contáctanos:">If you have any questions about these Terms, please contact us:</p>
+    </div>
+    <div class="contact-card">
+      <h3 data-en="Questions about these terms?" data-es="¿Preguntas sobre estos términos?">Questions about these terms?</h3>
+      <p data-en="Our team is happy to clarify anything in plain language. We respond within 5 business days." data-es="Nuestro equipo está feliz de aclarar cualquier cosa en lenguaje sencillo. Respondemos dentro de 5 días hábiles.">Our team is happy to clarify anything in plain language. We respond within 5 business days.</p>
+      <a href="mailto:legal@weup.app">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+        legal@weup.app
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="policy-footer">
+    <div class="footer-logo"><span class="dot"></span>WeUp</div>
+    <div class="footer-links">
+      <a href="/" data-en="Home" data-es="Inicio">Home</a>
+      <a href="/privacy.html" data-en="Privacy Policy" data-es="Política de Privacidad">Privacy Policy</a>
+      <a href="/terms.html" data-en="Terms & Conditions" data-es="Términos y Condiciones">Terms & Conditions</a>
+      <a href="/#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+    </div>
+    <p class="footer-copy">© 2026 WeUp. <span data-en="All rights reserved." data-es="Todos los derechos reservados.">All rights reserved.</span></p>
+  </div>
+
+</div>
+
+<script>
+let currentLang = 'en';
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.nav-lang button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.nav-lang button:${lang==='en'?'first-child':'last-child'}`).classList.add('active');
+  document.querySelectorAll('[data-'+lang+']').forEach(el => {
+    const val = el.getAttribute('data-'+lang);
+    if (val.includes('<em>') || val.includes('<br>')) el.innerHTML = val;
+    else el.textContent = val;
+  });
+  document.documentElement.lang = lang;
+}
+const lang = navigator.language?.startsWith('es') ? 'es' : 'en';
+setLang(lang);
+</script>
+</body>
+</html>

@@ -1143,7 +1143,8 @@ nav{
         <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
         <a href="#about" data-en="About" data-es="Nosotros">About</a>
         <a href="/privacy.html" data-en="Privacy Policy" data-es="Política de Privacidad">Privacy Policy</a>
-        <a href="mailto:privacy@weup.app" data-en="Contact" data-es="Contacto">Contact</a>
+        <a href="/terms.html" data-en="Terms & Conditions" data-es="Términos y Condiciones">Terms & Conditions</a>
+        <a href="mailto:legal@weup.app" data-en="Contact" data-es="Contacto">Contact</a>
       </div>
       <p class="footer-copy">© 2026 WeUp. <span data-en="Made with ♥ for Latin America." data-es="Hecho con ♥ para América Latina.">Made with ♥ for Latin America.</span></p>
     </div>
@@ -1250,7 +1251,7 @@ nav{
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function toggleMenu() {
   const menu = document.getElementById('mobile-menu');
   const btn  = document.getElementById('hamburger');
@@ -1542,9 +1543,4 @@ function checkPwStrength(val) {
   if (/[A-Z]/.test(val)) score++;
   if (/[0-9]/.test(val)) score++;
   if (/[^A-Za-z0-9]/.test(val)) score++;
-  const cls = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
-  for (let i = 0; i < score; i++) bars[i].classList.add(cls);
-}
-</script>
-</body>
-</html>
+  const cls =
