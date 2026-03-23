@@ -810,7 +810,7 @@ nav{
         <button onclick="setLang('es')">ES</button>
       </div>
     </div>
-    <a href="#" class="nav-cta" onclick="openModal('login');return false;"
+    <a href="#" class="nav-cta" onclick="event.preventDefault();openModal('login')"
        data-en="Sign in" data-es="Ingresar">Sign in</a>
     <!-- Hamburger -->
     <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
@@ -827,8 +827,8 @@ nav{
       <button class="active" id="mob-en" onclick="setLang('en');document.getElementById('mob-en').classList.add('active');document.getElementById('mob-es').classList.remove('active')">EN</button>
       <button id="mob-es" onclick="setLang('es');document.getElementById('mob-es').classList.add('active');document.getElementById('mob-en').classList.remove('active')">ES</button>
     </div>
-    <a href="#" class="mobile-menu-cta" onclick="openModal('signup');closeMenu();return false;" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
-    <a href="#" class="mobile-menu-cta" style="background:transparent;border:0.5px solid var(--w20);margin-top:8px" onclick="openModal('login');closeMenu();return false;" data-en="Sign in" data-es="Ingresar">Sign in</a>
+    <a href="#" class="mobile-menu-cta" onclick="event.preventDefault();openModal('signup');closeMenu()" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
+    <a href="#" class="mobile-menu-cta" style="background:transparent;border:0.5px solid var(--w20);margin-top:8px" onclick="event.preventDefault();openModal('login');closeMenu()" data-en="Sign in" data-es="Ingresar">Sign in</a>
   </div>
 
   <!-- Hero -->
@@ -854,13 +854,13 @@ nav{
       </p>
 
       <div class="hero-actions">
-        <a href="#" class="btn-primary" onclick="openModal('signup');return false;">
+        <a href="#" class="btn-primary" onclick="event.preventDefault();openModal('signup')">
           <span data-en="Get started free" data-es="Comenzar gratis">Get started free</span>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
-        <a href="#" class="btn-ghost" onclick="openModal('login');return false;">
+        <a href="#" class="btn-ghost" onclick="event.preventDefault();openModal('login')">
           <span data-en="Sign in" data-es="Ingresar">Sign in</span>
         </a>
       </div>
@@ -1194,7 +1194,7 @@ nav{
       </form>
       <div class="modal-footer">
         <span data-en="Don't have an account?" data-es="¿No tienes cuenta?">Don't have an account?</span>
-        <a href="#" onclick="switchTab('signup');return false;"
+        <a href="#" onclick="event.preventDefault();switchTab('signup')"
            data-en=" Create one free" data-es=" Crear una gratis"> Create one free</a>
       </div>
     </div>
@@ -1243,7 +1243,7 @@ nav{
       </form>
       <div class="modal-footer">
         <span data-en="Already have an account?" data-es="¿Ya tienes cuenta?">Already have an account?</span>
-        <a href="#" onclick="switchTab('login');return false;"
+        <a href="#" onclick="event.preventDefault();switchTab('login')"
            data-en=" Sign in" data-es=" Ingresar"> Sign in</a>
       </div>
     </div>
@@ -1265,36 +1265,47 @@ function closeMenu() {
   document.body.style.overflow = '';
 }
 
-// ── Plan intent ───────────────────────────────────────────────────────────────
-async function selectPlanIntent(plan, el) {
-  if (el) el.preventDefault();
+// ── All variables & Supabase first ────────────────────────────────────────────
+let currentLang = 'en';
+let isYearly = false;
+const proMonthly = { en:'$4.99', es:'$4.99' };
+const proYearly  = { en:'$3.24', es:'$3.24' };
+const famMonthly = { en:'$9.99', es:'$9.99' };
+const famYearly  = { en:'$6.49', es:'$6.49' };
+const periodMonth= { en:'/month', es:'/mes' };
+const periodYear = { en:'/month, billed yearly', es:'/mes, cobrado anual' };
+const translations = {
+  'modal-sub-login':  { en: 'Welcome back', es: 'Bienvenido de nuevo' },
+  'modal-sub-signup': { en: 'Join WeUp for free', es: 'Únete a WeUp gratis' },
+};
 
+const SUPABASE_URL = 'https://tnkydfulsrzihlohchhc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Plan intent ───────────────────────────────────────────────────────────────
+async function selectPlanIntent(plan, ev) {
+  if (ev) ev.preventDefault();
   sessionStorage.setItem('weup_plan_intent', plan);
 
-  const { data: { session } } = await sb.auth.getSession();
+  let session = null;
+  try {
+    const { data } = await sb.auth.getSession();
+    session = data?.session;
+  } catch(e) {}
+
   if (session) {
-    if (plan === 'free') {
-      window.location.href = '/dashboard.html';
-    } else {
-      window.location.href = '/upgrade.html?plan=' + plan;
-    }
+    window.location.href = plan === 'free' ? '/dashboard.html' : '/upgrade.html?plan=' + plan;
     return;
   }
 
-  // Update modal subtitle to reflect the plan
+  // Update modal subtitle
   const sub = document.getElementById('modal-sub');
-  if (plan === 'pro') {
-    sub.textContent = currentLang === 'es'
-      ? '🚀 Crea tu cuenta para activar Pro'
-      : '🚀 Create your account to activate Pro';
-  } else if (plan === 'family') {
-    sub.textContent = currentLang === 'es'
-      ? '👨‍👩‍👧 Crea tu cuenta para activar Family'
-      : '👨‍👩‍👧 Create your account to activate Family';
-  } else {
-    sub.textContent = currentLang === 'es'
-      ? 'Únete a WeUp gratis'
-      : 'Join WeUp for free';
+  if (sub) {
+    if (plan === 'pro') sub.textContent = currentLang === 'es' ? '🚀 Crea tu cuenta para activar Pro' : '🚀 Create your account to activate Pro';
+    else if (plan === 'family') sub.textContent = currentLang === 'es' ? '👨‍👩‍👧 Crea tu cuenta para activar Family' : '👨‍👩‍👧 Create your account to activate Family';
+    else sub.textContent = currentLang === 'es' ? 'Únete a WeUp gratis' : 'Join WeUp for free';
   }
 
   openModal('signup');
@@ -1304,19 +1315,10 @@ function getRedirectAfterAuth() {
   const plan = sessionStorage.getItem('weup_plan_intent');
   sessionStorage.removeItem('weup_plan_intent');
   if (plan && plan !== 'free') return '/upgrade.html?plan=' + plan;
-  return null; // will go to onboarding or dashboard as normal
+  return null;
 }
 
-let currentLang = 'en';
-let isYearly = false;
-
-const proMonthly = { en:'$4.99', es:'$4.99' };
-const proYearly  = { en:'$3.24', es:'$3.24' };
-const famMonthly = { en:'$9.99', es:'$9.99' };
-const famYearly  = { en:'$6.49', es:'$6.49' };
-const periodMonth= { en:'/month', es:'/mes' };
-const periodYear = { en:'/month, billed yearly', es:'/mes, cobrado anual' };
-
+// ── Pricing toggle ────────────────────────────────────────────────────────────
 function togglePricing() {
   isYearly = !isYearly;
   const sw = document.getElementById('pricing-toggle');
@@ -1326,11 +1328,8 @@ function togglePricing() {
   document.getElementById('pro-period').textContent = isYearly ? periodYear[currentLang] : periodMonth[currentLang];
   document.getElementById('fam-period').textContent = isYearly ? periodYear[currentLang] : periodMonth[currentLang];
 }
-const translations = {
-  'modal-sub-login':  { en: 'Welcome back', es: 'Bienvenido de nuevo' },
-  'modal-sub-signup': { en: 'Join WeUp for free', es: 'Únete a WeUp gratis' },
-};
 
+// ── Language ──────────────────────────────────────────────────────────────────
 function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.nav-lang button').forEach(b => b.classList.remove('active'));
@@ -1355,6 +1354,7 @@ function setLang(lang) {
   document.getElementById('ph-inc').textContent = ph.inc;
 }
 
+// ── Modal ─────────────────────────────────────────────────────────────────────
 function openModal(tab = 'login') {
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1378,12 +1378,6 @@ function switchTab(tab) {
     tab === 'login' ? translations['modal-sub-login'][currentLang]
                     : translations['modal-sub-signup'][currentLang];
 }
-
-// ── Supabase client ──────────────────────────────────────────────────────────
-const SUPABASE_URL  = 'https://tnkydfulsrzihlohchhc.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── Auth helpers ──────────────────────────────────────────────────────────────
 function showAuthError(msg) {
