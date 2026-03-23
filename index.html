@@ -1089,7 +1089,7 @@ nav{
             <li class="feat-off" data-en="Bank sync" data-es="Sincronización bancaria">Bank sync</li>
             <li class="feat-off" data-en="Savings goals" data-es="Metas de ahorro">Savings goals</li>
           </ul>
-          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="selectPlanIntent('free');return false;" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
+          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="selectPlanIntent('free',event)" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
         </div>
 
         <!-- Pro -->
@@ -1107,7 +1107,7 @@ nav{
             <li data-en="Advanced visual reports" data-es="Reportes visuales avanzados">Advanced visual reports</li>
             <li data-en="Priority support" data-es="Soporte prioritario">Priority support</li>
           </ul>
-          <a href="#" class="pricing-cta" onclick="selectPlanIntent('pro');return false;" data-en="Start Pro free 14 days" data-es="Empieza Pro gratis 14 días">Start Pro free 14 days</a>
+          <a href="#" class="pricing-cta" onclick="selectPlanIntent('pro',event)" data-en="Start Pro free 14 days" data-es="Empieza Pro gratis 14 días">Start Pro free 14 days</a>
         </div>
 
         <!-- Family -->
@@ -1124,7 +1124,7 @@ nav{
             <li data-en="Dedicated support" data-es="Soporte dedicado">Dedicated support</li>
             <li class="feat-off" data-en="Business features" data-es="Funciones empresariales">Business features</li>
           </ul>
-          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="selectPlanIntent('family');return false;" data-en="Start free 14 days" data-es="Empieza gratis 14 días">Start free 14 days</a>
+          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="selectPlanIntent('family',event)" data-en="Start free 14 days" data-es="Empieza gratis 14 días">Start free 14 days</a>
         </div>
 
       </div>
@@ -1266,14 +1266,13 @@ function closeMenu() {
 }
 
 // ── Plan intent ───────────────────────────────────────────────────────────────
-async function selectPlanIntent(plan) {
-  // Store the plan they clicked
+async function selectPlanIntent(plan, el) {
+  if (el) el.preventDefault();
+
   sessionStorage.setItem('weup_plan_intent', plan);
 
-  // Check if already logged in
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
-    // Already logged in — go straight to upgrade page
     if (plan === 'free') {
       window.location.href = '/dashboard.html';
     } else {
@@ -1282,7 +1281,22 @@ async function selectPlanIntent(plan) {
     return;
   }
 
-  // Not logged in — open signup modal
+  // Update modal subtitle to reflect the plan
+  const sub = document.getElementById('modal-sub');
+  if (plan === 'pro') {
+    sub.textContent = currentLang === 'es'
+      ? '🚀 Crea tu cuenta para activar Pro'
+      : '🚀 Create your account to activate Pro';
+  } else if (plan === 'family') {
+    sub.textContent = currentLang === 'es'
+      ? '👨‍👩‍👧 Crea tu cuenta para activar Family'
+      : '👨‍👩‍👧 Create your account to activate Family';
+  } else {
+    sub.textContent = currentLang === 'es'
+      ? 'Únete a WeUp gratis'
+      : 'Join WeUp for free';
+  }
+
   openModal('signup');
 }
 
