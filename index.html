@@ -1089,7 +1089,7 @@ nav{
             <li class="feat-off" data-en="Bank sync" data-es="Sincronización bancaria">Bank sync</li>
             <li class="feat-off" data-en="Savings goals" data-es="Metas de ahorro">Savings goals</li>
           </ul>
-          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="openModal('signup');return false;" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
+          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="selectPlanIntent('free');return false;" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
         </div>
 
         <!-- Pro -->
@@ -1107,7 +1107,7 @@ nav{
             <li data-en="Advanced visual reports" data-es="Reportes visuales avanzados">Advanced visual reports</li>
             <li data-en="Priority support" data-es="Soporte prioritario">Priority support</li>
           </ul>
-          <a href="#" class="pricing-cta" onclick="openModal('signup');return false;" data-en="Start Pro free 14 days" data-es="Empieza Pro gratis 14 días">Start Pro free 14 days</a>
+          <a href="#" class="pricing-cta" onclick="selectPlanIntent('pro');return false;" data-en="Start Pro free 14 days" data-es="Empieza Pro gratis 14 días">Start Pro free 14 days</a>
         </div>
 
         <!-- Family -->
@@ -1124,7 +1124,7 @@ nav{
             <li data-en="Dedicated support" data-es="Soporte dedicado">Dedicated support</li>
             <li class="feat-off" data-en="Business features" data-es="Funciones empresariales">Business features</li>
           </ul>
-          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="openModal('signup');return false;" data-en="Start free 14 days" data-es="Empieza gratis 14 días">Start free 14 days</a>
+          <a href="#" class="pricing-cta pricing-cta-ghost" onclick="selectPlanIntent('family');return false;" data-en="Start free 14 days" data-es="Empieza gratis 14 días">Start free 14 days</a>
         </div>
 
       </div>
@@ -1144,7 +1144,7 @@ nav{
         <a href="#about" data-en="About" data-es="Nosotros">About</a>
         <a href="/privacy.html" data-en="Privacy Policy" data-es="Política de Privacidad">Privacy Policy</a>
         <a href="/terms.html" data-en="Terms & Conditions" data-es="Términos y Condiciones">Terms & Conditions</a>
-        <a href="mailto:legal@weup.app" data-en="Contact" data-es="Contacto">Contact</a>
+        <a href="/cdn-cgi/l/email-protection#9bf7fefcfaf7dbecfeeeebb5faebeb" data-en="Contact" data-es="Contacto">Contact</a>
       </div>
       <p class="footer-copy">© 2026 WeUp. <span data-en="Made with ♥ for Latin America." data-es="Hecho con ♥ para América Latina.">Made with ♥ for Latin America.</span></p>
     </div>
@@ -1251,7 +1251,7 @@ nav{
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function toggleMenu() {
   const menu = document.getElementById('mobile-menu');
   const btn  = document.getElementById('hamburger');
@@ -1263,6 +1263,34 @@ function closeMenu() {
   document.getElementById('mobile-menu').classList.remove('open');
   document.getElementById('hamburger').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+// ── Plan intent ───────────────────────────────────────────────────────────────
+async function selectPlanIntent(plan) {
+  // Store the plan they clicked
+  sessionStorage.setItem('weup_plan_intent', plan);
+
+  // Check if already logged in
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    // Already logged in — go straight to upgrade page
+    if (plan === 'free') {
+      window.location.href = '/dashboard.html';
+    } else {
+      window.location.href = '/upgrade.html?plan=' + plan;
+    }
+    return;
+  }
+
+  // Not logged in — open signup modal
+  openModal('signup');
+}
+
+function getRedirectAfterAuth() {
+  const plan = sessionStorage.getItem('weup_plan_intent');
+  sessionStorage.removeItem('weup_plan_intent');
+  if (plan && plan !== 'free') return '/upgrade.html?plan=' + plan;
+  return null; // will go to onboarding or dashboard as normal
 }
 
 let currentLang = 'en';
@@ -1404,11 +1432,12 @@ async function handleLogin(e) {
     setBtnLoading('login-btn', false, currentLang === 'es' ? '✓ ¡Bienvenido!' : '✓ Welcome back!');
     setTimeout(async () => {
       closeModal();
-      // Check if onboarding done
+      const planRedirect = getRedirectAfterAuth();
+      if (planRedirect) { window.location.href = planRedirect; return; }
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
         const { data: profile } = await sb.from('profiles').select('lang').eq('id', session.user.id).single();
-        window.location.href = profile?.lang === 'done' ? '/dashboard.html' : '/onboarding.html';
+        window.location.href = profile?.lang === 'done' || profile?.lang?.startsWith('pro') ? '/dashboard.html' : '/onboarding.html';
       }
     }, 800);
   }
@@ -1487,10 +1516,13 @@ window.addEventListener('DOMContentLoaded', async () => {
                 || session.user?.user_metadata?.name?.split(' ')[0]
                 || session.user.email.split('@')[0];
       updateNavForUser(name);
+      // Check plan intent first
+      const planRedirect = getRedirectAfterAuth();
+      if (planRedirect) { setTimeout(() => { window.location.href = planRedirect; }, 500); return; }
       // Check onboarding
       const { data: profile } = await sb.from('profiles').select('lang').eq('id', session.user.id).single();
       setTimeout(() => {
-        window.location.href = profile?.lang === 'done' ? '/dashboard.html' : '/onboarding.html';
+        window.location.href = profile?.lang === 'done' || profile?.lang?.startsWith('pro') ? '/dashboard.html' : '/onboarding.html';
       }, 800);
     }
     return;
@@ -1539,8 +1571,4 @@ function checkPwStrength(val) {
   bars.forEach(b => { b.className = 'pw-bar'; });
   if (!val) return;
   let score = 0;
-  if (val.length >= 8) score++;
-  if (/[A-Z]/.test(val)) score++;
-  if (/[0-9]/.test(val)) score++;
-  if (/[^A-Za-z0-9]/.test(val)) score++;
-  const cls =
+  if (val

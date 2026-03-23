@@ -777,6 +777,19 @@ async function finishOnboarding() {
   goToStep(6);
   // Update progress to 100%
   document.getElementById('progress-fill').style.width = '100%';
+
+  // Check if user came from a plan intent
+  const planIntent = sessionStorage.getItem('weup_plan_intent');
+  if (planIntent && planIntent !== 'free') {
+    sessionStorage.removeItem('weup_plan_intent');
+    // Show completion briefly then redirect to upgrade
+    setTimeout(() => {
+      document.querySelector('#step-6 .btn-primary').textContent = 'Continue to payment →';
+      document.querySelector('#step-6 .btn-primary').onclick = () => {
+        window.location.href = '/upgrade.html?plan=' + planIntent;
+      };
+    }, 300);
+  }
 }
 
 async function skipOnboarding() {
