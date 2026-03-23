@@ -354,166 +354,13 @@ nav{
 .pw-bar.medium{background:#FBBF24}
 .pw-bar.strong{background:var(--light)}
 
-/* ══════════════════════════════════════════════
-   RESPONSIVE — Tablet (≤900px)
-══════════════════════════════════════════════ */
+/* ── Responsive ── */
 @media(max-width:900px){
-  nav{padding:14px 20px}
-  .nav-center{gap:20px}
-  .hero{grid-template-columns:1fr;padding:48px 24px 64px;gap:48px}
-  .hero-right{padding-bottom:80px;padding-right:40px}
+  nav{padding:16px 24px}
+  .hero{grid-template-columns:1fr;padding:48px 24px 64px;gap:56px}
+  .hero-right{padding-bottom:32px}
   .stats-strip{flex-wrap:wrap}
   .stat{min-width:140px;padding:20px 24px}
-  .section{padding:72px 32px}
-  .features-grid{grid-template-columns:repeat(2,1fr)}
-  .about-grid{grid-template-columns:1fr;gap:40px}
-  .pricing-grid{grid-template-columns:1fr;max-width:480px}
-  .footer{padding:40px 32px}
-}
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE — Mobile (≤640px)
-══════════════════════════════════════════════ */
-@media(max-width:640px){
-
-  /* ── Nav: logo left, hamburger or just CTA right ── */
-  nav{
-    padding:14px 20px;
-    flex-wrap:nowrap;
-    gap:0;
-  }
-  .nav-center{
-    display:none; /* hide nav links on mobile */
-  }
-  .nav-logo{font-size:22px}
-  .nav-right-mobile{
-    display:flex;align-items:center;gap:10px;
-  }
-  .nav-lang{padding:2px}
-  .nav-lang button{padding:3px 8px;font-size:11px}
-  .nav-cta{padding:8px 16px;font-size:13px}
-
-  /* ── Hero: single column, tighter ── */
-  .hero{
-    grid-template-columns:1fr;
-    padding:36px 20px 56px;
-    gap:40px;
-    text-align:center;
-  }
-  .hero-badge{font-size:10px;padding:5px 12px}
-  .hero-headline{
-    font-size:clamp(36px,10vw,52px);
-    margin-bottom:16px;
-  }
-  .hero-sub{
-    font-size:15px;
-    margin-bottom:28px;
-    max-width:100%;
-  }
-  .hero-actions{
-    flex-direction:column;
-    gap:10px;
-    align-items:stretch;
-  }
-  .btn-primary,.btn-ghost{
-    justify-content:center;
-    padding:15px 24px;
-    font-size:15px;
-    width:100%;
-  }
-  .hero-social{
-    justify-content:center;
-    margin-top:28px;
-  }
-
-  /* ── Phone mockup: centered, smaller ── */
-  .hero-right{
-    display:flex;justify-content:center;
-    padding-bottom:80px;
-    padding-right:0;
-  }
-  .phone-frame{width:240px}
-  .float-card{
-    bottom:-60px;
-    right:-20px;
-    width:160px;
-    height:100px;
-    padding:12px 14px;
-  }
-  .card-logo-text{font-size:12px}
-  .card-name{font-size:8px}
-
-  /* ── Stats: 2x2 grid ── */
-  .stats-strip{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-  }
-  .stat{
-    padding:20px 16px;
-    border-right:0.5px solid var(--w08);
-    border-bottom:0.5px solid var(--w08);
-  }
-  .stat:nth-child(2n){border-right:none}
-  .stat:nth-child(3),.stat:nth-child(4){border-bottom:none}
-  .stat-num{font-size:22px}
-  .stat-label{font-size:11px}
-
-  /* ── Sections ── */
-  .section{padding:56px 20px}
-  .section-title{font-size:clamp(26px,7vw,36px)}
-  .section-sub{font-size:15px}
-
-  /* ── Features: single column ── */
-  .features-grid{
-    grid-template-columns:1fr;
-    gap:12px;
-    margin-top:36px;
-  }
-  .feat-card{padding:20px}
-  .feat-icon{font-size:24px;margin-bottom:12px}
-  .feat-title{font-size:15px}
-
-  /* ── About ── */
-  .about-grid{gap:32px}
-  .about-stats{gap:24px}
-  .about-stat-num{font-size:28px}
-  .about-card{padding:20px}
-  .about-quote{font-size:14px}
-
-  /* ── Pricing ── */
-  .pricing-grid{
-    grid-template-columns:1fr;
-    max-width:100%;
-    gap:14px;
-  }
-  .pricing-card{padding:24px 20px}
-  .pricing-price{font-size:36px}
-  .pricing-toggle{margin:24px 0 32px}
-
-  /* ── Footer ── */
-  .footer{padding:40px 20px}
-  .footer-links{gap:16px}
-  .footer-links a{font-size:13px}
-
-  /* ── Modal: full-width, slides from bottom ── */
-  .modal-overlay{align-items:flex-end}
-  .modal{
-    border-radius:24px 24px 0 0;
-    padding:28px 20px 36px;
-    max-width:100%;
-  }
-}
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE — Small (≤380px)
-══════════════════════════════════════════════ */
-@media(max-width:380px){
-  .hero-headline{font-size:32px}
-  .hero{padding:28px 16px 48px}
-  .section{padding:48px 16px}
-  .phone-frame{width:210px}
-  .float-card{display:none} /* hide card on very small screens */
-  nav{padding:12px 16px}
 }
 
 /* ── Shared section styles ── */
@@ -653,141 +500,12 @@ nav{
 .footer-links a:hover{color:var(--light)}
 .footer-copy{font-size:12px;color:var(--w20)}
 
-/* ── Hamburger ── */
-.nav-hamburger{
-  display:none;flex-direction:column;gap:5px;
-  cursor:pointer;padding:4px;background:none;border:none;
-}
-.nav-hamburger span{
-  display:block;width:22px;height:2px;
-  background:var(--w80);border-radius:2px;
-  transition:all 0.3s;
-}
-.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.nav-hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
-.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-
-/* Mobile drawer */
-.mobile-menu{
-  display:none;
-  position:fixed;top:0;left:0;right:0;bottom:0;z-index:99;
-  background:var(--deep);
-  flex-direction:column;
-  padding:100px 32px 40px;
-  gap:8px;
-}
-.mobile-menu.open{display:flex}
-.mobile-menu a{
-  font-size:28px;font-family:var(--ff-d);color:var(--w80);
-  text-decoration:none;padding:12px 0;
-  border-bottom:0.5px solid var(--w08);
-  transition:color 0.2s;
-}
-.mobile-menu a:hover{color:var(--w)}
-.mobile-menu-lang{
-  display:flex;gap:8px;margin-top:16px;
-}
-.mobile-menu-lang button{
-  flex:1;padding:12px;border-radius:var(--r-sm);
-  background:var(--w06);border:0.5px solid var(--w20);
-  color:var(--w50);font-family:var(--ff-b);font-size:14px;
-  font-weight:600;cursor:pointer;letter-spacing:0.06em;transition:all 0.2s;
-}
-.mobile-menu-lang button.active{background:var(--w20);color:var(--w)}
-.mobile-menu-cta{
-  margin-top:24px;background:var(--accent);color:var(--w);
-  border:none;border-radius:var(--r-md);padding:16px;
-  font-family:var(--ff-b);font-size:16px;font-weight:600;
-  cursor:pointer;text-align:center;text-decoration:none;
-  display:block;
-}
-
-/* ══ Tablet (≤1024px) ══ */
-@media(max-width:1024px){
-  nav{padding:16px 32px}
-  .hero{padding:56px 32px 72px;gap:32px}
-  .section{padding:72px 32px}
-  .stats-strip .stat{padding:24px 32px}
-  .pricing-grid{grid-template-columns:1fr 1fr;gap:16px}
-  .pricing-card-featured{grid-column:1 / -1}
-  .footer{padding:40px 32px}
-}
-
-/* ══ Mobile (≤768px) ══ */
-@media(max-width:768px){
-
-  /* Nav */
-  nav{padding:14px 20px}
-  .nav-center{display:none}
-  .nav-cta{display:none}
-  .nav-hamburger{display:flex}
-
-  /* Hero — single column */
-  .hero{
-    grid-template-columns:1fr;
-    padding:40px 20px 56px;
-    gap:48px;
-  }
-  .hero-left{padding-right:0}
-  .hero-headline{font-size:clamp(36px,9vw,52px)}
-  .hero-sub{font-size:16px;max-width:100%}
-  .hero-actions{flex-direction:column;align-items:stretch}
-  .btn-primary,.btn-ghost{justify-content:center;width:100%;padding:15px}
-  .hero-right{padding-bottom:60px;padding-right:20px}
-  .float-card{right:-16px;bottom:-56px;width:170px;height:104px}
-  .card-logo-text{font-size:13px}
-
-  /* Stats */
-  .stats-strip{
-    flex-wrap:wrap;
-    justify-content:flex-start;
-  }
-  .stat{
-    min-width:50%;flex:1;
-    padding:20px 20px;
-    border-right:none !important;
-    border-bottom:0.5px solid var(--w08);
-  }
-  .stat:nth-child(odd){border-right:0.5px solid var(--w08) !important}
-  .stat-num{font-size:22px}
-
-  /* Sections */
-  .section{padding:56px 20px}
-  .section-title{font-size:clamp(26px,7vw,36px)}
-  .section-sub{font-size:15px;max-width:100%}
-
-  /* Features */
-  .features-grid{grid-template-columns:1fr;gap:12px}
-  .feat-card{padding:22px}
-
-  /* About */
-  .about-grid{grid-template-columns:1fr;gap:32px}
-  .about-stats{gap:24px}
-  .about-stat-num{font-size:28px}
-
-  /* Pricing */
-  .pricing-grid{grid-template-columns:1fr;gap:14px}
-  .pricing-card{padding:24px}
-  .pricing-price{font-size:36px}
-  .pricing-toggle{margin:24px 0 32px}
-  .pricing-card-featured{grid-column:auto}
-
-  /* Footer */
-  .footer{padding:40px 20px}
-  .footer-links{gap:16px;flex-wrap:wrap;justify-content:center}
-  .footer-links a{font-size:12px}
-}
-
-/* ══ Small mobile (≤400px) ══ */
-@media(max-width:400px){
-  nav{padding:12px 16px}
-  .hero{padding:32px 16px 48px}
-  .hero-headline{font-size:34px}
-  .section{padding:48px 16px}
-  .feat-card{padding:18px}
-  .pricing-card{padding:20px}
-  .footer{padding:32px 16px}
-  .about-stats{flex-wrap:wrap;gap:16px}
+@media(max-width:900px){
+  .section{padding:64px 24px}
+  .features-grid{grid-template-columns:1fr}
+  .about-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .footer{padding:40px 24px}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -812,24 +530,7 @@ nav{
     </div>
     <a href="#" class="nav-cta" onclick="event.preventDefault();openModal('login')"
        data-en="Sign in" data-es="Ingresar">Sign in</a>
-    <!-- Hamburger -->
-    <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
   </nav>
-
-  <!-- Mobile menu drawer -->
-  <div class="mobile-menu" id="mobile-menu">
-    <a href="#features" onclick="closeMenu()" data-en="Features" data-es="Funciones">Features</a>
-    <a href="#pricing" onclick="closeMenu()" data-en="Pricing" data-es="Precios">Pricing</a>
-    <a href="#about" onclick="closeMenu()" data-en="About" data-es="Nosotros">About</a>
-    <div class="mobile-menu-lang">
-      <button class="active" id="mob-en" onclick="setLang('en');document.getElementById('mob-en').classList.add('active');document.getElementById('mob-es').classList.remove('active')">EN</button>
-      <button id="mob-es" onclick="setLang('es');document.getElementById('mob-es').classList.add('active');document.getElementById('mob-en').classList.remove('active')">ES</button>
-    </div>
-    <a href="#" class="mobile-menu-cta" onclick="event.preventDefault();openModal('signup');closeMenu()" data-en="Get started free" data-es="Comenzar gratis">Get started free</a>
-    <a href="#" class="mobile-menu-cta" style="background:transparent;border:0.5px solid var(--w20);margin-top:8px" onclick="event.preventDefault();openModal('login');closeMenu()" data-en="Sign in" data-es="Ingresar">Sign in</a>
-  </div>
 
   <!-- Hero -->
   <main class="hero">
@@ -1142,9 +843,8 @@ nav{
         <a href="#features" data-en="Features" data-es="Funciones">Features</a>
         <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
         <a href="#about" data-en="About" data-es="Nosotros">About</a>
-        <a href="/privacy.html" data-en="Privacy Policy" data-es="Política de Privacidad">Privacy Policy</a>
-        <a href="/terms.html" data-en="Terms & Conditions" data-es="Términos y Condiciones">Terms & Conditions</a>
-        <a href="/cdn-cgi/l/email-protection#9bf7fefcfaf7dbecfeeeebb5faebeb" data-en="Contact" data-es="Contacto">Contact</a>
+        <a href="#" data-en="Privacy" data-es="Privacidad">Privacy</a>
+        <a href="#" data-en="Terms" data-es="Términos">Terms</a>
       </div>
       <p class="footer-copy">© 2026 WeUp. <span data-en="Made with ♥ for Latin America." data-es="Hecho con ♥ para América Latina.">Made with ♥ for Latin America.</span></p>
     </div>
@@ -1251,64 +951,27 @@ nav{
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-function toggleMenu() {
-  const menu = document.getElementById('mobile-menu');
-  const btn  = document.getElementById('hamburger');
-  menu.classList.toggle('open');
-  btn.classList.toggle('open');
-  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
-}
-function closeMenu() {
-  document.getElementById('mobile-menu').classList.remove('open');
-  document.getElementById('hamburger').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-// ── All variables & Supabase first ────────────────────────────────────────────
-let currentLang = 'en';
-let isYearly = false;
-const proMonthly = { en:'$4.99', es:'$4.99' };
-const proYearly  = { en:'$3.24', es:'$3.24' };
-const famMonthly = { en:'$9.99', es:'$9.99' };
-const famYearly  = { en:'$6.49', es:'$6.49' };
-const periodMonth= { en:'/month', es:'/mes' };
-const periodYear = { en:'/month, billed yearly', es:'/mes, cobrado anual' };
-const translations = {
-  'modal-sub-login':  { en: 'Welcome back', es: 'Bienvenido de nuevo' },
-  'modal-sub-signup': { en: 'Join WeUp for free', es: 'Únete a WeUp gratis' },
-};
-
-const SUPABASE_URL = 'https://tnkydfulsrzihlohchhc.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-
+<script>
 // ── Plan intent ───────────────────────────────────────────────────────────────
-async function selectPlanIntent(plan, ev) {
+function selectPlanIntent(plan, ev) {
   if (ev) ev.preventDefault();
   sessionStorage.setItem('weup_plan_intent', plan);
-
-  let session = null;
-  try {
-    const { data } = await sb.auth.getSession();
-    session = data?.session;
-  } catch(e) {}
-
-  if (session) {
-    window.location.href = plan === 'free' ? '/dashboard.html' : '/upgrade.html?plan=' + plan;
-    return;
-  }
-
-  // Update modal subtitle
-  const sub = document.getElementById('modal-sub');
-  if (sub) {
-    if (plan === 'pro') sub.textContent = currentLang === 'es' ? '🚀 Crea tu cuenta para activar Pro' : '🚀 Create your account to activate Pro';
-    else if (plan === 'family') sub.textContent = currentLang === 'es' ? '👨‍👩‍👧 Crea tu cuenta para activar Family' : '👨‍👩‍👧 Create your account to activate Family';
-    else sub.textContent = currentLang === 'es' ? 'Únete a WeUp gratis' : 'Join WeUp for free';
-  }
-
-  openModal('signup');
+  // Check session async then act
+  sb.auth.getSession().then(({ data }) => {
+    const session = data?.session;
+    if (session) {
+      window.location.href = plan === 'free' ? '/dashboard.html' : '/upgrade.html?plan=' + plan;
+      return;
+    }
+    // Update modal subtitle
+    const sub = document.getElementById('modal-sub');
+    if (sub) {
+      if (plan === 'pro') sub.textContent = '🚀 Create your account to activate Pro';
+      else if (plan === 'family') sub.textContent = '👨‍👩‍👧 Create your account to activate Family';
+      else sub.textContent = 'Join WeUp for free';
+    }
+    openModal('signup');
+  }).catch(() => openModal('signup'));
 }
 
 function getRedirectAfterAuth() {
@@ -1318,7 +981,16 @@ function getRedirectAfterAuth() {
   return null;
 }
 
-// ── Pricing toggle ────────────────────────────────────────────────────────────
+let currentLang = 'en';
+let isYearly = false;
+
+const proMonthly = { en:'$4.99', es:'$4.99' };
+const proYearly  = { en:'$3.24', es:'$3.24' };
+const famMonthly = { en:'$9.99', es:'$9.99' };
+const famYearly  = { en:'$6.49', es:'$6.49' };
+const periodMonth= { en:'/month', es:'/mes' };
+const periodYear = { en:'/month, billed yearly', es:'/mes, cobrado anual' };
+
 function togglePricing() {
   isYearly = !isYearly;
   const sw = document.getElementById('pricing-toggle');
@@ -1328,8 +1000,11 @@ function togglePricing() {
   document.getElementById('pro-period').textContent = isYearly ? periodYear[currentLang] : periodMonth[currentLang];
   document.getElementById('fam-period').textContent = isYearly ? periodYear[currentLang] : periodMonth[currentLang];
 }
+const translations = {
+  'modal-sub-login':  { en: 'Welcome back', es: 'Bienvenido de nuevo' },
+  'modal-sub-signup': { en: 'Join WeUp for free', es: 'Únete a WeUp gratis' },
+};
 
-// ── Language ──────────────────────────────────────────────────────────────────
 function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.nav-lang button').forEach(b => b.classList.remove('active'));
@@ -1354,7 +1029,6 @@ function setLang(lang) {
   document.getElementById('ph-inc').textContent = ph.inc;
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
 function openModal(tab = 'login') {
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1378,6 +1052,12 @@ function switchTab(tab) {
     tab === 'login' ? translations['modal-sub-login'][currentLang]
                     : translations['modal-sub-signup'][currentLang];
 }
+
+// ── Supabase client ──────────────────────────────────────────────────────────
+const SUPABASE_URL  = 'https://tnkydfulsrzihlohchhc.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── Auth helpers ──────────────────────────────────────────────────────────────
 function showAuthError(msg) {
@@ -1445,7 +1125,7 @@ async function handleLogin(e) {
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
         const { data: profile } = await sb.from('profiles').select('lang').eq('id', session.user.id).single();
-        window.location.href = profile?.lang === 'done' || profile?.lang?.startsWith('pro') ? '/dashboard.html' : '/onboarding.html';
+        window.location.href = (profile?.lang === 'done' || profile?.lang?.startsWith('pro')) ? '/dashboard.html' : '/onboarding.html';
       }
     }, 800);
   }
@@ -1486,7 +1166,6 @@ async function handleSignup(e) {
   } else {
     // Store email so auth.html can show it
     sessionStorage.setItem('weup_pending_email', email);
-    sessionStorage.setItem('weup_new_user', 'true');
     setBtnLoading('signup-btn', false, currentLang === 'es' ? '✓ ¡Revisa tu email!' : '✓ Check your email!');
     setTimeout(() => { window.location.href = '/auth.html'; }, 800);
   }
@@ -1524,14 +1203,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                 || session.user?.user_metadata?.name?.split(' ')[0]
                 || session.user.email.split('@')[0];
       updateNavForUser(name);
-      // Check plan intent first
-      const planRedirect = getRedirectAfterAuth();
-      if (planRedirect) { setTimeout(() => { window.location.href = planRedirect; }, 500); return; }
-      // Check onboarding
-      const { data: profile } = await sb.from('profiles').select('lang').eq('id', session.user.id).single();
-      setTimeout(() => {
-        window.location.href = profile?.lang === 'done' || profile?.lang?.startsWith('pro') ? '/dashboard.html' : '/onboarding.html';
-      }, 800);
+      // Redirect to dashboard after Google OAuth
+      setTimeout(() => { window.location.href = '/dashboard.html'; }, 800);
     }
     return;
   }
@@ -1579,4 +1252,13 @@ function checkPwStrength(val) {
   bars.forEach(b => { b.className = 'pw-bar'; });
   if (!val) return;
   let score = 0;
-  if (val
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const cls = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
+  for (let i = 0; i < score; i++) bars[i].classList.add(cls);
+}
+</script>
+</body>
+</html>
