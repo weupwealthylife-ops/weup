@@ -55,7 +55,7 @@ body::before{
   flex-direction:column;gap:16px;
 }
 #auth-gate .logo{font-family:var(--ff-d);font-size:32px;color:#fff;display:flex;align-items:center;gap:8px}
-#auth-gate .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--light)}
+#auth-gate .logo .dot{display:none}
 #auth-gate p{font-size:15px;color:rgba(255,255,255,.5)}
 #auth-gate a{color:var(--light);text-decoration:none;font-weight:500}
 
@@ -82,7 +82,7 @@ body::before{
   border-bottom:.5px solid var(--w08);
 }
 .nav-logo{font-family:var(--ff-d);font-size:22px;color:var(--w);display:flex;align-items:center;gap:7px;text-decoration:none}
-.nav-logo .dot{width:6px;height:6px;border-radius:50%;background:var(--light);flex-shrink:0}
+.nav-logo .dot{display:none}
 .nav-steps{display:flex;align-items:center;gap:6px}
 .nav-step{
   width:28px;height:4px;border-radius:2px;
@@ -302,7 +302,7 @@ body::before{
 
 <!-- Auth gate -->
 <div id="auth-gate">
-  <div class="logo"><span class="dot"></span>WeUp</div>
+  <div class="logo" style="gap:10px"><img src="/Logo_WeUp.png" alt="WeUp" style="height:48px;width:48px;object-fit:contain;border-radius:10px;flex-shrink:0"><span>WeUp</span></div>
   <p id="gate-msg">Setting things up...</p>
 </div>
 
@@ -314,7 +314,7 @@ body::before{
 
   <!-- Nav -->
   <nav class="onboard-nav">
-    <a href="/" class="nav-logo"><span class="dot"></span>WeUp</a>
+    <a href="/" class="nav-logo" style="gap:10px"><img src="/Logo_WeUp.png" alt="WeUp" style="height:32px;width:32px;object-fit:contain;border-radius:6px;flex-shrink:0"><span style="font-family:var(--ff-d);font-size:22px;letter-spacing:-0.3px">WeUp</span></a>
     <div class="nav-steps">
       <div class="nav-step active" id="ns1"></div>
       <div class="nav-step" id="ns2"></div>

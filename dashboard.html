@@ -50,7 +50,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
   flex-direction:column;gap:16px;
 }
 #auth-gate .logo{font-family:var(--ff-d);font-size:32px;color:#fff;display:flex;align-items:center;gap:8px}
-#auth-gate .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--light)}
+#auth-gate .logo .dot{display:none}
 #auth-gate p{font-size:15px;color:rgba(255,255,255,0.5)}
 #auth-gate a{color:var(--light);text-decoration:none;font-weight:500}
 
@@ -73,7 +73,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
   border-bottom:0.5px solid rgba(255,255,255,0.08);
   margin-bottom:8px;
 }
-.sidebar-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--light);flex-shrink:0}
+.sidebar-logo .dot{display:none}
 .nav-section{padding:0 12px;margin-bottom:4px}
 .nav-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;padding:8px 12px 6px}
 .nav-item{
@@ -485,7 +485,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
 <!-- Auth gate -->
 <div id="auth-gate">
-  <div class="logo"><span class="dot"></span>WeUp</div>
+  <div class="logo" style="gap:10px"><img src="/Logo_WeUp.png" alt="WeUp" style="height:48px;width:48px;object-fit:contain;border-radius:10px;flex-shrink:0"><span>WeUp</span></div>
   <p id="gate-msg">Checking your session...</p>
 </div>
 
@@ -494,7 +494,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
   <!-- Mobile top header -->
   <div class="mobile-header">
-    <div class="mobile-header-logo"><span class="dot"></span>WeUp</div>
+    <div class="mobile-header-logo" style="gap:8px;display:flex;align-items:center"><img src="/Logo_WeUp.png" alt="WeUp" style="height:28px;width:28px;object-fit:contain;border-radius:5px;flex-shrink:0"><span style="font-family:var(--ff-d);font-size:18px;color:#fff;letter-spacing:-0.2px">WeUp</span></div>
     <div class="mobile-header-avatar" id="mobile-avatar" onclick="showPage('settings')">?</div>
   </div>
 
@@ -502,7 +502,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-logo"><span class="dot"></span>WeUp</div>
+      <div class="sidebar-logo" style="gap:10px"><img src="/Logo_WeUp.png" alt="WeUp" style="height:30px;width:30px;object-fit:contain;border-radius:5px;flex-shrink:0"><span style="font-family:var(--ff-d);font-size:20px;color:#fff;letter-spacing:-0.2px">WeUp</span></div>
 
       <div class="nav-section">
         <div class="nav-label" data-en="Main" data-es="Principal">Main</div>

@@ -77,10 +77,7 @@ nav{
   color:var(--w);text-decoration:none;
   display:flex;align-items:center;gap:8px;
 }
-.nav-logo .dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--light);display:inline-block;flex-shrink:0;
-}
+.nav-logo .dot{display:none}
 .nav-center{display:flex;align-items:center;gap:32px}
 .nav-center a{
   font-size:14px;color:var(--w60);text-decoration:none;
@@ -516,8 +513,8 @@ nav{
 
   <!-- Nav -->
   <nav>
-    <a href="#" class="nav-logo">
-      <span class="dot"></span>WeUp
+    <a href="#" class="nav-logo" style="gap:10px">
+      <img src="/Logo_WeUp.png" alt="WeUp" style="height:32px;width:32px;object-fit:contain;border-radius:6px;flex-shrink:0"><span style="font-family:var(--ff-d);font-size:22px;letter-spacing:-0.3px">WeUp</span>
     </a>
     <div class="nav-center">
       <a href="#features" data-en="Features" data-es="Funciones">Features</a>
@@ -637,7 +634,7 @@ nav{
           <div class="card-chip"></div>
           <div class="card-bottom">
             <div class="card-name">ANA GARCIA</div>
-            <div class="card-logo-text">WeUp</div>
+            <div class="card-logo-text"><img src="/Logo_WeUp.png" alt="WeUp" style="height:18px;width:18px;object-fit:contain;border-radius:3px;opacity:0.85"></div>
           </div>
         </div>
       </div>
@@ -835,8 +832,8 @@ nav{
   <!-- ── Footer ── -->
   <footer class="footer">
     <div class="footer-inner">
-      <div class="footer-logo">
-        <span class="dot"></span>WeUp
+      <div class="footer-logo" style="gap:10px">
+        <img src="/Logo_WeUp.png" alt="WeUp" style="height:28px;width:28px;object-fit:contain;border-radius:6px;flex-shrink:0"><span>WeUp</span>
       </div>
       <p class="footer-tagline" data-en="Your money, finally under control." data-es="Tu dinero, por fin bajo control.">Your money, finally under control.</p>
       <div class="footer-links">
@@ -856,7 +853,7 @@ nav{
 <div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-logo">WeUp</div>
+    <div class="modal-logo" style="display:flex;align-items:center;gap:8px"><img src="/Logo_WeUp.png" alt="" style="height:24px;width:24px;object-fit:contain;border-radius:4px">WeUp</div>
     <p class="modal-sub" id="modal-sub">Welcome back</p>
 
     <div class="auth-tabs">
