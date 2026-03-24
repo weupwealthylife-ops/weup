@@ -782,6 +782,11 @@ async function finishOnboarding() {
   const planIntent = sessionStorage.getItem('weup_plan_intent');
   if (planIntent && planIntent !== 'free') {
     sessionStorage.removeItem('weup_plan_intent');
+    // Mark onboarding complete in Supabase
+    if (currentUser) {
+      await sb.from('profiles')
+        .upsert({ id: currentUser.id, onboarding_completed: true }, { onConflict: 'id' });
+    }
     // Show completion briefly then redirect to upgrade
     setTimeout(() => {
       document.querySelector('#step-6 .btn-primary').textContent = 'Continue to payment →';

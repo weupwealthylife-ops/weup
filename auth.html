@@ -413,6 +413,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('confirm-email').textContent = email;
     showPage('page-confirm-sent');
     startResendTimer();
+    startConfirmPolling();
   } else {
     // No context — redirect to home
     window.location.href = '/';
@@ -503,6 +504,19 @@ async function resendEmail() {
 
   if (!error) startResendTimer();
   else { btn.disabled = false; }
+}
+
+// ── Auto-advance when email is confirmed in another tab ───────────────────────
+function startConfirmPolling() {
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const confirmed = document.getElementById('check-confirmed');
+      const dashItem  = document.getElementById('check-dashboard');
+      if (confirmed) { confirmed.classList.add('done'); confirmed.querySelector('.check-dot').textContent = '✓'; }
+      if (dashItem)  { dashItem.classList.add('done');  dashItem.querySelector('.check-dot').textContent = '✓'; }
+      setTimeout(() => { window.location.href = '/onboarding.html'; }, 1200);
+    }
+  });
 }
 
 function startResendTimer() {

@@ -809,16 +809,18 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
     <div class="form-group">
       <label class="form-label" data-en="Category" data-es="Categoría">Category</label>
       <select class="form-select" id="tx-category">
-        <option value="food">🛒 Food & Drinks</option>
-        <option value="transport">🚌 Transport</option>
-        <option value="housing">🏠 Housing</option>
-        <option value="health">💊 Health</option>
-        <option value="entertainment">🎬 Entertainment</option>
-        <option value="shopping">🛍️ Shopping</option>
-        <option value="education">📚 Education</option>
-        <option value="salary">💼 Salary</option>
-        <option value="freelance">💻 Freelance</option>
-        <option value="other">📦 Other</option>
+        <option value="food"     data-en="🛒 Food & groceries"    data-es="🛒 Alimentación">🛒 Food & groceries</option>
+        <option value="transport"data-en="🚌 Transport"           data-es="🚌 Transporte">🚌 Transport</option>
+        <option value="housing"  data-en="🏠 Housing & utilities" data-es="🏠 Vivienda y servicios">🏠 Housing & utilities</option>
+        <option value="health"   data-en="💊 Health"              data-es="💊 Salud">💊 Health</option>
+        <option value="leisure"  data-en="🎬 Leisure & dining"    data-es="🎬 Ocio y restaurantes">🎬 Leisure & dining</option>
+        <option value="shopping" data-en="🛍️ Shopping & clothing" data-es="🛍️ Compras y ropa">🛍️ Shopping & clothing</option>
+        <option value="education"data-en="📚 Education"           data-es="📚 Educación">📚 Education</option>
+        <option value="subscriptions" data-en="📱 Subscriptions"  data-es="📱 Suscripciones">📱 Subscriptions</option>
+        <option value="salary"   data-en="💼 Salary"              data-es="💼 Salario">💼 Salary</option>
+        <option value="freelance"data-en="💻 Freelance"           data-es="💻 Freelance">💻 Freelance</option>
+        <option value="savings"  data-en="🏦 Savings"             data-es="🏦 Ahorro">🏦 Savings</option>
+        <option value="other"    data-en="📦 Other"               data-es="📦 Otro">📦 Other</option>
       </select>
     </div>
     <div class="form-group">
@@ -863,6 +865,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // Check onboarding — redirect if not completed
+  const { data: profileCheck } = await sb.from('profiles')
+    .select('onboarding_completed')
+    .eq('id', session.user.id)
+    .single();
+  if (!profileCheck?.onboarding_completed) {
+    window.location.href = '/onboarding.html';
+    return;
+  }
+
   currentUser = session.user;
   bootApp();
 
@@ -894,6 +906,7 @@ async function bootApp() {
   document.getElementById('home-greeting').textContent = `${greet}, ${name} ✦`;
   document.getElementById('home-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
+  await loadUserBudgets();
   await loadTransactions();
   renderDashboard();
   initCharts();
@@ -936,7 +949,7 @@ function renderDashboard() {
   renderTxList('all-tx-list', transactions);
 
   // AI insights
-  generateAIInsights(income, expenses, balance, thisMonth);
+  generateAIInsights(income, expenses, balance, thisMonth); // async - no await needed here
 
   // Budgets
   renderBudgets(thisMonth);
@@ -971,35 +984,90 @@ function renderTxList(containerId, txs) {
     </div>`).join('');
 }
 
-// ── AI Insights ───────────────────────────────────────────────────────────────
-function generateAIInsights(income, expenses, balance, monthTxs) {
-  const insights = [];
+// ── AI Insights — real Claude API ────────────────────────────────────────────
+async function generateAIInsights(income, expenses, balance, monthTxs) {
+  const container = document.getElementById('ai-insights-container');
 
   if (monthTxs.length === 0) {
-    insights.push({ icon:'📊', text: currentLang==='es' ? 'Agrega transacciones para recibir insights personalizados de tu IA.' : 'Add transactions to receive personalized AI insights.' });
-    insights.push({ icon:'💡', text: currentLang==='es' ? 'WeUp IA analizará tus patrones de gasto para ayudarte a ahorrar más.' : 'WeUp AI will analyze your spending patterns to help you save more.' });
-    insights.push({ icon:'🎯', text: currentLang==='es' ? 'Configura categorías de presupuesto para desbloquear el seguimiento de metas.' : 'Set up budget categories to unlock goal tracking.' });
-  } else {
-    const saveRate = income > 0 ? Math.round((balance/income)*100) : 0;
-    const topCat = getTopCategory(monthTxs.filter(t=>t.type==='expense'));
-    const expRatio = income > 0 ? Math.round((expenses/income)*100) : 0;
-
-    if (saveRate >= 20) insights.push({ icon:'🏆', text: currentLang==='es' ? `¡Excelente! Estás ahorrando el <strong>${saveRate}%</strong> de tus ingresos este mes. Estás por encima del promedio.` : `Excellent! You're saving <strong>${saveRate}%</strong> of your income this month — above average.` });
-    else if (saveRate > 0) insights.push({ icon:'💡', text: currentLang==='es' ? `Estás ahorrando el <strong>${saveRate}%</strong> este mes. El objetivo recomendado es el 20%. ¡Sigue así!` : `You're saving <strong>${saveRate}%</strong> this month. The recommended goal is 20%. Keep going!` });
-    else insights.push({ icon:'⚠️', text: currentLang==='es' ? `Tus gastos superan tus ingresos este mes. Revisa tus categorías para identificar dónde recortar.` : `Your expenses exceed your income this month. Review your categories to identify where to cut.` });
-
-    if (topCat) insights.push({ icon:'🔍', text: currentLang==='es' ? `Tu mayor categoría de gasto es <strong>${topCat}</strong>. Considera establecer un presupuesto para esta categoría.` : `Your top spending category is <strong>${topCat}</strong>. Consider setting a budget limit for this category.` });
-
-    if (expRatio > 80) insights.push({ icon:'🚨', text: currentLang==='es' ? `Estás gastando el <strong>${expRatio}%</strong> de tus ingresos. Intenta reducir gastos no esenciales.` : `You're spending <strong>${expRatio}%</strong> of your income. Try reducing non-essential expenses.` });
-    else insights.push({ icon:'📈', text: currentLang==='es' ? `Con ${monthTxs.length} transacciones este mes, tu seguimiento financiero está activo. ¡Sigue registrando!` : `With ${monthTxs.length} transactions this month, your financial tracking is active. Keep it up!` });
+    document.getElementById('ai-insight-1').innerHTML = currentLang==='es' ? 'Agrega transacciones para recibir insights personalizados.' : 'Add transactions to receive personalized AI insights.';
+    document.getElementById('ai-insight-2').innerHTML = currentLang==='es' ? 'WeUp IA analizará tus patrones de gasto para ayudarte a ahorrar más.' : 'WeUp AI will analyze your spending patterns to help you save more.';
+    document.getElementById('ai-insight-3').innerHTML = currentLang==='es' ? 'Configura categorías de presupuesto para desbloquear el seguimiento de metas.' : 'Set up budget categories to unlock goal tracking.';
+    return;
   }
 
-  document.getElementById('ai-insight-1').innerHTML = insights[0]?.text || '';
-  document.getElementById('ai-insight-2').innerHTML = insights[1]?.text || '';
-  document.getElementById('ai-insight-3').innerHTML = insights[2]?.text || '';
-  document.querySelector('#ai-insights-container .ai-insight:nth-child(1) .ai-insight-icon').textContent = insights[0]?.icon || '📊';
-  document.querySelector('#ai-insights-container .ai-insight:nth-child(2) .ai-insight-icon').textContent = insights[1]?.icon || '💡';
-  document.querySelector('#ai-insights-container .ai-insight:nth-child(3) .ai-insight-icon').textContent = insights[2]?.icon || '🎯';
+  // Show skeleton loading state
+  ['ai-insight-1','ai-insight-2','ai-insight-3'].forEach(id => {
+    document.getElementById(id).innerHTML = '<span style="opacity:0.4;font-style:italic">' + (currentLang==='es'?'Analizando...':'Analyzing...') + '</span>';
+  });
+
+  // Build financial summary for Claude
+  const saveRate = income > 0 ? Math.round((balance/income)*100) : 0;
+  const expRatio = income > 0 ? Math.round((expenses/income)*100) : 0;
+  const catSpend = {};
+  monthTxs.filter(t=>t.type==='expense').forEach(t => { catSpend[t.category]=(catSpend[t.category]||0)+parseFloat(t.amount); });
+  const topCats = Object.entries(catSpend).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([c,v])=>`${c}: $${v.toFixed(0)}`).join(', ');
+  const lang = currentLang === 'es' ? 'Spanish' : 'English';
+
+  const prompt = `You are WeUp, a friendly personal finance AI for Latin American users. Analyze this user's monthly finances and give exactly 3 short, actionable insights in ${lang}.
+
+Financial data this month:
+- Income: $${income.toFixed(0)}
+- Expenses: $${expenses.toFixed(0)}
+- Net balance: $${balance.toFixed(0)}
+- Savings rate: ${saveRate}%
+- Expense ratio: ${expRatio}% of income
+- Top spending categories: ${topCats || 'none yet'}
+- Total transactions: ${monthTxs.length}
+
+Rules:
+- Return ONLY valid JSON, no markdown, no explanation
+- Each insight must be 1-2 sentences max, personalized and specific
+- Use the actual numbers from the data
+- Be encouraging but honest
+- Format: {"insights":[{"icon":"emoji","text":"insight text"},{"icon":"emoji","text":"insight text"},{"icon":"emoji","text":"insight text"}]}`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!response.ok) throw new Error('API error ' + response.status);
+    const data = await response.json();
+    const text = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    const insights = parsed.insights || [];
+
+    ['ai-insight-1','ai-insight-2','ai-insight-3'].forEach((id, i) => {
+      document.getElementById(id).innerHTML = insights[i]?.text || '';
+    });
+    document.querySelector('#ai-insights-container .ai-insight:nth-child(1) .ai-insight-icon').textContent = insights[0]?.icon || '📊';
+    document.querySelector('#ai-insights-container .ai-insight:nth-child(2) .ai-insight-icon').textContent = insights[1]?.icon || '💡';
+    document.querySelector('#ai-insights-container .ai-insight:nth-child(3) .ai-insight-icon').textContent = insights[2]?.icon || '🎯';
+
+  } catch(err) {
+    console.error('AI insights error:', err);
+    // Graceful fallback to calculated insights
+    const insights = [];
+    if (saveRate >= 20) insights.push({ icon:'🏆', text: currentLang==='es' ? `¡Excelente! Ahorraste el <strong>${saveRate}%</strong> de tus ingresos este mes.` : `Excellent! You saved <strong>${saveRate}%</strong> of your income this month.` });
+    else if (saveRate > 0) insights.push({ icon:'💡', text: currentLang==='es' ? `Ahorraste el <strong>${saveRate}%</strong> este mes. La meta recomendada es el 20%.` : `You saved <strong>${saveRate}%</strong> this month. The recommended goal is 20%.` });
+    else insights.push({ icon:'⚠️', text: currentLang==='es' ? 'Tus gastos superan tus ingresos. Revisa dónde puedes recortar.' : 'Your expenses exceed your income. Review where you can cut back.' });
+    const topCat = getTopCategory(monthTxs.filter(t=>t.type==='expense'));
+    if (topCat) insights.push({ icon:'🔍', text: currentLang==='es' ? `Tu mayor categoría es <strong>${topCat}</strong>. Considera un límite de presupuesto.` : `Your top category is <strong>${topCat}</strong>. Consider setting a budget limit.` });
+    insights.push({ icon:'📈', text: currentLang==='es' ? `${monthTxs.length} transacciones este mes. ¡Sigue registrando!` : `${monthTxs.length} transactions logged this month. Keep it up!` });
+    document.getElementById('ai-insight-1').innerHTML = insights[0]?.text || '';
+    document.getElementById('ai-insight-2').innerHTML = insights[1]?.text || '';
+    document.getElementById('ai-insight-3').innerHTML = insights[2]?.text || '';
+    document.querySelector('#ai-insights-container .ai-insight:nth-child(1) .ai-insight-icon').textContent = insights[0]?.icon || '📊';
+    document.querySelector('#ai-insights-container .ai-insight:nth-child(2) .ai-insight-icon').textContent = insights[1]?.icon || '💡';
+    document.querySelector('#ai-insights-container .ai-insight:nth-child(3) .ai-insight-icon').textContent = insights[2]?.icon || '🎯';
+  }
 }
 
 function getTopCategory(expenses) {
@@ -1009,8 +1077,18 @@ function getTopCategory(expenses) {
 }
 
 // ── Budgets ───────────────────────────────────────────────────────────────────
-const BUDGETS = { food:500, transport:150, housing:800, entertainment:200, shopping:300, health:100, education:100 };
-const CAT_ICONS = { food:'🛒',transport:'🚌',housing:'🏠',health:'💊',entertainment:'🎬',shopping:'🛍️',education:'📚' };
+// Default budgets (used if user hasn't set custom ones)
+const DEFAULT_BUDGETS = { food:500, transport:150, housing:800, entertainment:200, shopping:300, health:100, education:100 };
+const CAT_ICONS = { food:'🛒',transport:'🚌',housing:'🏠',health:'💊',entertainment:'🎬',shopping:'🛍️',education:'📚',salary:'💼',freelance:'💻',other:'📦' };
+let userBudgets = { ...DEFAULT_BUDGETS };
+
+async function loadUserBudgets() {
+  if (!currentUser) return;
+  const { data } = await sb.from('profiles').select('budgets').eq('id', currentUser.id).single();
+  if (data?.budgets && Object.keys(data.budgets).length > 0) {
+    userBudgets = data.budgets;
+  }
+}
 
 function renderBudgets(monthTxs) {
   const spent = {};
@@ -1019,13 +1097,18 @@ function renderBudgets(monthTxs) {
   });
 
   const el = document.getElementById('budget-list');
-  el.innerHTML = Object.entries(BUDGETS).map(([cat, limit]) => {
+  const budgetsToShow = Object.keys(userBudgets).length > 0 ? userBudgets : DEFAULT_BUDGETS;
+
+  el.innerHTML = Object.entries(budgetsToShow).map(([cat, limit]) => {
     const s = spent[cat] || 0;
     const pct = Math.min(Math.round((s/limit)*100), 100);
     const cls = pct >= 100 ? 'bar-over' : pct >= 80 ? 'bar-warn' : 'bar-safe';
+    const catLabel = currentLang === 'es'
+      ? { food:'Alimentación',transport:'Transporte',housing:'Vivienda',health:'Salud',entertainment:'Entretenimiento',shopping:'Compras',education:'Educación',other:'Otro' }[cat] || cat
+      : cat.charAt(0).toUpperCase()+cat.slice(1);
     return `<div class="budget-item">
       <div class="budget-header">
-        <div class="budget-cat"><span style="font-size:14px">${CAT_ICONS[cat]}</span>${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
+        <div class="budget-cat"><span style="font-size:14px">${CAT_ICONS[cat]||'📦'}</span>${catLabel}</div>
         <div class="budget-amounts">${fmt(s)} / ${fmt(limit)}</div>
       </div>
       <div class="budget-bar-bg"><div class="budget-bar-fill ${cls}" style="width:${pct}%"></div></div>
@@ -1035,6 +1118,9 @@ function renderBudgets(monthTxs) {
 
 // ── Charts ────────────────────────────────────────────────────────────────────
 function initCharts() {
+  // Guard: don't init charts if canvas elements aren't in the DOM
+  if (!document.getElementById('donut-chart')) return;
+
   const now = new Date();
   const months = [];
   const incomeData = [];
@@ -1206,8 +1292,18 @@ function setLang(lang) {
   document.querySelectorAll('[data-'+lang+']').forEach(el=>{
     const val = el.getAttribute('data-'+lang);
     if(el.tagName==='INPUT'){el.placeholder=val}
+    else if(el.tagName==='OPTION'){el.textContent=val}
     else{el.textContent=val}
   });
+  // Re-render budgets with new language labels
+  if(transactions.length) {
+    const now = new Date();
+    const thisMonth = transactions.filter(t => {
+      const d = new Date(t.date);
+      return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+    });
+    renderBudgets(thisMonth);
+  }
 }
 
 // ── Sign out ──────────────────────────────────────────────────────────────────

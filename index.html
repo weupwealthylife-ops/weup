@@ -1124,8 +1124,8 @@ async function handleLogin(e) {
       if (planRedirect) { window.location.href = planRedirect; return; }
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
-        const { data: profile } = await sb.from('profiles').select('lang').eq('id', session.user.id).single();
-        window.location.href = (profile?.lang === 'done' || profile?.lang?.startsWith('pro')) ? '/dashboard.html' : '/onboarding.html';
+        const { data: profile } = await sb.from('profiles').select('onboarding_completed').eq('id', session.user.id).single();
+        window.location.href = profile?.onboarding_completed ? '/dashboard.html' : '/onboarding.html';
       }
     }, 800);
   }
@@ -1174,11 +1174,14 @@ async function handleSignup(e) {
 // ── Google OAuth ──────────────────────────────────────────────────────────────
 async function handleSocial(provider) {
   const redirectTo = window.location.hostname === 'localhost'
-    ? window.location.origin
-    : 'https://www.weupwealthylife.com';
+    ? `${window.location.origin}/dashboard.html`
+    : 'https://www.weupwealthylife.com/dashboard.html';
   const { error } = await sb.auth.signInWithOAuth({
     provider,
-    options: { redirectTo }
+    options: {
+      redirectTo,
+      queryParams: { access_type: 'offline', prompt: 'consent' }
+    }
   });
   if (error) showAuthError(error.message);
 }

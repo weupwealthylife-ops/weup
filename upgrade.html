@@ -344,4 +344,72 @@ async function updateUserPlan(){
   const plan=params.get('plan')||'pro';
   const {data:{session}}=await sb.auth.getSession();
   if(!session)return;
-  aw
+  await sb.from('profiles').upsert({
+    id: session.user.id,
+    plan: plan,
+    plan_billing: billing,
+    onboarding_completed: true,
+    plan_activated_at: new Date().toISOString()
+  }, { onConflict: 'id' });
+}
+
+// ── Language ──────────────────────────────────────────────────────────────────
+let currentLang = navigator.language?.startsWith('es') ? 'es' : 'en';
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-'+lang+']').forEach(el => {
+    const val = el.getAttribute('data-'+lang);
+    if (el.tagName === 'INPUT') el.placeholder = val;
+    else el.textContent = val;
+  });
+}
+
+// ── Billing toggle ────────────────────────────────────────────────────────────
+let billing = 'monthly';
+function toggleBilling() {
+  billing = billing === 'monthly' ? 'yearly' : 'monthly';
+  const track = document.getElementById('billing-toggle');
+  track.classList.toggle('yearly', billing === 'yearly');
+  document.querySelectorAll('.toggle-label').forEach((el,i) => {
+    el.classList.toggle('active', i === (billing === 'yearly' ? 1 : 0));
+  });
+  // Update prices displayed
+  const p = PRICES[billing];
+  document.getElementById('pro-price-val').textContent  = '$' + (p.pro.amount/100).toFixed(2);
+  document.getElementById('fam-price-val').textContent  = '$' + (p.family.amount/100).toFixed(2);
+  document.getElementById('pro-period-label').textContent  = billing === 'yearly' ? '/mo, billed yearly' : '/month';
+  document.getElementById('fam-period-label').textContent  = billing === 'yearly' ? '/mo, billed yearly' : '/month';
+}
+
+// ── FAQ accordion ─────────────────────────────────────────────────────────────
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+let currentUser = null;
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    document.querySelectorAll('.nav-user').forEach(el => {
+      el.textContent = session.user.user_metadata?.full_name || session.user.email;
+    });
+  }
+
+  // Check for payment return
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status');
+  if (status === 'approved') { showState('success'); return; }
+  if (status === 'rejected') { showState('error'); return; }
+  if (status === 'pending')  { showState('success'); return; } // treat pending as success for UX
+
+  // Pre-select plan from URL
+  const planParam = params.get('plan');
+  if (planParam) {
+    const planLabel = document.querySelector('.plan-card.featured .plan-name');
+  }
+});
+</script>
+</body>
+</html>
