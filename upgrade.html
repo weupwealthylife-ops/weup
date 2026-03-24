@@ -205,7 +205,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)"><span>Do you offer refunds?</span><span class="faq-chevron">▼</span></button>
-      <div class="faq-a">7-day money-back guarantee for first-time subscribers. Contact legal@weup.app within 7 days of payment.</div>
+      <div class="faq-a">7-day money-back guarantee for first-time subscribers. Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="472b2220262b073022323769263737">[email&#160;protected]</a> within 7 days of payment.</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)"><span>Can I switch between plans?</span><span class="faq-chevron">▼</span></button>
@@ -231,11 +231,11 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 <div class="state-page" id="state-failure">
   <div class="state-circle error">❌</div>
   <h1 class="state-title">Payment failed</h1>
-  <p class="state-sub">No charge was made. Please try again or contact us at legal@weup.app.</p>
+  <p class="state-sub">No charge was made. Please try again or contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="24484143454864534151540a455454">[email&#160;protected]</a>.</p>
   <button class="btn-upgrade primary" style="max-width:260px" onclick="showUpgradePage()">Try again</button>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const SUPA_URL='https://tnkydfulsrzihlohchhc.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
@@ -344,15 +344,4 @@ async function updateUserPlan(){
   const plan=params.get('plan')||'pro';
   const {data:{session}}=await sb.auth.getSession();
   if(!session)return;
-  await sb.from('profiles').update({lang:'pro_'+plan}).eq('id',session.user.id);
-}
-
-function toggleFaq(btn){
-  const item=btn.closest('.faq-item');
-  const isOpen=item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
-  if(!isOpen)item.classList.add('open');
-}
-</script>
-</body>
-</html>
+  aw

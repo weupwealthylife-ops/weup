@@ -275,7 +275,7 @@ nav{
         <li data-en="Maintain and update your account information as needed" data-es="Mantener y actualizar tu información de cuenta según sea necesario">Maintain and update your account information as needed</li>
         <li data-en="Keep your password secure and confidential" data-es="Mantener tu contraseña segura y confidencial">Keep your password secure and confidential</li>
         <li data-en="Not share your account with any other person" data-es="No compartir tu cuenta con ninguna otra persona">Not share your account with any other person</li>
-        <li data-en="Notify us immediately of any unauthorized access at legal@weup.app" data-es="Notificarnos inmediatamente de cualquier acceso no autorizado en legal@weup.app">Notify us immediately of any unauthorized access at legal@weup.app</li>
+        <li data-en="Notify us immediately of any unauthorized access at legal@weup.app" data-es="Notificarnos inmediatamente de cualquier acceso no autorizado en legal@weup.app">Notify us immediately of any unauthorized access at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670b0200060b271002121749061717">[email&#160;protected]</a></li>
       </ul>
       <p style="margin-top:14px" data-en="You are responsible for all activity that occurs under your account. WeUp will not be liable for any loss resulting from unauthorized use of your account." data-es="Eres responsable de toda la actividad que ocurra bajo tu cuenta. WeUp no será responsable por ninguna pérdida derivada del uso no autorizado de tu cuenta.">You are responsible for all activity that occurs under your account. WeUp will not be liable for any loss resulting from unauthorized use of your account.</p>
     </div>
@@ -437,9 +437,9 @@ nav{
     <div class="contact-card">
       <h3 data-en="Questions about these terms?" data-es="¿Preguntas sobre estos términos?">Questions about these terms?</h3>
       <p data-en="Our team is happy to clarify anything in plain language. We respond within 5 business days." data-es="Nuestro equipo está feliz de aclarar cualquier cosa en lenguaje sencillo. Respondemos dentro de 5 días hábiles.">Our team is happy to clarify anything in plain language. We respond within 5 business days.</p>
-      <a href="mailto:legal@weup.app">
+      <a href="/cdn-cgi/l/email-protection#cda1a8aaaca18dbaa8b8bde3acbdbd">
         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
-        legal@weup.app
+        <span class="__cf_email__" data-cfemail="412d2426202d01362434316f203131">[email&#160;protected]</span>
       </a>
     </div>
   </div>
@@ -458,21 +458,10 @@ nav{
 
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 let currentLang = 'en';
 function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.nav-lang button').forEach(b => b.classList.remove('active'));
   document.querySelector(`.nav-lang button:${lang==='en'?'first-child':'last-child'}`).classList.add('active');
-  document.querySelectorAll('[data-'+lang+']').forEach(el => {
-    const val = el.getAttribute('data-'+lang);
-    if (val.includes('<em>') || val.includes('<br>')) el.innerHTML = val;
-    else el.textContent = val;
-  });
-  document.documentElement.lang = lang;
-}
-const lang = navigator.language?.startsWith('es') ? 'es' : 'en';
-setLang(lang);
-</script>
-</body>
-</html>
+  document.querySel
