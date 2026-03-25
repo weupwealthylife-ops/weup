@@ -24,7 +24,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
   padding:16px 48px;background:rgba(11,36,24,.85);backdrop-filter:blur(16px);border-bottom:.5px solid var(--w08);}
 .nav-logo{font-family:var(--ff-d);font-size:24px;color:var(--w);text-decoration:none;display:flex;align-items:center;gap:8px}
-.nav-logo .dot{display:none}
+.nav-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--light)}
 .nav-back{font-size:14px;color:var(--light);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:6px}
 .nav-back:hover{color:var(--w)}
 .nav-user{font-size:13px;color:var(--w50)}
@@ -93,7 +93,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 <body>
 
 <nav>
-  <a href="/dashboard.html" class="nav-logo" style="gap:10px"><img src="/Logo_WeUp.png" alt="WeUp" style="height:32px;width:32px;object-fit:contain;border-radius:10px;flex-shrink:0"><span style="font-family:var(--ff-d);font-size:22px;letter-spacing:-0.3px">WeUp</span></a>
+  <a href="/dashboard.html" class="nav-logo"><span class="dot"></span>WeUp</a>
   <span class="nav-user" id="nav-user"></span>
   <a href="/dashboard.html" class="nav-back">
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -235,181 +235,224 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
   <button class="btn-upgrade primary" style="max-width:260px" onclick="showUpgradePage()">Try again</button>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
+<script>
 const SUPA_URL='https://tnkydfulsrzihlohchhc.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
-const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
-const MP_ACCESS_TOKEN='APP_USR-1269418378848212-032301-a19b6c9425e7550b4323f0c16433955e-2210995499';
-const PRICES={
-  monthly:{pro:{amount:4.99,label:'$4.99',period:'/month'},family:{amount:9.99,label:'$9.99',period:'/month'}},
-  yearly: {pro:{amount:39.00,label:'$39',period:'/year · $3.25/mo'},family:{amount:79.00,label:'$79',period:'/year · $6.58/mo'}}
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ── MercadoPago config ────────────────────────────────────────────────────────
+// Uses /preapproval (subscription) endpoint with 14-day free trial
+const MP_TOKEN = 'APP_USR-1269418378848212-032301-a19b6c9425e7550b4323f0c16433955e-2210995499';
+const PRICES = {
+  monthly: {
+    pro:    { amount: 4.99,  label: '$4.99',  period: '/month' },
+    family: { amount: 9.99,  label: '$9.99',  period: '/month' }
+  },
+  yearly: {
+    pro:    { amount: 3.25,  label: '$3.25',  period: '/month, billed $39/yr' },
+    family: { amount: 6.58,  label: '$6.58',  period: '/month, billed $79/yr' }
+  }
 };
-let billing='monthly';
-let currentUser=null;
 
-window.addEventListener('DOMContentLoaded',async()=>{
-  const params=new URLSearchParams(window.location.search);
-  const status=params.get('status')||params.get('collection_status');
-  if(status==='approved'){showState('success');return;}
-  if(status==='pending'||status==='in_process'){showState('pending');return;}
-  if(status==='rejected'||status==='failure'){showState('failure');return;}
-
-  // Pre-select plan from URL
-  const urlPlan = params.get('plan');
-  if(urlPlan==='family'){
-    document.getElementById('btn-fam').classList.add('primary');
-    document.getElementById('btn-fam').classList.remove('ghost');
-    document.querySelector('.plan-card:last-child').classList.add('featured');
-  }
-
-  const {data:{session}}=await sb.auth.getSession();
-  if(session){
-    currentUser=session.user;
-    const name=session.user.user_metadata?.full_name?.split(' ')[0]||session.user.email.split('@')[0];
-    document.getElementById('nav-user').textContent=name;
-  }
-});
-
-function toggleBilling(){
-  billing=billing==='monthly'?'yearly':'monthly';
-  document.getElementById('billing-toggle').classList.toggle('yearly',billing==='yearly');
-  document.getElementById('lbl-monthly').classList.toggle('active',billing==='monthly');
-  document.getElementById('lbl-yearly').classList.toggle('active',billing==='yearly');
-  const p=PRICES[billing];
-  document.getElementById('pro-price').textContent=p.pro.label;
-  document.getElementById('pro-period').textContent=p.pro.period;
-  document.getElementById('fam-price').textContent=p.family.label;
-  document.getElementById('fam-period').textContent=p.family.period;
-}
-
-async function startCheckout(plan){
-  const btnId=plan==='pro'?'btn-pro':'btn-fam';
-  const btn=document.getElementById(btnId);
-  btn.disabled=true;
-  btn.querySelector('span').textContent='Loading...';
-  const price=PRICES[billing][plan];
-  const userEmail=currentUser?.email||'';
-  const userName=currentUser?.user_metadata?.full_name||'WeUp User';
-  const preference={
-    items:[{
-      title:`WeUp ${plan.charAt(0).toUpperCase()+plan.slice(1)} - ${billing==='yearly'?'Annual':'Monthly'}`,
-      quantity:1,
-      unit_price:price.amount,
-      currency_id:'USD',
-    }],
-    payer:{email:userEmail,name:userName},
-    back_urls:{
-      success:`${window.location.origin}/upgrade.html?status=approved&plan=${plan}`,
-      failure:`${window.location.origin}/upgrade.html?status=rejected`,
-      pending:`${window.location.origin}/upgrade.html?status=pending`,
-    },
-    auto_return:'approved',
-    external_reference:`weup_${plan}_${billing}_${currentUser?.id||'guest'}`,
-    statement_descriptor:'WEUP APP',
-  };
-  try{
-    const res=await fetch('https://api.mercadopago.com/checkout/preferences',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${MP_ACCESS_TOKEN}`},
-      body:JSON.stringify(preference)
-    });
-    const data=await res.json();
-    if(data.init_point){
-      window.location.href=data.init_point;
-    }else{
-      throw new Error(data.message||'Could not create payment');
-    }
-  }catch(err){
-    btn.disabled=false;
-    btn.querySelector('span').textContent='Start free trial';
-    alert('Error: '+err.message+'\n\nContact legal@weup.app if this persists.');
-  }
-}
-
-function showState(state){
-  document.getElementById('upgrade-page').style.display='none';
-  document.querySelectorAll('.state-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('state-'+state).classList.add('active');
-  if(state==='success')updateUserPlan();
-}
-
-function showUpgradePage(){
-  document.getElementById('upgrade-page').style.display='block';
-  document.querySelectorAll('.state-page').forEach(p=>p.classList.remove('active'));
-  window.history.replaceState({},'','/upgrade.html');
-}
-
-async function updateUserPlan(){
-  const params=new URLSearchParams(window.location.search);
-  const plan=params.get('plan')||'pro';
-  const {data:{session}}=await sb.auth.getSession();
-  if(!session)return;
-  await sb.from('profiles').upsert({
-    id: session.user.id,
-    plan: plan,
-    plan_billing: billing,
-    onboarding_completed: true,
-    plan_activated_at: new Date().toISOString()
-  }, { onConflict: 'id' });
-}
-
-// ── Language ──────────────────────────────────────────────────────────────────
-let currentLang = navigator.language?.startsWith('es') ? 'es' : 'en';
-function setLang(lang) {
-  currentLang = lang;
-  document.querySelectorAll('[data-'+lang+']').forEach(el => {
-    const val = el.getAttribute('data-'+lang);
-    if (el.tagName === 'INPUT') el.placeholder = val;
-    else el.textContent = val;
-  });
-}
-
-// ── Billing toggle ────────────────────────────────────────────────────────────
 let billing = 'monthly';
-function toggleBilling() {
-  billing = billing === 'monthly' ? 'yearly' : 'monthly';
-  const track = document.getElementById('billing-toggle');
-  track.classList.toggle('yearly', billing === 'yearly');
-  document.querySelectorAll('.toggle-label').forEach((el,i) => {
-    el.classList.toggle('active', i === (billing === 'yearly' ? 1 : 0));
-  });
-  // Update prices displayed
-  const p = PRICES[billing];
-  document.getElementById('pro-price-val').textContent  = '$' + (p.pro.amount/100).toFixed(2);
-  document.getElementById('fam-price-val').textContent  = '$' + (p.family.amount/100).toFixed(2);
-  document.getElementById('pro-period-label').textContent  = billing === 'yearly' ? '/mo, billed yearly' : '/month';
-  document.getElementById('fam-period-label').textContent  = billing === 'yearly' ? '/mo, billed yearly' : '/month';
-}
-
-// ── FAQ accordion ─────────────────────────────────────────────────────────────
-function toggleFaq(el) {
-  el.closest('.faq-item').classList.toggle('open');
-}
+let currentUser = null;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-let currentUser = null;
 window.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+
+  // Handle MercadoPago return
+  const status = params.get('status') || params.get('collection_status');
+  if (status === 'approved')                         { showState('success'); return; }
+  if (status === 'pending' || status === 'in_process') { showState('pending'); return; }
+  if (status === 'rejected' || status === 'failure')   { showState('failure'); return; }
+
+  // Load session
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
-    document.querySelectorAll('.nav-user').forEach(el => {
-      el.textContent = session.user.user_metadata?.full_name || session.user.email;
-    });
+    const name = session.user.user_metadata?.full_name?.split(' ')[0]
+               || session.user.email.split('@')[0];
+    document.getElementById('nav-user').textContent = name;
+
+    // If already on a paid plan — show current plan state
+    const { data: profile } = await sb.from('profiles')
+      .select('plan')
+      .eq('id', session.user.id)
+      .single();
+    if (profile?.plan === 'pro' || profile?.plan === 'family') {
+      markCurrentPlan(profile.plan);
+    }
   }
 
-  // Check for payment return
-  const params = new URLSearchParams(window.location.search);
-  const status = params.get('status');
-  if (status === 'approved') { showState('success'); return; }
-  if (status === 'rejected') { showState('error'); return; }
-  if (status === 'pending')  { showState('success'); return; } // treat pending as success for UX
-
-  // Pre-select plan from URL
-  const planParam = params.get('plan');
-  if (planParam) {
-    const planLabel = document.querySelector('.plan-card.featured .plan-name');
-  }
+  // Pre-highlight plan from URL
+  const urlPlan = params.get('plan');
+  if (urlPlan === 'family') highlightPlan('family');
 });
+
+// ── Billing toggle ────────────────────────────────────────────────────────────
+function toggleBilling() {
+  billing = billing === 'monthly' ? 'yearly' : 'monthly';
+  document.getElementById('billing-toggle').classList.toggle('yearly', billing === 'yearly');
+  document.getElementById('lbl-monthly').classList.toggle('active', billing === 'monthly');
+  document.getElementById('lbl-yearly').classList.toggle('active', billing === 'yearly');
+  const p = PRICES[billing];
+  document.getElementById('pro-price').textContent  = p.pro.label;
+  document.getElementById('pro-period').textContent  = p.pro.period;
+  document.getElementById('fam-price').textContent  = p.family.label;
+  document.getElementById('fam-period').textContent = p.family.period;
+}
+
+// ── Mark current plan (if already subscribed) ─────────────────────────────────
+function markCurrentPlan(plan) {
+  const btnId = plan === 'pro' ? 'btn-pro' : 'btn-fam';
+  const btn = document.getElementById(btnId);
+  btn.className = 'btn-upgrade current';
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Current plan';
+}
+
+function highlightPlan(plan) {
+  if (plan === 'family') {
+    const card = document.querySelector('.plan-card:last-child');
+    card.classList.add('featured');
+    const btn = document.getElementById('btn-fam');
+    btn.className = 'btn-upgrade primary';
+  }
+}
+
+// ── Checkout: session guard + MercadoPago subscription ───────────────────────
+async function startCheckout(plan) {
+  // 1. Guard: must be logged in
+  if (!currentUser) {
+    sessionStorage.setItem('weup_plan_intent', plan);
+    window.location.href = '/?modal=signup&plan=' + plan;
+    return;
+  }
+
+  const btnId = plan === 'pro' ? 'btn-pro' : 'btn-fam';
+  const btn   = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Setting up trial...';
+
+  const price     = PRICES[billing][plan];
+  const userEmail = currentUser.email;
+  const userName  = currentUser.user_metadata?.full_name || 'WeUp User';
+  const ref       = `weup_${plan}_${billing}_${currentUser.id}`;
+
+  // 2. MercadoPago /preapproval = subscription with free trial
+  const payload = {
+    reason:           `WeUp ${plan.charAt(0).toUpperCase() + plan.slice(1)} – ${billing === 'yearly' ? 'Annual' : 'Monthly'}`,
+    external_reference: ref,
+    payer_email:      userEmail,
+    card_token_id:    undefined,          // MP collects card on hosted page
+    auto_recurring: {
+      frequency:        billing === 'yearly' ? 12 : 1,
+      frequency_type:   'months',
+      transaction_amount: billing === 'yearly'
+                          ? (plan === 'pro' ? 39.00 : 79.00)
+                          : price.amount,
+      currency_id:      'USD',
+      free_trial: {
+        frequency:      14,
+        frequency_type: 'days'
+      }
+    },
+    back_url: `${window.location.origin}/upgrade.html?status=approved&plan=${plan}&ref=${ref}`,
+    status:   'pending'
+  };
+
+  try {
+    const res = await fetch('https://api.mercadopago.com/preapproval', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${MP_TOKEN}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (data.init_point) {
+      // Save plan intent to DB before redirecting
+      await sb.from('profiles').upsert({
+        id:                   currentUser.id,
+        plan_intent:          plan,
+        plan_billing:         billing,
+        onboarding_completed: true
+      }, { onConflict: 'id' });
+
+      window.location.href = data.init_point;
+
+    } else if (data.sandbox_init_point) {
+      // Sandbox/test mode fallback
+      window.location.href = data.sandbox_init_point;
+
+    } else {
+      throw new Error(data.message || JSON.stringify(data));
+    }
+
+  } catch (err) {
+    console.error('Checkout error:', err);
+    btn.disabled = false;
+    btn.querySelector('span').textContent = 'Start free trial';
+    showToast('Could not start checkout: ' + err.message);
+  }
+}
+
+// ── Post-payment: update Supabase profile ─────────────────────────────────────
+async function updateUserPlan() {
+  const params = new URLSearchParams(window.location.search);
+  const plan   = params.get('plan') || 'pro';
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+
+  await sb.from('profiles').upsert({
+    id:                   session.user.id,
+    plan:                 plan,
+    plan_billing:         billing,
+    onboarding_completed: true,
+    plan_activated_at:    new Date().toISOString(),
+    trial_ends_at:        new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+  }, { onConflict: 'id' });
+}
+
+// ── State pages ───────────────────────────────────────────────────────────────
+function showState(state) {
+  document.getElementById('upgrade-page').style.display = 'none';
+  document.querySelectorAll('.state-page').forEach(p => p.classList.remove('active'));
+  document.getElementById('state-' + state).classList.add('active');
+  if (state === 'success') updateUserPlan();
+}
+
+function showUpgradePage() {
+  document.getElementById('upgrade-page').style.display = 'block';
+  document.querySelectorAll('.state-page').forEach(p => p.classList.remove('active'));
+  window.history.replaceState({}, '', '/upgrade.html');
+}
+
+// ── FAQ accordion ─────────────────────────────────────────────────────────────
+function toggleFaq(btn) {
+  btn.closest('.faq-item').classList.toggle('open');
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0D2B1E;border:0.5px solid rgba(95,220,154,.3);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.4)';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 4000);
+}
 </script>
 </body>
 </html>
