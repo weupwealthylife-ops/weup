@@ -365,19 +365,31 @@ async function startCheckout(plan) {
   };
 
   try {
-    const res = await fetch('https://api.mercadopago.com/preapproval', {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${MP_TOKEN}`
-      },
-      body: JSON.stringify(payload)
-    });
+    // Call Supabase Edge Function (avoids CORS — MercadoPago blocks direct browser calls)
+    const res = await fetch(
+      `${SUPA_URL}/functions/v1/create-checkout`,
+      {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'apikey':        SUPA_KEY,
+        },
+        body: JSON.stringify({
+          plan,
+          billing,
+          userId:    currentUser.id,
+          userEmail: currentUser.email,
+          userName:  currentUser.user_metadata?.full_name || 'WeUp User',
+          origin:    window.location.origin,
+        }),
+      }
+    );
 
     const data = await res.json();
 
-    if (data.init_point) {
-      // Save plan intent to DB before redirecting
+    if (data.url) {
+      // Save plan intent before leaving
       await sb.from('profiles').upsert({
         id:                   currentUser.id,
         plan_intent:          plan,
@@ -385,14 +397,10 @@ async function startCheckout(plan) {
         onboarding_completed: true
       }, { onConflict: 'id' });
 
-      window.location.href = data.init_point;
-
-    } else if (data.sandbox_init_point) {
-      // Sandbox/test mode fallback
-      window.location.href = data.sandbox_init_point;
+      window.location.href = data.url;
 
     } else {
-      throw new Error(data.message || JSON.stringify(data));
+      throw new Error(data.error || 'Could not create checkout');
     }
 
   } catch (err) {
