@@ -367,7 +367,7 @@ async function startCheckout(plan) {
   try {
     // Call Supabase Edge Function (avoids CORS — MercadoPago blocks direct browser calls)
     const res = await fetch(
-      `${SUPA_URL}/functions/v1/create-checkout`,
+      `${SUPA_URL}/functions/v1/dynamic-endpoint`,
       {
         method:  'POST',
         headers: {
