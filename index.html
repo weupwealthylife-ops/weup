@@ -199,6 +199,33 @@ nav{
   padding:8px 22px 0;font-size:10px;font-weight:600;color:var(--w50);
 }
 .phone-body{padding:14px 18px;flex:1}
+/* ── Phone staggered entrance animations ── */
+/* Shared base: everything starts invisible */
+.phone-greeting,.phone-name,.phone-bal-card,
+.phone-section-title,.phone-tx,.phone-insight{
+  opacity:0;
+}
+/* Each element fades up with its own delay */
+.phone-greeting { animation:phoneFadeUp 0.4s ease-out 0.3s both }
+.phone-name      { animation:phoneFadeUp 0.4s ease-out 0.5s both }
+.phone-bal-card  { animation:phoneFadeUp 0.45s ease-out 0.75s both }
+.phone-section-title { animation:phoneFadeUp 0.35s ease-out 1.0s both }
+/* Transactions: staggered one by one */
+.phone-tx:nth-child(1){ animation:phoneTxSlide 0.4s ease-out 1.15s both }
+.phone-tx:nth-child(2){ animation:phoneTxSlide 0.4s ease-out 1.35s both }
+.phone-tx:nth-child(3){ animation:phoneTxSlide 0.4s ease-out 1.55s both }
+/* AI insight: last — feels like it just "calculated" */
+.phone-insight { animation:phoneFadeUp 0.45s ease-out 1.85s both }
+
+@keyframes phoneFadeUp{
+  from{ opacity:0; transform:translateY(7px) }
+  to  { opacity:1; transform:translateY(0) }
+}
+@keyframes phoneTxSlide{
+  from{ opacity:0; transform:translateX(-6px) }
+  to  { opacity:1; transform:translateX(0) }
+}
+
 .phone-greeting{font-size:11px;color:var(--w50);margin-bottom:2px}
 .phone-name{font-size:16px;font-weight:600;margin-bottom:18px}
 .phone-bal-card{
@@ -240,19 +267,31 @@ nav{
 .phone-tx-amt{font-size:12px;font-weight:600}
 .neg{color:#F87171}.pos{color:var(--light)}
 
-/* card behind phone */
-.float-card{
-  position:absolute;bottom:-72px;right:-52px;z-index:3;
-  width:196px;height:118px;
-  background:var(--brand);border-radius:16px;padding:16px 18px;
-  box-shadow:0 24px 48px rgba(0,0,0,0.5),0 0 0 0.5px rgba(255,255,255,0.10);
-  transform:rotate(6deg);
-  display:flex;flex-direction:column;justify-content:space-between;
+/* AI Insight inside phone */
+.phone-insight{
+  margin:12px 0 4px;
+  background:rgba(255,255,255,0.05);
+  border:0.5px solid rgba(95,220,154,0.22);
+  border-radius:12px;
+  padding:10px 12px;
+  /* animation handled by shared phoneFadeUp above */
 }
-.card-chip{width:28px;height:20px;background:rgba(255,255,255,0.22);border-radius:10px}
-.card-bottom{display:flex;justify-content:space-between;align-items:flex-end}
-.card-name{font-size:9px;font-weight:500;letter-spacing:0.06em;color:var(--w50);text-transform:uppercase}
-.card-logo-text{font-family:var(--ff-d);font-size:14px;color:var(--w80)}
+.phone-insight-header{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.phone-insight-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--light);flex-shrink:0;
+  animation:pulse 2.5s ease-in-out 2.5s infinite;
+  opacity:0;
+  /* starts hidden, fades in with insight block via parent animation */
+}
+.phone-insight-label{font-size:9px;font-weight:600;color:var(--light);letter-spacing:0.07em;text-transform:uppercase}
+.phone-insight-text{font-size:11px;color:var(--w80);line-height:1.4;margin-bottom:8px}
+.phone-insight-text strong{color:var(--w);font-weight:600}
+.phone-insight-bar-track{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-bottom:5px}
+.phone-insight-bar-fill{height:100%;background:var(--light);border-radius:2px;width:0%;animation:barFill 0.7s ease-out 2.4s forwards}
+@keyframes barFill{to{width:68%}}
+.phone-insight-footer{display:flex;justify-content:space-between;align-items:center}
+.phone-insight-pct{font-size:10px;font-weight:600;color:var(--light)}
+.phone-insight-goal{font-size:10px;color:var(--w50)}
 
 /* ── Stats ── */
 .stats-strip{
@@ -625,18 +664,26 @@ nav{
                   <div class="phone-tx-amt pos">+$3,050</div>
                 </div>
               </div>
+
+              <!-- AI Insight section inside phone -->
+              <div class="phone-insight">
+                <div class="phone-insight-header">
+                  <span class="phone-insight-dot"></span>
+                  <span class="phone-insight-label" id="bubble-label">AI Insight</span>
+                </div>
+                <p class="phone-insight-text" id="bubble-text">You saved <strong>34%</strong> this month — above average! 🎯</p>
+                <div class="phone-insight-bar-track">
+                  <div class="phone-insight-bar-fill" id="bubble-bar"></div>
+                </div>
+                <div class="phone-insight-footer">
+                  <span class="phone-insight-pct" id="bubble-pct">68% to goal</span>
+                  <span class="phone-insight-goal" id="bubble-goal">Vacation 🌴</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Card -->
-        <div class="float-card">
-          <div class="card-chip"></div>
-          <div class="card-bottom">
-            <div class="card-name">ANA GARCIA</div>
-            <div class="card-logo-text"><img src="/Logo_WeUp.png" alt="WeUp" style="height:18px;width:18px;object-fit:contain;border-radius:6px;opacity:0.85"></div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -1024,6 +1071,15 @@ function setLang(lang) {
   document.getElementById('ph-food').textContent = ph.food;
   document.getElementById('ph-leisure').textContent = ph.leisure;
   document.getElementById('ph-inc').textContent = ph.inc;
+  // Bubble bilingual
+  const bub = {
+    en: { label:'AI Insight', text:'You saved <strong>34%</strong> of your income this month — above average! 🎯', pct:'68% to goal', goal:'Vacation 🌴' },
+    es: { label:'IA Insight',  text:'Ahorraste el <strong>34%</strong> de tus ingresos este mes — ¡por encima del promedio! 🎯', pct:'68% a la meta', goal:'Vacaciones 🌴' }
+  }[lang];
+  document.getElementById('bubble-label').textContent = bub.label;
+  document.getElementById('bubble-text').innerHTML   = bub.text;
+  document.getElementById('bubble-pct').textContent  = bub.pct;
+  document.getElementById('bubble-goal').textContent = bub.goal;
 }
 
 function openModal(tab = 'login') {
