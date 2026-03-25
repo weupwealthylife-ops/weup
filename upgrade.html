@@ -22,9 +22,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   radial-gradient(ellipse 50% 40% at 110% 100%,rgba(26,92,58,.18) 0%,transparent 55%),
   linear-gradient(160deg,#0B2418 0%,#0D2B1E 40%,#0A1F16 100%);}
 nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
-  padding:16px 48px;background:rgba(11,36,24,.85);backdrop-filter:blur(16px);border-bottom:.5px solid var(--w08);}
+  padding:16px 48px;background:rgba(15,45,30,.80);backdrop-filter:blur(20px);border-bottom:.5px solid rgba(255,255,255,0.10);}
 .nav-logo{font-family:var(--ff-d);font-size:24px;color:var(--w);text-decoration:none;display:flex;align-items:center;gap:8px}
-.nav-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--light)}
+.nav-logo .dot{display:none}
 .nav-back{font-size:14px;color:var(--light);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:6px}
 .nav-back:hover{color:var(--w)}
 .nav-user{font-size:13px;color:var(--w50)}
@@ -93,7 +93,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 <body>
 
 <nav>
-  <a href="/dashboard.html" class="nav-logo"><span class="dot"></span>WeUp</a>
+  <a href="/dashboard.html" class="nav-logo" style="gap:10px"><img src="/Logo_WeUp.png" alt="WeUp" style="height:30px;width:30px;object-fit:contain;border-radius:10px;flex-shrink:0"><span style="font-family:var(--ff-d);font-size:22px;letter-spacing:-0.3px">WeUp</span></a>
   <span class="nav-user" id="nav-user"></span>
   <a href="/dashboard.html" class="nav-back">
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
