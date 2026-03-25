@@ -246,13 +246,14 @@ const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 // Uses /preapproval (subscription) endpoint with 14-day free trial
 const MP_TOKEN = 'APP_USR-1269418378848212-032301-a19b6c9425e7550b4323f0c16433955e-2210995499';
 const PRICES = {
+  // label = what user sees (USD), amount = what MercadoPago receives (COP)
   monthly: {
-    pro:    { amount: 4.99,  label: '$4.99',  period: '/month' },
-    family: { amount: 9.99,  label: '$9.99',  period: '/month' }
+    pro:    { amount: 19900,  label: '$4.99',  period: '/month' },
+    family: { amount: 39900,  label: '$9.99',  period: '/month' }
   },
   yearly: {
-    pro:    { amount: 3.25,  label: '$3.25',  period: '/month, billed $39/yr' },
-    family: { amount: 6.58,  label: '$6.58',  period: '/month, billed $79/yr' }
+    pro:    { amount: 155000, label: '$3.25',  period: '/month · billed $39/yr' },
+    family: { amount: 315000, label: '$6.58',  period: '/month · billed $79/yr' }
   }
 };
 
