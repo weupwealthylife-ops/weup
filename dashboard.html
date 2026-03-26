@@ -1171,7 +1171,14 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 <script>
 const SUPA_URL = 'https://tnkydfulsrzihlohchhc.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRua3lkZnVsc3J6aWhsb2hjaGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM2NjYsImV4cCI6MjA4OTYwOTY2Nn0.ZIlHCk1FtEjdUriF8ikWIEttz9G9Xk1ddzTvFJnqcLw';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
+  auth: {
+    detectSessionInUrl: true,
+    flowType: 'implicit',
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+});
 
 let currentUser = null;
 let transactions = [];
@@ -1179,35 +1186,44 @@ let currentLang = 'en';
 let txType = 'expense';
 let donutChart, barChart, lineChart, budgetChart;
 
-// ── Boot ───────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', async () => {
+// ── Boot ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
   // Set today's date in modal
   document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
 
-  // ── Auth boot ─────────────────────────────────────────────────────────────
-  // Supabase auto-parses #access_token from the URL hash when initialized.
-  // Wait one tick so it finishes, THEN call getSession — never clear hash first.
+  // ── Single auth listener — handles ALL cases ──────────────────────────────
+  // INITIAL_SESSION fires once on every page load with the current session.
+  // It handles: normal loads, OAuth redirects, token refreshes — everything.
+  // This is the correct Supabase v2 pattern. No getSession() race conditions.
+  let booted = false;
 
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') window.location.href = '/';
+  sb.auth.onAuthStateChange(async (event, session) => {
+
+    // Clean up the URL hash if it has OAuth tokens (cosmetic — already parsed)
+    if (window.location.hash.includes('access_token')) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    if (event === 'INITIAL_SESSION') {
+      if (!session) {
+        gateError('You need to <a href="/">sign in</a> to access your dashboard.');
+        return;
+      }
+      if (!booted) {
+        booted = true;
+        await handleSession(session);
+      }
+    }
+
+    if (event === 'SIGNED_IN' && !booted) {
+      booted = true;
+      await handleSession(session);
+    }
+
+    if (event === 'SIGNED_OUT') {
+      window.location.href = '/';
+    }
   });
-
-  // 150ms tick — lets Supabase JS finish parsing the OAuth hash token
-  await new Promise(r => setTimeout(r, 150));
-
-  const { data: { session } } = await sb.auth.getSession();
-
-  // Safe to clean the URL now (Supabase already consumed the hash)
-  if (window.location.hash.includes('access_token')) {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-
-  if (!session) {
-    gateError('You need to <a href="/">sign in</a> to access your dashboard.');
-    return;
-  }
-
-  await handleSession(session);
 });
 
 // ── Gate step animator ──────────────────────────────────────────────────────
