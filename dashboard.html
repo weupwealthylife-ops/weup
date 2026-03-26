@@ -1190,49 +1190,42 @@ let donutChart, barChart, lineChart, budgetChart;
 window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
 
-  // ── If URL has OAuth hash token, manually inject it into Supabase ─────────
-  // The CDN build of Supabase v2 does NOT always auto-parse #access_token.
-  // We parse it ourselves and call setSession() directly — 100% reliable.
-  if (window.location.hash.includes('access_token')) {
-    try {
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      const access_token  = params.get('access_token');
-      const refresh_token = params.get('refresh_token');
+  // Sign-out listener (always register first)
+  sb.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') window.location.href = '/';
+  });
 
-      if (access_token && refresh_token) {
-        // Manually set the session — bypasses all event/timing issues
-        const { data, error } = await sb.auth.setSession({ access_token, refresh_token });
-        // Clean URL immediately
-        window.history.replaceState({}, document.title, window.location.pathname);
-        if (!error && data?.session) {
-          setupSignOutListener();
+  // ── OAuth redirect: parse hash and set session manually ───────────────────
+  if (window.location.hash.includes('access_token')) {
+    const params  = new URLSearchParams(window.location.hash.substring(1));
+    const at      = params.get('access_token');
+    const rt      = params.get('refresh_token');
+    // Clean URL right away — looks better while we process
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    if (at && rt) {
+      try {
+        const { data, error } = await sb.auth.setSession({ access_token: at, refresh_token: rt });
+        if (!error && data.session) {
           await handleSession(data.session);
           return;
         }
+        console.error('setSession error:', error);
+      } catch(e) {
+        console.error('setSession exception:', e);
       }
-    } catch(e) {
-      console.warn('Hash parse failed, falling back:', e);
     }
-    // Clean URL even if parsing failed
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // If setSession failed, fall through to getSession below
   }
 
-  // ── Normal load — check existing stored session ───────────────────────────
-  const { data: { session } } = await sb.auth.getSession();
+  // ── Normal / fallback load ────────────────────────────────────────────────
+  const { data: { session }, error } = await sb.auth.getSession();
   if (!session) {
     gateError('You need to <a href="/">sign in</a> to access your dashboard.');
     return;
   }
-  setupSignOutListener();
   await handleSession(session);
 });
-
-function setupSignOutListener() {
-  sb.auth.onAuthStateChange((event) => {
-    if (event === 'SIGNED_OUT') window.location.href = '/';
-  });
-}
 
 // ── Gate step animator ──────────────────────────────────────────────────────
 function gateStep(n, done_prev=true) {
@@ -1910,7 +1903,7 @@ async function loadSettingsPlan() {
   document.getElementById('settings-plan-desc').textContent = planDescs[plan] || '';
   // Change upgrade button to "Manage" if already on paid plan
   if (plan !== 'free') {
-    const upgradeBtn = document.querySelector('[onclick="window.location.href='/upgrade.html'"]');
+    const upgradeBtn = document.querySelector('.btn-primary[onclick*="upgrade.html"]');
     if (upgradeBtn) { upgradeBtn.textContent = currentLang==='es'?'Gestionar':'Manage'; upgradeBtn.className='btn btn-ghost'; upgradeBtn.style.fontSize='12px'; }
   }
   // Currency selector
