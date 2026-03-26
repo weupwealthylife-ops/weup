@@ -223,11 +223,38 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .tx-info{flex:1;min-width:0}
 .tx-name{font-size:14px;font-weight:500;color:var(--text)}
 .tx-cat{font-size:12px;color:var(--text3);margin-top:1px}
-.tx-right{text-align:right;flex-shrink:0}
+.tx-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .tx-amt{font-size:14px;font-weight:600}
 .tx-amt.neg{color:var(--expense)}
 .tx-amt.pos{color:var(--income)}
-.tx-date{font-size:11px;color:var(--text3);margin-top:2px}
+.tx-date{font-size:11px;color:var(--text3)}
+.tx-actions{display:flex;gap:4px;opacity:0;transition:opacity 0.15s}
+.tx-item:hover .tx-actions,.tx-item:focus-within .tx-actions{opacity:1}
+.tx-act{
+  width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:10px;
+  background:var(--bg2);color:var(--text3);transition:all 0.15s;flex-shrink:0;
+}
+.tx-act:hover{background:var(--border2);color:var(--text)}
+.tx-act.del:hover{background:#FEE2E2;color:#DC2626}
+/* Confirm delete banner */
+.confirm-bar{
+  display:none;background:#FEF2F2;border:1px solid #FECACA;
+  border-radius:8px;padding:10px 14px;margin:4px 0;
+  font-size:13px;color:#991B1B;align-items:center;justify-content:space-between;gap:8px;
+}
+.confirm-bar.show{display:flex}
+/* Budget set modal */
+.budget-set-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(13,43,30,0.55);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:16px;
+}
+.budget-set-overlay.open{display:flex}
+.budget-set-modal{
+  background:var(--card);border-radius:20px;padding:28px;
+  width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.15);
+}
 
 /* ── Budget bars ── */
 .budget-list{display:flex;flex-direction:column;gap:16px}
@@ -740,17 +767,22 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
         <div class="topbar">
           <div class="topbar-left">
             <h1 data-en="Budgets" data-es="Presupuestos">Budgets</h1>
-            <p data-en="Track your spending limits this month" data-es="Controla tus límites de gasto este mes">Track your spending limits this month</p>
+            <p data-en="Set monthly limits and track your spending" data-es="Fija límites mensuales y controla tus gastos">Set limits, track spending</p>
+          </div>
+          <div class="topbar-right">
+            <button class="btn btn-primary" onclick="openBudgetModal()">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+              <span data-en="Set budget" data-es="Fijar presupuesto">Set budget</span>
+            </button>
           </div>
         </div>
         <div class="two-col">
           <div class="card">
             <div class="section-header">
-              <div class="section-title" data-en="Monthly budget" data-es="Presupuesto mensual">Monthly budget</div>
+              <div class="section-title" data-en="Monthly budgets" data-es="Presupuestos mensuales">Monthly budgets</div>
+              <a class="section-link" onclick="openBudgetModal()" data-en="Edit" data-es="Editar">Edit</a>
             </div>
-            <div class="budget-list" id="budget-list">
-              <!-- Populated by JS -->
-            </div>
+            <div class="budget-list" id="budget-list"></div>
           </div>
           <div class="card">
             <div class="section-header">
@@ -797,44 +829,92 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
             <p data-en="Manage your account and preferences" data-es="Administra tu cuenta y preferencias">Manage your account and preferences</p>
           </div>
         </div>
+        <!-- Profile -->
         <div class="settings-section">
           <div class="settings-title" data-en="Profile" data-es="Perfil">Profile</div>
           <div class="settings-item">
             <div class="settings-item-left">
-              <div class="settings-item-icon" style="background:#D1FAE5">👤</div>
-              <div><div class="settings-label" id="settings-name">-</div><div class="settings-desc" id="settings-email">-</div></div>
+              <div class="settings-item-icon" style="background:#D1FAE5;font-size:18px" id="settings-avatar-icon">👤</div>
+              <div>
+                <div class="settings-label" id="settings-name">-</div>
+                <div class="settings-desc" id="settings-email">-</div>
+              </div>
             </div>
-            <div class="settings-value">Edit</div>
+            <span class="settings-value" style="font-size:12px;color:var(--text3)" data-en="Google account" data-es="Cuenta Google">Google account</span>
           </div>
         </div>
+
+        <!-- Plan -->
+        <div class="settings-section">
+          <div class="settings-title" data-en="Plan" data-es="Plan">Plan</div>
+          <div class="settings-item">
+            <div class="settings-item-left">
+              <div class="settings-item-icon" style="background:#FEF3C7">⚡</div>
+              <div>
+                <div class="settings-label" id="settings-plan-name" data-en="Free plan" data-es="Plan gratuito">Free plan</div>
+                <div class="settings-desc" id="settings-plan-desc" data-en="30 transactions/month · Basic reports" data-es="30 transacciones/mes · Reportes básicos">30 transactions/month · Basic reports</div>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="window.location.href='/upgrade.html'" style="font-size:12px;padding:7px 14px" data-en="Upgrade →" data-es="Mejorar →">Upgrade →</button>
+          </div>
+        </div>
+
+        <!-- Preferences -->
         <div class="settings-section">
           <div class="settings-title" data-en="Preferences" data-es="Preferencias">Preferences</div>
           <div class="settings-item">
             <div class="settings-item-left">
               <div class="settings-item-icon" style="background:#EDE9FE">🌎</div>
-              <div><div class="settings-label" data-en="Language" data-es="Idioma">Language</div><div class="settings-desc" data-en="English / Spanish" data-es="Inglés / Español">English / Spanish</div></div>
+              <div>
+                <div class="settings-label" data-en="Language" data-es="Idioma">Language</div>
+                <div class="settings-desc" data-en="English / Spanish" data-es="Inglés / Español">English / Spanish</div>
+              </div>
             </div>
             <div style="display:flex;gap:4px">
-              <button onclick="setLang('en')" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)">EN</button>
-              <button onclick="setLang('es')" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)">ES</button>
+              <button id="btn-lang-en" onclick="setLang('en')" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:all 0.2s">EN</button>
+              <button id="btn-lang-es" onclick="setLang('es')" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:all 0.2s">ES</button>
             </div>
           </div>
           <div class="settings-item">
             <div class="settings-item-left">
-              <div class="settings-item-icon" style="background:#FEF3C7">💰</div>
-              <div><div class="settings-label" data-en="Currency" data-es="Moneda">Currency</div><div class="settings-desc">COP / MXN / USD</div></div>
+              <div class="settings-item-icon" style="background:#FEF3C7">💱</div>
+              <div>
+                <div class="settings-label" data-en="Currency" data-es="Moneda">Currency</div>
+                <div class="settings-desc" data-en="Display currency for your transactions" data-es="Moneda para mostrar tus transacciones">Display currency</div>
+              </div>
             </div>
-            <div class="settings-value">COP</div>
+            <select id="currency-select" onchange="saveCurrency(this.value)" style="padding:6px 10px;border-radius:8px;border:1.5px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);color:var(--text)">
+              <option value="COP">🇨🇴 COP</option>
+              <option value="USD">🇺🇸 USD</option>
+              <option value="MXN">🇲🇽 MXN</option>
+            </select>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left">
+              <div class="settings-item-icon" style="background:#DBEAFE">🔔</div>
+              <div>
+                <div class="settings-label" data-en="Budget alerts" data-es="Alertas de presupuesto">Budget alerts</div>
+                <div class="settings-desc" data-en="Notify when 80% of budget is used" data-es="Notificar al usar el 80% del presupuesto">Notify at 80% of budget</div>
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;cursor:pointer">
+              <input type="checkbox" id="budget-alerts-toggle" onchange="saveBudgetAlerts(this.checked)" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" checked>
+            </label>
           </div>
         </div>
+
+        <!-- Danger zone -->
         <div class="settings-section">
           <div class="settings-title" data-en="Danger zone" data-es="Zona de peligro">Danger zone</div>
           <div class="settings-item">
             <div class="settings-item-left">
               <div class="settings-item-icon" style="background:#FEE2E2">🚪</div>
-              <div><div class="settings-label" data-en="Sign out" data-es="Cerrar sesión">Sign out</div><div class="settings-desc" data-en="Log out of your WeUp account" data-es="Salir de tu cuenta WeUp">Log out of your WeUp account</div></div>
+              <div>
+                <div class="settings-label" data-en="Sign out" data-es="Cerrar sesión">Sign out</div>
+                <div class="settings-desc" data-en="Log out of your WeUp account" data-es="Salir de tu cuenta WeUp">Log out of your WeUp account</div>
+              </div>
             </div>
-            <button class="btn btn-ghost" onclick="signOut()" style="font-size:13px;padding:7px 14px" data-en="Sign out" data-es="Salir">Sign out</button>
+            <button class="btn btn-ghost" onclick="signOut()" style="font-size:13px;padding:7px 14px;color:#DC2626;border-color:#FECACA" data-en="Sign out" data-es="Salir">Sign out</button>
           </div>
         </div>
       </div>
@@ -903,6 +983,68 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeAddModal()" data-en="Cancel" data-es="Cancelar">Cancel</button>
       <button class="btn btn-primary" onclick="saveTransaction()" id="save-btn" data-en="Save transaction" data-es="Guardar">Save transaction</button>
+    </div>
+  </div>
+</div>
+
+<!-- Budget Set Modal -->
+<div class="budget-set-overlay" id="budget-modal" onclick="if(event.target===this)closeBudgetModal()">
+  <div class="budget-set-modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-size:17px;font-weight:600;color:var(--text)" data-en="Set monthly budgets" data-es="Fijar presupuestos mensuales">Set monthly budgets</div>
+        <div style="font-size:13px;color:var(--text3);margin-top:2px" data-en="How much to spend per category" data-es="Cuánto gastar por categoría">How much per category</div>
+      </div>
+      <button onclick="closeBudgetModal()" style="width:28px;height:28px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:14px;color:var(--text3)">✕</button>
+    </div>
+    <div id="budget-inputs" style="display:flex;flex-direction:column;gap:10px;max-height:340px;overflow-y:auto;padding-right:4px"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-ghost" onclick="closeBudgetModal()" style="flex:1;justify-content:center" data-en="Cancel" data-es="Cancelar">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBudgets()" style="flex:2;justify-content:center" data-en="Save budgets" data-es="Guardar presupuestos">Save budgets</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Transaction Modal -->
+<div class="budget-set-overlay" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
+  <div class="budget-set-modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:17px;font-weight:600;color:var(--text)" data-en="Edit transaction" data-es="Editar transacción">Edit transaction</div>
+      <button onclick="closeEditModal()" style="width:28px;height:28px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:14px;color:var(--text3)">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-en="Amount" data-es="Monto">Amount</label>
+      <input type="number" class="form-input" id="edit-amount" placeholder="0.00" step="0.01">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-en="Description" data-es="Descripción">Description</label>
+      <input type="text" class="form-input" id="edit-desc">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-en="Category" data-es="Categoría">Category</label>
+      <select class="form-select" id="edit-category">
+        <option value="food">🛒 Food & groceries</option>
+        <option value="transport">🚌 Transport</option>
+        <option value="housing">🏠 Housing & utilities</option>
+        <option value="health">💊 Health</option>
+        <option value="leisure">🎬 Leisure & dining</option>
+        <option value="shopping">🛍️ Shopping & clothing</option>
+        <option value="education">📚 Education</option>
+        <option value="subscriptions">📱 Subscriptions</option>
+        <option value="salary">💼 Salary</option>
+        <option value="freelance">💻 Freelance</option>
+        <option value="savings">🏦 Savings</option>
+        <option value="other">📦 Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-en="Date" data-es="Fecha">Date</label>
+      <input type="date" class="form-input" id="edit-date">
+    </div>
+    <input type="hidden" id="edit-tx-id">
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-ghost" onclick="closeEditModal()" style="flex:1;justify-content:center" data-en="Cancel" data-es="Cancelar">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()" style="flex:2;justify-content:center" id="edit-save-btn" data-en="Save changes" data-es="Guardar cambios">Save changes</button>
     </div>
   </div>
 </div>
@@ -983,6 +1125,7 @@ async function bootApp() {
   await loadTransactions();
   renderDashboard();
   initCharts();
+  loadSettingsPlan();
 }
 
 // ── Load data ─────────────────────────────────────────────────────────────────
@@ -1043,18 +1186,29 @@ function renderTxList(containerId, txs) {
   }
   const catIcons = {food:'🛒',transport:'🚌',housing:'🏠',health:'💊',entertainment:'🎬',shopping:'🛍️',education:'📚',salary:'💼',freelance:'💻',other:'📦'};
   const catColors = {food:'#FEE2E2',transport:'#FEF3C7',housing:'#DBEAFE',health:'#D1FAE5',entertainment:'#EDE9FE',shopping:'#FCE7F3',education:'#E0F2FE',salary:'#D1FAE5',freelance:'#D1FAE5',other:'#F1F5F9'};
-  el.innerHTML = txs.map(t => `
-    <div class="tx-item">
+  el.innerHTML = txs.map(t => {
+    const catLabel = {
+      food:'Food',transport:'Transport',housing:'Housing',health:'Health',
+      leisure:'Leisure',shopping:'Shopping',education:'Education',
+      subscriptions:'Subscriptions',salary:'Salary',freelance:'Freelance',
+      savings:'Savings',other:'Other'
+    };
+    return `<div class="tx-item" id="tx-${t.id}">
       <div class="tx-icon" style="background:${catColors[t.category]||'#F1F5F9'}">${catIcons[t.category]||'📦'}</div>
       <div class="tx-info">
         <div class="tx-name">${t.description||'Transaction'}</div>
-        <div class="tx-cat">${t.category||'Other'}</div>
+        <div class="tx-cat">${catLabel[t.category]||t.category||'Other'}</div>
       </div>
       <div class="tx-right">
         <div class="tx-amt ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
         <div class="tx-date">${new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+        <div class="tx-actions">
+          <button class="tx-act" title="Edit" onclick="openEditModal('${t.id}')">✏️</button>
+          <button class="tx-act del" title="Delete" onclick="confirmDelete('${t.id}','${(t.description||'').replace(/'/g,'')}')" >🗑</button>
+        </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ── AI Insights — real Claude API ────────────────────────────────────────────
@@ -1247,11 +1401,12 @@ function initCharts() {
   });
 
   // Budget chart
-  const budgetLabels = Object.keys(BUDGETS).map(c=>c.charAt(0).toUpperCase()+c.slice(1));
-  const budgetSpent = Object.keys(BUDGETS).map(cat => {
+  const activeBudgets = Object.keys(userBudgets).length > 0 ? userBudgets : DEFAULT_BUDGETS;
+  const budgetLabels = Object.keys(activeBudgets).map(c=>c.charAt(0).toUpperCase()+c.slice(1));
+  const budgetSpent = Object.keys(activeBudgets).map(cat => {
     return thisMonth.filter(t=>t.category===cat).reduce((s,t)=>s+parseFloat(t.amount),0);
   });
-  const budgetLimits = Object.values(BUDGETS);
+  const budgetLimits = Object.values(activeBudgets);
   if (budgetChart) budgetChart.destroy();
   budgetChart = new Chart(document.getElementById('budget-chart'), {
     type: 'bar',
@@ -1424,6 +1579,180 @@ function showPage(id) {
   });
   // Scroll to top
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── DELETE TRANSACTION ────────────────────────────────────────────────────────
+function confirmDelete(id, desc) {
+  // Remove any existing confirm bars
+  document.querySelectorAll('.confirm-bar').forEach(b => b.remove());
+
+  const row = document.getElementById('tx-' + id);
+  if (!row) return;
+
+  const bar = document.createElement('div');
+  bar.className = 'confirm-bar show';
+  bar.id = 'confirm-' + id;
+  bar.innerHTML = `
+    <span data-en="Delete '${desc}'?" data-es="¿Eliminar '${desc}'?">Delete "${desc}"?</span>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <button onclick="document.getElementById('confirm-${id}').remove()" style="padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--bg);font-size:12px;cursor:pointer;font-family:var(--ff)" data-en="Cancel" data-es="No">Cancel</button>
+      <button onclick="deleteTransaction('${id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#DC2626;color:#fff;font-size:12px;cursor:pointer;font-weight:600;font-family:var(--ff)" data-en="Delete" data-es="Eliminar">Delete</button>
+    </div>`;
+  row.insertAdjacentElement('afterend', bar);
+}
+
+async function deleteTransaction(id) {
+  const { error } = await sb.from('transactions').delete().eq('id', id).eq('user_id', currentUser.id);
+  if (error) {
+    showToast('Error: ' + error.message);
+  } else {
+    showToast(currentLang === 'es' ? '🗑 Transacción eliminada' : '🗑 Transaction deleted');
+    await loadTransactions();
+    renderDashboard();
+    initCharts();
+  }
+}
+
+// ── EDIT TRANSACTION ──────────────────────────────────────────────────────────
+let editingTx = null;
+function openEditModal(id) {
+  editingTx = transactions.find(t => t.id == id);
+  if (!editingTx) return;
+  document.getElementById('edit-tx-id').value = editingTx.id;
+  document.getElementById('edit-amount').value = editingTx.amount;
+  document.getElementById('edit-desc').value = editingTx.description;
+  document.getElementById('edit-category').value = editingTx.category;
+  document.getElementById('edit-date').value = editingTx.date;
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editingTx = null;
+}
+async function saveEdit() {
+  const id     = document.getElementById('edit-tx-id').value;
+  const amount = parseFloat(document.getElementById('edit-amount').value);
+  const desc   = document.getElementById('edit-desc').value.trim();
+  const cat    = document.getElementById('edit-category').value;
+  const date   = document.getElementById('edit-date').value;
+  if (!amount || !desc) { showToast(currentLang==='es'?'Completa todos los campos':'Fill in all fields'); return; }
+  const btn = document.getElementById('edit-save-btn');
+  btn.disabled = true;
+  btn.textContent = currentLang==='es'?'Guardando...':'Saving...';
+  const { error } = await sb.from('transactions')
+    .update({ amount, description: desc, category: cat, date })
+    .eq('id', id).eq('user_id', currentUser.id);
+  if (error) {
+    showToast('Error: ' + error.message);
+  } else {
+    closeEditModal();
+    showToast(currentLang==='es'?'✓ Cambios guardados':'✓ Changes saved');
+    await loadTransactions();
+    renderDashboard();
+    initCharts();
+  }
+  btn.disabled = false;
+  btn.textContent = currentLang==='es'?'Guardar cambios':'Save changes';
+}
+
+// ── BUDGET MODAL ──────────────────────────────────────────────────────────────
+const BUDGET_CATS = [
+  { key:'food',      icon:'🛒', en:'Food & groceries',   es:'Alimentación' },
+  { key:'transport', icon:'🚌', en:'Transport',           es:'Transporte' },
+  { key:'housing',   icon:'🏠', en:'Housing & utilities', es:'Vivienda' },
+  { key:'health',    icon:'💊', en:'Health',              es:'Salud' },
+  { key:'leisure',   icon:'🎬', en:'Leisure & dining',    es:'Ocio' },
+  { key:'shopping',  icon:'🛍️', en:'Shopping',            es:'Compras' },
+  { key:'education', icon:'📚', en:'Education',           es:'Educación' },
+  { key:'subscriptions', icon:'📱', en:'Subscriptions',   es:'Suscripciones' },
+];
+
+function openBudgetModal() {
+  const container = document.getElementById('budget-inputs');
+  container.innerHTML = BUDGET_CATS.map(cat => `
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:16px;width:22px;text-align:center">${cat.icon}</span>
+      <label style="flex:1;font-size:13px;font-weight:500;color:var(--text)">${currentLang==='es'?cat.es:cat.en}</label>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:13px;color:var(--text3)">$</span>
+        <input type="number" id="bgt-${cat.key}" value="${userBudgets[cat.key]||''}"
+          placeholder="0" min="0" step="1"
+          style="width:90px;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border2);background:var(--bg);font-size:13px;font-weight:600;color:var(--text);text-align:right;font-family:var(--ff);outline:none"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'">
+      </div>
+    </div>`).join('');
+  document.getElementById('budget-modal').classList.add('open');
+}
+
+function closeBudgetModal() {
+  document.getElementById('budget-modal').classList.remove('open');
+}
+
+async function saveBudgets() {
+  const newBudgets = {};
+  BUDGET_CATS.forEach(cat => {
+    const val = parseFloat(document.getElementById('bgt-' + cat.key).value);
+    if (val > 0) newBudgets[cat.key] = val;
+  });
+  const { error } = await sb.from('profiles')
+    .upsert({ id: currentUser.id, budgets: newBudgets }, { onConflict: 'id' });
+  if (error) {
+    showToast('Error: ' + error.message);
+  } else {
+    userBudgets = newBudgets;
+    closeBudgetModal();
+    showToast(currentLang==='es'?'✓ Presupuestos guardados':'✓ Budgets saved');
+    renderDashboard();
+    initCharts();
+  }
+}
+
+// ── SETTINGS HELPERS ──────────────────────────────────────────────────────────
+async function loadSettingsPlan() {
+  if (!currentUser) return;
+  const { data } = await sb.from('profiles').select('plan,plan_billing,trial_ends_at').eq('id', currentUser.id).single();
+  const plan = data?.plan || 'free';
+  const planNames = { free: currentLang==='es'?'Plan Gratuito':'Free Plan', pro: 'Pro', family: 'Family' };
+  const planDescs = {
+    free: currentLang==='es'?'30 transacciones/mes · Reportes básicos':'30 transactions/month · Basic reports',
+    pro:  currentLang==='es'?'Transacciones ilimitadas · IA · Sincronización bancaria':'Unlimited · AI insights · Bank sync',
+    family: currentLang==='es'?'Todo Pro + hasta 5 miembros':'Everything Pro + up to 5 members'
+  };
+  document.getElementById('settings-plan-name').textContent = planNames[plan] || plan;
+  document.getElementById('settings-plan-desc').textContent = planDescs[plan] || '';
+  // Change upgrade button to "Manage" if already on paid plan
+  if (plan !== 'free') {
+    const upgradeBtn = document.querySelector('[onclick="window.location.href='/upgrade.html'"]');
+    if (upgradeBtn) { upgradeBtn.textContent = currentLang==='es'?'Gestionar':'Manage'; upgradeBtn.className='btn btn-ghost'; upgradeBtn.style.fontSize='12px'; }
+  }
+  // Currency selector
+  const saved = localStorage.getItem('weup_currency') || 'COP';
+  const sel = document.getElementById('currency-select');
+  if (sel) sel.value = saved;
+  // Language active state
+  updateLangButtons();
+}
+
+function saveCurrency(val) {
+  localStorage.setItem('weup_currency', val);
+  showToast(currentLang==='es'?'✓ Moneda actualizada':'✓ Currency updated');
+}
+
+function saveBudgetAlerts(val) {
+  localStorage.setItem('weup_budget_alerts', val);
+  showToast(currentLang==='es'?'✓ Preferencia guardada':'✓ Preference saved');
+}
+
+function updateLangButtons() {
+  const enBtn = document.getElementById('btn-lang-en');
+  const esBtn = document.getElementById('btn-lang-es');
+  if (!enBtn || !esBtn) return;
+  const activeStyle = 'padding:6px 14px;border-radius:8px;border:1.5px solid var(--accent);background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:all 0.2s';
+  const inactiveStyle = 'padding:6px 14px;border-radius:8px;border:1.5px solid var(--border2);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:all 0.2s';
+  enBtn.style.cssText = currentLang==='en' ? activeStyle : inactiveStyle;
+  esBtn.style.cssText = currentLang==='es' ? activeStyle : inactiveStyle;
+  enBtn.style.color = currentLang==='en' ? '#fff' : 'var(--text)';
+  esBtn.style.color = currentLang==='es' ? '#fff' : 'var(--text)';
 }
 
 // ── Language ──────────────────────────────────────────────────────────────────
