@@ -1184,42 +1184,30 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Set today's date in modal
   document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
 
-  // ── OAuth hash fix ────────────────────────────────────────────────────────
-  // When redirected back from Google, Supabase puts the token in the URL hash.
-  // We MUST let onAuthStateChange fire first — not race with getSession().
+  // ── Auth boot ─────────────────────────────────────────────────────────────
+  // Supabase auto-parses #access_token from the URL hash when initialized.
+  // Wait one tick so it finishes, THEN call getSession — never clear hash first.
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') window.location.href = '/';
+  });
+
+  // 150ms tick — lets Supabase JS finish parsing the OAuth hash token
+  await new Promise(r => setTimeout(r, 150));
+
+  const { data: { session } } = await sb.auth.getSession();
+
+  // Safe to clean the URL now (Supabase already consumed the hash)
   if (window.location.hash.includes('access_token')) {
-    // Clean the URL immediately so it doesn't look broken
     window.history.replaceState({}, document.title, window.location.pathname);
-    // Let onAuthStateChange handle the session instead of polling getSession
-    sb.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        await handleSession(session);
-      }
-      if (event === 'SIGNED_OUT') window.location.href = '/';
-    });
-    // Safety timeout — if onAuthStateChange doesn't fire in 4s, try getSession
-    setTimeout(async () => {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session && !currentUser) await handleSession(session);
-      else if (!session && !currentUser) {
-        gateError('Session expired. <a href="/">Sign in again</a>.');
-      }
-    }, 4000);
-    return;
   }
 
-  // Normal load (not OAuth redirect)
-  const { data: { session } } = await sb.auth.getSession();
   if (!session) {
     gateError('You need to <a href="/">sign in</a> to access your dashboard.');
     return;
   }
 
   await handleSession(session);
-
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') window.location.href = '/';
-  });
 });
 
 // ── Gate step animator ──────────────────────────────────────────────────────
