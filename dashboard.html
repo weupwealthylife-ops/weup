@@ -45,13 +45,105 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* ── Auth gate ── */
 #auth-gate{
   position:fixed;inset:0;z-index:1000;
-  background:#0D2B1E;
+  background:linear-gradient(160deg,#0B2418 0%,#0D2B1E 50%,#091D14 100%);
   display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:16px;
+  flex-direction:column;gap:0;
+  overflow:hidden;
 }
-#auth-gate .logo{font-family:var(--ff-d);font-size:32px;color:#fff;display:flex;align-items:center;gap:8px}
+/* Ambient glow */
+#auth-gate::before{
+  content:'';position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(46,139,87,0.18) 0%,transparent 70%);
+  top:-100px;left:-100px;animation:gateGlow 6s ease-in-out infinite alternate;
+}
+#auth-gate::after{
+  content:'';position:absolute;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(61,186,122,0.12) 0%,transparent 70%);
+  bottom:-80px;right:-80px;animation:gateGlow 8s ease-in-out infinite alternate-reverse;
+}
+@keyframes gateGlow{
+  from{transform:scale(1) translate(0,0)}
+  to  {transform:scale(1.15) translate(20px,20px)}
+}
+/* Logo entrance */
+.gate-logo-wrap{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:48px;
+  animation:gateFadeDown 0.6s ease-out both;
+}
+@keyframes gateFadeDown{
+  from{opacity:0;transform:translateY(-12px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+.gate-logo-img{
+  width:52px;height:52px;border-radius:14px;
+  object-fit:contain;
+  box-shadow:0 8px 32px rgba(46,139,87,0.35);
+}
+.gate-wordmark{
+  font-family:var(--ff-d);font-size:34px;
+  color:#fff;letter-spacing:-0.02em;
+}
+/* Progress steps */
+.gate-steps{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;gap:0;
+  width:220px;
+  animation:gateFadeUp 0.5s ease-out 0.3s both;
+}
+@keyframes gateFadeUp{
+  from{opacity:0;transform:translateY(8px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+.gate-step{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;
+  font-size:13px;color:rgba(255,255,255,0.35);
+  transition:color 0.4s,opacity 0.4s;
+  opacity:0.4;
+}
+.gate-step.active{color:rgba(255,255,255,0.9);opacity:1}
+.gate-step.done{color:rgba(95,220,154,0.8);opacity:0.7}
+.gate-step-icon{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  transition:all 0.4s;
+}
+.gate-step.active .gate-step-icon{
+  background:rgba(46,139,87,0.3);
+  border-color:rgba(95,220,154,0.5);
+}
+.gate-step.done .gate-step-icon{
+  background:rgba(95,220,154,0.2);
+  border-color:rgba(95,220,154,0.4);
+}
+/* Spinner ring */
+.gate-spinner{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.08);
+  border-top-color:rgba(95,220,154,0.7);
+  animation:spin 0.9s linear infinite;
+  position:relative;z-index:1;
+  margin-top:36px;
+  opacity:0;animation:spin 0.9s linear infinite, gateFadeUp 0.4s ease-out 0.6s forwards;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Error/message state */
+#auth-gate .gate-msg-error{
+  position:relative;z-index:1;
+  font-size:14px;color:rgba(255,255,255,0.45);
+  margin-top:32px;text-align:center;line-height:1.6;max-width:280px;
+}
+#auth-gate .gate-msg-error a{color:var(--light);text-decoration:none;font-weight:500}
+#auth-gate .logo{font-family:var(--ff-d);font-size:32px;color:#fff;display:flex;align-items:center;gap:8px;display:none}
 #auth-gate .logo .dot{display:none}
-#auth-gate p{font-size:15px;color:rgba(255,255,255,0.5)}
+#auth-gate p{display:none} /* hidden — we use .gate-steps now */
 #auth-gate a{color:var(--light);text-decoration:none;font-weight:500}
 
 /* ── Layout ── */
@@ -561,8 +653,33 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
 <!-- Auth gate -->
 <div id="auth-gate">
-  <div class="logo" style="gap:10px"><img src="/Logo_WeUp.png" alt="WeUp" style="height:48px;width:48px;object-fit:contain;border-radius:10px;flex-shrink:0"><span>WeUp</span></div>
-  <p id="gate-msg">Checking your session...</p>
+  <!-- Logo -->
+  <div class="gate-logo-wrap">
+    <img src="/Logo_WeUp.png" alt="WeUp" class="gate-logo-img">
+    <span class="gate-wordmark">WeUp</span>
+  </div>
+
+  <!-- Step-by-step progress -->
+  <div class="gate-steps" id="gate-steps">
+    <div class="gate-step active" id="gstep-1">
+      <div class="gate-step-icon" id="gstep-1-icon">1</div>
+      <span id="gstep-1-text">Verifying your session</span>
+    </div>
+    <div class="gate-step" id="gstep-2">
+      <div class="gate-step-icon" id="gstep-2-icon">2</div>
+      <span id="gstep-2-text">Loading your profile</span>
+    </div>
+    <div class="gate-step" id="gstep-3">
+      <div class="gate-step-icon" id="gstep-3-icon">3</div>
+      <span id="gstep-3-text">Getting your data ready</span>
+    </div>
+  </div>
+
+  <!-- Spinner -->
+  <div class="gate-spinner" id="gate-spinner"></div>
+
+  <!-- Error state (hidden by default) -->
+  <div class="gate-msg-error" id="gate-msg" style="display:none"></div>
 </div>
 
 <!-- App -->
@@ -1067,36 +1184,95 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Set today's date in modal
   document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
 
-  // Handle OAuth hash
+  // ── OAuth hash fix ────────────────────────────────────────────────────────
+  // When redirected back from Google, Supabase puts the token in the URL hash.
+  // We MUST let onAuthStateChange fire first — not race with getSession().
   if (window.location.hash.includes('access_token')) {
-    await sb.auth.getSession();
+    // Clean the URL immediately so it doesn't look broken
     window.history.replaceState({}, document.title, window.location.pathname);
+    // Let onAuthStateChange handle the session instead of polling getSession
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        await handleSession(session);
+      }
+      if (event === 'SIGNED_OUT') window.location.href = '/';
+    });
+    // Safety timeout — if onAuthStateChange doesn't fire in 4s, try getSession
+    setTimeout(async () => {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session && !currentUser) await handleSession(session);
+      else if (!session && !currentUser) {
+        gateError('Session expired. <a href="/">Sign in again</a>.');
+      }
+    }, 4000);
+    return;
   }
 
+  // Normal load (not OAuth redirect)
   const { data: { session } } = await sb.auth.getSession();
   if (!session) {
-    document.getElementById('gate-msg').innerHTML =
-      'You need to <a href="/">sign in</a> to access your dashboard.';
+    gateError('You need to <a href="/">sign in</a> to access your dashboard.');
     return;
   }
 
-  // Check onboarding — redirect if not completed
-  const { data: profileCheck } = await sb.from('profiles')
-    .select('onboarding_completed')
-    .eq('id', session.user.id)
-    .single();
-  if (!profileCheck?.onboarding_completed) {
-    window.location.href = '/onboarding.html';
-    return;
-  }
-
-  currentUser = session.user;
-  bootApp();
+  await handleSession(session);
 
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_OUT') window.location.href = '/';
   });
 });
+
+// ── Gate step animator ──────────────────────────────────────────────────────
+function gateStep(n, done_prev=true) {
+  // Mark previous step done
+  if (done_prev && n > 1) {
+    const prev = document.getElementById('gstep-' + (n-1));
+    const prevIcon = document.getElementById('gstep-' + (n-1) + '-icon');
+    if (prev) prev.classList.replace('active','done');
+    if (prevIcon) prevIcon.textContent = '✓';
+  }
+  // Activate current step
+  const curr = document.getElementById('gstep-' + n);
+  if (curr) curr.classList.add('active');
+}
+
+function gateError(msg) {
+  // Hide spinner + steps, show error
+  const spinner = document.getElementById('gate-spinner');
+  if (spinner) spinner.style.display = 'none';
+  const steps = document.getElementById('gate-steps');
+  if (steps) steps.style.opacity = '0.3';
+  const errEl = document.getElementById('gate-msg');
+  if (errEl) { errEl.innerHTML = msg; errEl.style.display = 'block'; }
+}
+
+// Shared session handler — called from both normal load and OAuth redirect
+async function handleSession(session) {
+  if (currentUser) return; // prevent double-boot
+
+  // Step 2: loading profile
+  gateStep(2);
+
+  // Check onboarding
+  const { data: profileCheck } = await sb.from('profiles')
+    .select('onboarding_completed')
+    .eq('id', session.user.id)
+    .single();
+
+  if (!profileCheck?.onboarding_completed) {
+    window.location.href = '/onboarding.html';
+    return;
+  }
+
+  // Step 3: getting data
+  gateStep(3);
+
+  currentUser = session.user;
+
+  // Small pause so step 3 is visible, then boot
+  await new Promise(r => setTimeout(r, 400));
+  bootApp();
+}
 
 async function bootApp() {
   document.getElementById('auth-gate').style.display = 'none';
