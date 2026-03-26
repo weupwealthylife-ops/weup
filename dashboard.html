@@ -1187,44 +1187,52 @@ let txType = 'expense';
 let donutChart, barChart, lineChart, budgetChart;
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  // Set today's date in modal
+window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
 
-  // ── Single auth listener — handles ALL cases ──────────────────────────────
-  // INITIAL_SESSION fires once on every page load with the current session.
-  // It handles: normal loads, OAuth redirects, token refreshes — everything.
-  // This is the correct Supabase v2 pattern. No getSession() race conditions.
-  let booted = false;
+  // ── If URL has OAuth hash token, manually inject it into Supabase ─────────
+  // The CDN build of Supabase v2 does NOT always auto-parse #access_token.
+  // We parse it ourselves and call setSession() directly — 100% reliable.
+  if (window.location.hash.includes('access_token')) {
+    try {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const access_token  = params.get('access_token');
+      const refresh_token = params.get('refresh_token');
 
-  sb.auth.onAuthStateChange(async (event, session) => {
-
-    // Clean up the URL hash if it has OAuth tokens (cosmetic — already parsed)
-    if (window.location.hash.includes('access_token')) {
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    if (event === 'INITIAL_SESSION') {
-      if (!session) {
-        gateError('You need to <a href="/">sign in</a> to access your dashboard.');
-        return;
+      if (access_token && refresh_token) {
+        // Manually set the session — bypasses all event/timing issues
+        const { data, error } = await sb.auth.setSession({ access_token, refresh_token });
+        // Clean URL immediately
+        window.history.replaceState({}, document.title, window.location.pathname);
+        if (!error && data?.session) {
+          setupSignOutListener();
+          await handleSession(data.session);
+          return;
+        }
       }
-      if (!booted) {
-        booted = true;
-        await handleSession(session);
-      }
+    } catch(e) {
+      console.warn('Hash parse failed, falling back:', e);
     }
+    // Clean URL even if parsing failed
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 
-    if (event === 'SIGNED_IN' && !booted) {
-      booted = true;
-      await handleSession(session);
-    }
-
-    if (event === 'SIGNED_OUT') {
-      window.location.href = '/';
-    }
-  });
+  // ── Normal load — check existing stored session ───────────────────────────
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    gateError('You need to <a href="/">sign in</a> to access your dashboard.');
+    return;
+  }
+  setupSignOutListener();
+  await handleSession(session);
 });
+
+function setupSignOutListener() {
+  sb.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') window.location.href = '/';
+  });
+}
 
 // ── Gate step animator ──────────────────────────────────────────────────────
 function gateStep(n, done_prev=true) {
