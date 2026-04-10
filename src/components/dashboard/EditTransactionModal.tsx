@@ -104,8 +104,8 @@ export function EditTransactionModal({ open, tx, onClose }: Props) {
           {/* Amount */}
           <div className="form-group">
             <label className="form-label">{t('Amount', 'Monto')} *</label>
-            <div className="amount-wrap">
-              <span className="amount-prefix">$</span>
+            <div className="amount-row">
+              <span className="amount-currency">$</span>
               <input
                 type="number" min="0.01" step="0.01" required
                 className="form-input amount-input"
@@ -152,7 +152,7 @@ export function EditTransactionModal({ open, tx, onClose }: Props) {
             />
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-actions">
             <button type="button" className="btn btn-ghost" onClick={onClose}>
               {t('Cancel', 'Cancelar')}
             </button>

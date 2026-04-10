@@ -90,7 +90,7 @@ export function BudgetModal({ open, onClose }: Props) {
             ))}
           </div>
 
-          <div className="modal-footer" style={{ marginTop: 24 }}>
+          <div className="modal-actions" style={{ marginTop: 24 }}>
             <button type="button" className="btn btn-ghost" onClick={onClose}>
               {t('Cancel', 'Cancelar')}
             </button>
