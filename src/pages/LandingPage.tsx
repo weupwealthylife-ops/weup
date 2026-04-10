@@ -161,10 +161,10 @@ export default function LandingPage() {
             </div>
 
             <h1 className="hero-headline">
-              {t(
-                <>Your money,<br /><em>finally</em> under control.</>,
-                <><em>Controla</em><br />tu dinero, de verdad.</>
-              ) as React.ReactNode}
+              {lang === 'es'
+                ? <><em>Controla</em><br />tu dinero, de verdad.</>
+                : <>Your money,<br /><em>finally</em> under control.</>
+              }
             </h1>
 
             <p className="hero-sub">
@@ -280,7 +280,10 @@ export default function LandingPage() {
           <div className="section-inner">
             <div className="section-tag">{t('Features', 'Características')}</div>
             <h2 className="section-title">
-              {t(<>Everything you need to <em>thrive</em></>, <>Todo lo que necesitas para <em>prosperar</em></>)  as React.ReactNode}
+              {lang === 'es'
+                ? <>Todo lo que necesitas para <em>prosperar</em></>
+                : <>Everything you need to <em>thrive</em></>
+              }
             </h2>
             <p className="section-sub">
               {t(
@@ -315,7 +318,10 @@ export default function LandingPage() {
               <div className="about-left">
                 <div className="section-tag">{t('About', 'Nosotros')}</div>
                 <h2 className="section-title">
-                  {t(<>Built for <em>real</em> people</>, <>Hecho para gente <em>real</em></>)  as React.ReactNode}
+                  {lang === 'es'
+                    ? <>Hecho para gente <em>real</em></>
+                    : <>Built for <em>real</em> people</>
+                  }
                 </h2>
                 <p className="section-sub" style={{ textAlign: 'left' }}>
                   {t(
@@ -379,7 +385,10 @@ export default function LandingPage() {
           <div className="section-inner">
             <div className="section-tag">{t('Pricing', 'Precios')}</div>
             <h2 className="section-title">
-              {t(<>Simple, <em>transparent</em> pricing</>, <>Precios simples y <em>transparentes</em></>)  as React.ReactNode}
+              {lang === 'es'
+                ? <>Precios simples y <em>transparentes</em></>
+                : <>Simple, <em>transparent</em> pricing</>
+              }
             </h2>
             <p className="section-sub">
               {t('Start free forever. Upgrade when you need more power.', 'Empieza gratis para siempre. Actualiza cuando necesites más.')}

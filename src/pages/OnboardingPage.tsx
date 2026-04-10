@@ -508,7 +508,7 @@ function CompletionStep({
   selectedPlan,
   planIntent,
 }: CompletionStepProps) {
-  const goalData = GOALS.find((g) => g.selectedGoal === selectedGoal) ?? GOALS.find((g) => g.id === selectedGoal)
+  const goalData = GOALS.find((g) => g.id === selectedGoal)
   const goalLabel = goalData
     ? lang === 'es' ? goalData.label_es : goalData.label_en
     : selectedGoal ?? '—'
