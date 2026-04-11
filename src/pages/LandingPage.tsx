@@ -146,8 +146,8 @@ export default function LandingPage() {
               <button className={lang === 'en' ? 'active' : ''} onClick={() => setLang('en')}>EN</button>
               <button className={lang === 'es' ? 'active' : ''} onClick={() => setLang('es')}>ES</button>
             </div>
-            <button className="nav-cta" onClick={() => openModal('signup')}>
-              {t('Get Started', 'Comenzar')}
+            <button className="nav-cta" onClick={() => openModal('signin')}>
+              {t('Sign in', 'Iniciar sesión')}
             </button>
           </div>
         </nav>
@@ -156,14 +156,14 @@ export default function LandingPage() {
         <section className="hero">
           <div className="hero-left">
             <div className="hero-badge">
-              <span className="pulse" />
-              {t('Smart Personal Finance', 'Finanzas Personales Inteligentes')}
+              <span className="badge-dot" />
+              {t('NOW AVAILABLE IN COLOMBIA & MEXICO', 'DISPONIBLE EN COLOMBIA Y MÉXICO')}
             </div>
 
             <h1 className="hero-headline">
               {lang === 'es'
-                ? <><em>Controla</em><br />tu dinero, de verdad.</>
-                : <>Your money,<br /><em>finally</em> under control.</>
+                ? <><em>Controla</em><br />tu dinero,<br />de verdad.</>
+                : <>Your money,<br /><em>finally</em><br />under control.</>
               }
             </h1>
 
@@ -176,7 +176,7 @@ export default function LandingPage() {
 
             <div className="hero-actions">
               <button className="btn-primary" onClick={() => openModal('signup')}>
-                🚀 {t('Start Free', 'Empezar Gratis')}
+                {t('Get started free', 'Empieza gratis')} <span className="btn-arrow">→</span>
               </button>
               <button className="btn-ghost" onClick={() => openModal('signin')}>
                 {t('Sign in', 'Iniciar sesión')}
@@ -185,74 +185,106 @@ export default function LandingPage() {
 
             <div className="hero-social">
               <div className="hero-social-avatars">
-                <span>😊</span><span>🌟</span><span>💪</span><span>🎯</span>
+                <div className="avatar-circle">MC</div>
+                <div className="avatar-circle">JR</div>
+                <div className="avatar-circle">AS</div>
+                <div className="avatar-circle avatar-plus">+</div>
               </div>
               <p className="hero-social-text">
-                <strong>{t('4,200+', '4,200+')}</strong>{' '}
-                {t('people already managing their finances', 'personas ya gestionando sus finanzas')}
+                <strong>12,000+</strong>{' '}
+                {t('users already weup-ing', 'usuarios ya haciendo weup')}
               </p>
             </div>
           </div>
 
           <div className="hero-right">
-            <div className="phone-frame">
-              <div className="phone-screen">
-                <div className="phone-notch" />
-                <div className="phone-status">
-                  <span>9:41</span>
-                  <span>●●●</span>
-                </div>
-                <div className="phone-body">
-                  <div className="phone-greeting">{t('Good morning,', 'Buenos días,')}</div>
-                  <div className="phone-name">Alex 👋</div>
+            <div className="iphone-float">
+              <div className="iphone">
+                {/* Hardware buttons */}
+                <div className="iphone-btn-silent" />
+                <div className="iphone-btn-vol-up" />
+                <div className="iphone-btn-vol-down" />
+                <div className="iphone-btn-power" />
 
-                  <div className="phone-bal-card">
-                    <div className="phone-bal-label">{t('Total Balance', 'Balance Total')}</div>
-                    <div className="phone-bal-amount">$4,280.50</div>
-                    <div className="phone-bal-row">
-                      <div className="phone-bal-item">
-                        <span>↑</span>
-                        <span>$3,200</span>
-                      </div>
-                      <div className="phone-bal-item">
-                        <span>↓</span>
-                        <span>$1,840</span>
-                      </div>
+                {/* Screen */}
+                <div className="iphone-screen">
+                  <div className="iphone-island" />
+
+                  <div className="iphone-status-bar">
+                    <span className="iphone-time">9:41</span>
+                    <div className="iphone-status-icons">
+                      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+                        <rect x="0" y="4" width="3" height="8" rx="1" opacity="0.4"/>
+                        <rect x="4.5" y="2.5" width="3" height="9.5" rx="1" opacity="0.6"/>
+                        <rect x="9" y="0.5" width="3" height="11.5" rx="1"/>
+                      </svg>
+                      <svg width="15" height="12" viewBox="0 0 15 12" fill="currentColor">
+                        <path d="M7.5 2.5C9.8 2.5 11.9 3.4 13.4 4.9L14.5 3.8C12.7 2 10.2 1 7.5 1S2.3 2 0.5 3.8L1.6 4.9C3.1 3.4 5.2 2.5 7.5 2.5Z" opacity="0.4"/>
+                        <path d="M7.5 5C9 5 10.3 5.6 11.3 6.6L12.4 5.5C11.1 4.3 9.4 3.5 7.5 3.5S3.9 4.3 2.6 5.5L3.7 6.6C4.7 5.6 6 5 7.5 5Z" opacity="0.6"/>
+                        <circle cx="7.5" cy="10" r="1.5"/>
+                      </svg>
+                      <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor">
+                        <rect x="0" y="1" width="21" height="10" rx="3" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.35"/>
+                        <rect x="1.5" y="2.5" width="16" height="7" rx="2" fill="currentColor" opacity="0.9"/>
+                        <path d="M22 4.5v3c.8-.4 1.3-1 1.3-1.5S22.8 4.9 22 4.5Z" fill="currentColor" opacity="0.4"/>
+                      </svg>
                     </div>
                   </div>
 
-                  <div className="phone-section-title">{t('Recent', 'Recientes')}</div>
-                  <div className="phone-txs">
-                    {[
-                      { icon: '🛒', name: t('Grocery', 'Mercado'), cat: t('Food', 'Comida'), amt: '-$48.20', cls: 'neg' },
-                      { icon: '💼', name: t('Salary', 'Salario'), cat: t('Income', 'Ingreso'), amt: '+$3,200', cls: 'pos' },
-                      { icon: '🚗', name: t('Gas', 'Gasolina'), cat: t('Transport', 'Transporte'), amt: '-$35.00', cls: 'neg' },
-                    ].map((tx, i) => (
-                      <div className="phone-tx" key={i}>
-                        <div className="phone-tx-icon">{tx.icon}</div>
-                        <div className="phone-tx-info">
-                          <div className="phone-tx-name">{tx.name}</div>
-                          <div className="phone-tx-cat">{tx.cat}</div>
+                  <div className="iphone-body">
+                    <div className="iphone-greeting">{t('Good morning,', 'Buenos días,')}</div>
+                    <div className="iphone-name">Alex 👋</div>
+
+                    <div className="iphone-bal-card">
+                      <div className="iphone-bal-label">{t('Total Balance', 'Balance Total')}</div>
+                      <div className="iphone-bal-amount">$4,280.50</div>
+                      <div className="iphone-bal-row">
+                        <div className="iphone-bal-item income">
+                          <span className="bal-icon">↑</span>
+                          <div>
+                            <div className="bal-sub">{t('Income', 'Ingreso')}</div>
+                            <div className="bal-val">$3,200</div>
+                          </div>
                         </div>
-                        <div className={`phone-tx-amt ${tx.cls}`}>{tx.amt}</div>
+                        <div className="iphone-bal-item expense">
+                          <span className="bal-icon">↓</span>
+                          <div>
+                            <div className="bal-sub">{t('Expenses', 'Gastos')}</div>
+                            <div className="bal-val">$1,840</div>
+                          </div>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
 
-                  <div className="phone-insight">
-                    <div className="phone-insight-header">
-                      <div className="phone-insight-dot" />
-                      <span className="phone-insight-label">{t('Budget AI', 'IA Presupuesto')}</span>
+                    <div className="iphone-section-title">{t('Recent', 'Recientes')}</div>
+                    <div className="iphone-txs">
+                      {[
+                        { icon: '🛒', name: t('Grocery', 'Mercado'), cat: t('Food', 'Comida'), amt: '-$48.20', neg: true },
+                        { icon: '💼', name: t('Salary', 'Salario'), cat: t('Income', 'Ingreso'), amt: '+$3,200', neg: false },
+                        { icon: '🚗', name: t('Gas', 'Gasolina'), cat: t('Transport', 'Transporte'), amt: '-$35.00', neg: true },
+                      ].map((tx, i) => (
+                        <div className="iphone-tx" key={i}>
+                          <div className="iphone-tx-icon">{tx.icon}</div>
+                          <div className="iphone-tx-info">
+                            <div className="iphone-tx-name">{tx.name}</div>
+                            <div className="iphone-tx-cat">{tx.cat}</div>
+                          </div>
+                          <div className={`iphone-tx-amt${tx.neg ? ' neg' : ' pos'}`}>{tx.amt}</div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="phone-insight-text">
-                      {t("You're 22% under budget this month 🎉", '¡Estás 22% bajo presupuesto este mes! 🎉')}
-                    </div>
-                    <div className="phone-insight-bar-track">
-                      <div className="phone-insight-bar-fill" style={{ width: '78%' }} />
-                    </div>
-                    <div className="phone-insight-footer">
-                      <span className="phone-insight-pct">78%</span>
-                      <span className="phone-insight-goal">{t('of budget used', 'del presupuesto usado')}</span>
+
+                    <div className="iphone-insight">
+                      <div className="iphone-insight-header">
+                        <span className="iphone-insight-dot" />
+                        <span className="iphone-insight-label">{t('AI Insight', 'IA Financiera')}</span>
+                      </div>
+                      <div className="iphone-insight-text">
+                        {t("You're 22% under budget this month 🎉", '¡Estás 22% bajo presupuesto! 🎉')}
+                      </div>
+                      <div className="iphone-insight-bar-track">
+                        <div className="iphone-insight-bar-fill" style={{ width: '78%' }} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -261,12 +293,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Stats ── */}
+        {/* ── Stats Strip ── */}
         <div className="stats-strip">
           {[
-            { num: '4,200+', label: t('Active Users', 'Usuarios Activos') },
-            { num: '$2.4M',  label: t('Tracked Monthly', 'Rastreado al Mes') },
-            { num: '98%',    label: t('Satisfaction Rate', 'Satisfacción') },
+            { num: '$2.4B+', label: t('Tracked', 'Rastreado') },
+            { num: '12K+',   label: t('Active users', 'Usuarios activos') },
+            { num: '94%',    label: t('Save more in 30 days', 'Ahorran más en 30 días') },
+            { num: 'ES/EN',  label: t('Fully bilingual', 'Totalmente bilingüe') },
           ].map((s, i) => (
             <div className="stat" key={i}>
               <div className="stat-num">{s.num}</div>
@@ -281,8 +314,8 @@ export default function LandingPage() {
             <div className="section-tag">{t('Features', 'Características')}</div>
             <h2 className="section-title">
               {lang === 'es'
-                ? <>Todo lo que necesitas para <em>prosperar</em></>
-                : <>Everything you need to <em>thrive</em></>
+                ? <>Todo lo que necesitas para <em>dominar tu dinero</em></>
+                : <>Everything you need to <em>master your money</em></>
               }
             </h2>
             <p className="section-sub">
@@ -295,11 +328,11 @@ export default function LandingPage() {
             <div className="features-grid">
               {[
                 { icon: '📊', title: t('Smart Budgets', 'Presupuestos Inteligentes'), desc: t('Set limits per category and get alerts before you overspend.', 'Fija límites por categoría y recibe alertas antes de gastar de más.') },
-                { icon: '🤖', title: t('Auto-Categorize', 'Auto-Categorización'), desc: t('Transactions are categorized automatically using AI rules.', 'Las transacciones se categorizan automáticamente con reglas de IA.') },
+                { icon: '🤖', title: t('AI Auto-Categorize', 'Auto-Categorización IA'), desc: t('Transactions are categorized automatically using AI rules.', 'Las transacciones se categorizan automáticamente con reglas de IA.') },
                 { icon: '📈', title: t('Visual Reports', 'Reportes Visuales'), desc: t('Bar, line, and donut charts reveal your spending patterns instantly.', 'Gráficos de barras, líneas y donut revelan tus patrones de gasto.') },
                 { icon: '🌍', title: t('Multi-Currency', 'Multi-Moneda'), desc: t('Support for USD, MXN, and COP with localized formatting.', 'Soporte para USD, MXN y COP con formato localizado.') },
                 { icon: '🔒', title: t('Bank-Grade Security', 'Seguridad Bancaria'), desc: t('Your data is encrypted and protected by Supabase row-level security.', 'Tus datos están cifrados y protegidos por seguridad a nivel de fila.') },
-                { icon: '🌐', title: t('Bilingual', 'Bilingüe'), desc: t('Full English and Spanish support across every screen.', 'Soporte completo en inglés y español en cada pantalla.') },
+                { icon: '🌐', title: t('Fully Bilingual', 'Totalmente Bilingüe'), desc: t('Full English and Spanish support across every screen.', 'Soporte completo en inglés y español en cada pantalla.') },
               ].map((f, i) => (
                 <div className="feat-card" key={i}>
                   <div className="feat-icon">{f.icon}</div>
@@ -316,24 +349,24 @@ export default function LandingPage() {
           <div className="section-inner">
             <div className="about-grid">
               <div className="about-left">
-                <div className="section-tag">{t('About', 'Nosotros')}</div>
-                <h2 className="section-title">
+                <div className="section-tag">{t('About us', 'Nosotros')}</div>
+                <h2 className="section-title" style={{ textAlign: 'left' }}>
                   {lang === 'es'
-                    ? <>Hecho para gente <em>real</em></>
-                    : <>Built for <em>real</em> people</>
+                    ? <>Creemos que todos merecen <em>libertad financiera</em></>
+                    : <>We believe everyone deserves <em>financial freedom</em></>
                   }
                 </h2>
                 <p className="section-sub" style={{ textAlign: 'left' }}>
                   {t(
-                    'WeUp was born from the frustration of complicated finance apps. We believe everyone deserves simple, powerful tools — regardless of income.',
-                    'WeUp nació de la frustración con apps financieras complicadas. Creemos que todos merecen herramientas simples y poderosas, sin importar el ingreso.'
+                    'WeUp was born from the frustration of complicated finance apps. Simple, powerful tools for everyone — regardless of income.',
+                    'WeUp nació de la frustración con apps financieras complicadas. Herramientas simples y poderosas para todos, sin importar el ingreso.'
                   )}
                 </p>
                 <div className="about-stats">
                   {[
-                    { num: '4,200+', label: t('Happy users', 'Usuarios felices') },
-                    { num: '3',      label: t('Countries', 'Países') },
-                    { num: '2024',   label: t('Founded', 'Fundado') },
+                    { num: '2',      label: t('Countries', 'Países') },
+                    { num: '12K+',   label: t('Users', 'Usuarios') },
+                    { num: '$2.4B+', label: t('Tracked', 'Rastreado') },
                   ].map((s, i) => (
                     <div className="about-stat" key={i}>
                       <div className="about-stat-num">{s.num}</div>
@@ -347,27 +380,28 @@ export default function LandingPage() {
                 {[
                   {
                     quote: t(
-                      '"WeUp completely changed how I think about money. The auto-categorization alone saves me hours each month."',
-                      '"WeUp cambió completamente cómo pienso en el dinero. La auto-categorización sola me ahorra horas al mes."'
+                      '"WeUp completely changed how I think about money. The AI insights alone are worth every penny."',
+                      '"WeUp cambió completamente cómo pienso en el dinero. Los insights de IA valen cada peso."'
                     ),
-                    emoji: '👩',
-                    name: t('María G.', 'María G.'),
-                    city: t('Mexico City', 'Ciudad de México'),
+                    initials: 'MC',
+                    name: 'María C.',
+                    city: t('Bogotá, Colombia', 'Bogotá, Colombia'),
                   },
                   {
                     quote: t(
                       '"Finally an app that works in Spanish AND English. My whole family uses it now."',
                       '"Por fin una app que funciona en español Y inglés. Toda mi familia la usa ahora."'
                     ),
-                    emoji: '👨',
-                    name: t('Carlos R.', 'Carlos R.'),
-                    city: t('Bogotá', 'Bogotá'),
+                    initials: 'JR',
+                    name: 'Jorge R.',
+                    city: t('Ciudad de México', 'Ciudad de México'),
                   },
                 ].map((card, i) => (
                   <div className="about-card" key={i}>
+                    <div className="about-diamond">◆</div>
                     <p className="about-quote">{card.quote}</p>
                     <div className="about-author">
-                      <div className="about-avatar">{card.emoji}</div>
+                      <div className="about-avatar">{card.initials}</div>
                       <div>
                         <div className="about-name">{card.name}</div>
                         <div className="about-city">{card.city}</div>
@@ -424,9 +458,9 @@ export default function LandingPage() {
                   {t('Perfect for getting started with personal finance tracking.', 'Perfecto para comenzar con el seguimiento de finanzas.')}
                 </div>
                 <ul className="pricing-features">
-                  <li>{t('Up to 50 transactions/month', 'Hasta 50 transacciones/mes')}</li>
+                  <li>{t('Up to 30 transactions/month', 'Hasta 30 transacciones/mes')}</li>
                   <li>{t('Basic budgets', 'Presupuestos básicos')}</li>
-                  <li>{t('3 categories', '3 categorías')}</li>
+                  <li>{t('Monthly reports', 'Reportes mensuales')}</li>
                   <li>{t('EN/ES language support', 'Soporte EN/ES')}</li>
                 </ul>
                 <button className="pricing-cta-ghost" onClick={() => openModal('signup', 'free')}>
@@ -439,21 +473,21 @@ export default function LandingPage() {
                 <div className="pricing-badge">{t('Most Popular', 'Más Popular')}</div>
                 <div className="pricing-plan">Pro</div>
                 <div className="pricing-price">
-                  <sup>$</sup>{yearly ? '3.24' : '4.99'}
+                  <sup>$</sup>{yearly ? '3.25' : '4.99'}
                 </div>
-                <div className="pricing-period">{t('per month', 'por mes')}{yearly ? t(', billed yearly', ', facturado anualmente') : ''}</div>
+                <div className="pricing-period">{t('per month', 'por mes')}{yearly ? t(' · billed $39/yr', ' · facturado $39/año') : ''}</div>
                 <div className="pricing-desc">
                   {t('Full power for serious finance management.', 'Toda la potencia para una gestión financiera seria.')}
                 </div>
                 <ul className="pricing-features">
                   <li>{t('Unlimited transactions', 'Transacciones ilimitadas')}</li>
-                  <li>{t('All budget categories', 'Todas las categorías de presupuesto')}</li>
-                  <li>{t('Visual reports & charts', 'Reportes y gráficos visuales')}</li>
-                  <li>{t('Auto-categorization AI', 'IA de auto-categorización')}</li>
+                  <li>{t('All budget categories', 'Todas las categorías')}</li>
+                  <li>{t('AI insights & reports', 'IA insights y reportes')}</li>
+                  <li>{t('Bank sync (CO & MX)', 'Sincronización bancaria')}</li>
                   <li>{t('14-day free trial', 'Prueba gratis 14 días')}</li>
                 </ul>
                 <button className="pricing-cta" onClick={() => openModal('signup', 'pro')}>
-                  🚀 {t('Start Free Trial', 'Iniciar Prueba Gratis')}
+                  {t('Start Free Trial', 'Iniciar Prueba Gratis')} →
                 </button>
               </div>
 
@@ -462,9 +496,9 @@ export default function LandingPage() {
                 <div className="pricing-badge">{t('Family', 'Familia')}</div>
                 <div className="pricing-plan">{t('Family', 'Familia')}</div>
                 <div className="pricing-price">
-                  <sup>$</sup>{yearly ? '6.49' : '9.99'}
+                  <sup>$</sup>{yearly ? '6.58' : '9.99'}
                 </div>
-                <div className="pricing-period">{t('per month', 'por mes')}{yearly ? t(', billed yearly', ', facturado anualmente') : ''}</div>
+                <div className="pricing-period">{t('per month', 'por mes')}{yearly ? t(' · billed $79/yr', ' · facturado $79/año') : ''}</div>
                 <div className="pricing-desc">
                   {t('Shared finances for up to 5 family members.', 'Finanzas compartidas para hasta 5 miembros de la familia.')}
                 </div>
@@ -507,19 +541,21 @@ export default function LandingPage() {
               </div>
               <div className="footer-links-col">
                 <h5>{t('Account', 'Cuenta')}</h5>
-                <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                  className="footer-links-col a" onClick={() => openModal('signup')}>
+                <button className="footer-link-btn" onClick={() => openModal('signup')}>
                   {t('Sign Up', 'Registrarse')}
                 </button>
-                <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                  className="footer-links-col a" onClick={() => openModal('signin')}>
+                <button className="footer-link-btn" onClick={() => openModal('signin')}>
                   {t('Sign In', 'Iniciar Sesión')}
                 </button>
               </div>
             </div>
           </div>
           <div className="footer-copy">
-            © 2024 WeUp. {t('All rights reserved.', 'Todos los derechos reservados.')}
+            © 2025 WeUp. {t('All rights reserved.', 'Todos los derechos reservados.')}
+            {' · '}
+            <a href="/privacy">{t('Privacy', 'Privacidad')}</a>
+            {' · '}
+            <a href="/terms">{t('Terms', 'Términos')}</a>
           </div>
         </footer>
       </div>
@@ -648,7 +684,7 @@ export default function LandingPage() {
                   ? t('Already have an account? ', '¿Ya tienes cuenta? ')
                   : t("Don't have an account? ", '¿No tienes cuenta? ')}
                 <button
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', fontWeight: 600, padding: 0 }}
+                  className="modal-switch-btn"
                   onClick={() => { setAuthTab(authTab === 'signup' ? 'signin' : 'signup'); setAuthError(''); setAuthSuccess('') }}
                 >
                   {authTab === 'signup' ? t('Sign In', 'Inicia sesión') : t('Sign Up', 'Regístrate')}
