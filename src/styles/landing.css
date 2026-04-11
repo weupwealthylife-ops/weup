@@ -961,12 +961,36 @@ body {
 
 /* ── PRICING ── */
 
+.pricing-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 80px;
+}
+
+.pricing-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 700;
+  color: var(--w);
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.pricing-sub {
+  font-size: 16px;
+  color: var(--w60);
+  margin-bottom: 36px;
+  text-align: left;
+  line-height: 1.6;
+}
+
 .pricing-toggle {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 12px;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 
 .toggle-label {
@@ -984,7 +1008,7 @@ body {
   position: relative;
   width: 44px;
   height: 24px;
-  background: var(--w10);
+  background: var(--w20);
   border: none;
   border-radius: 100px;
   cursor: pointer;
@@ -1018,125 +1042,173 @@ body {
   color: var(--light);
   border: 1px solid rgba(95,220,154,0.3);
   border-radius: 100px;
-  padding: 3px 10px;
+  padding: 3px 12px;
   font-size: 12px;
   font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.pricing-badge-discount.visible {
+  opacity: 1;
 }
 
 .pricing-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 16px;
   align-items: start;
 }
 
+/* Base card */
 .pricing-card {
-  background: var(--card);
+  background: rgba(255,255,255,0.04);
   border: 1px solid var(--w10);
-  border-radius: 24px;
-  padding: 32px 28px;
+  border-radius: 20px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  gap: 0;
   transition: border-color 0.2s, transform 0.2s;
 }
 
 .pricing-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  border-color: var(--w20);
 }
 
+/* Featured Pro card */
 .pricing-card-featured {
-  background: linear-gradient(160deg, #142E20 0%, #0D2218 100%);
-  border-color: rgba(95,220,154,0.3);
-  position: relative;
-  transform: scale(1.03);
+  background: #1A4D2E;
+  border-color: rgba(95,220,154,0.25);
 }
 
 .pricing-card-featured:hover {
-  transform: scale(1.03) translateY(-3px);
+  border-color: rgba(95,220,154,0.4);
+  transform: translateY(-2px);
 }
 
-.pricing-badge {
+/* Popular badge inside Pro card */
+.pricing-popular-badge {
   display: inline-block;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--light);
-  background: rgba(95,220,154,0.1);
-  border: 1px solid rgba(95,220,154,0.2);
+  background: rgba(95,220,154,0.15);
+  border: 1px solid rgba(95,220,154,0.3);
   border-radius: 100px;
-  padding: 3px 10px;
-  margin-bottom: 16px;
+  padding: 3px 12px;
+  margin-bottom: 12px;
   width: fit-content;
 }
 
-.pricing-plan {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 24px;
+/* Plan label (FREE / PRO / FAMILY) */
+.pricing-plan-label {
+  font-size: 11px;
   font-weight: 700;
-  color: var(--w);
+  letter-spacing: 0.1em;
+  color: var(--w60);
+  margin-bottom: 12px;
+}
+
+/* Price row: $4.99 /month inline */
+.pricing-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
   margin-bottom: 8px;
 }
 
-.pricing-price {
+.pricing-amount {
   font-family: 'Fraunces', Georgia, serif;
-  font-size: 52px;
+  font-size: 48px;
   font-weight: 700;
   color: var(--w);
   letter-spacing: -0.03em;
   line-height: 1;
-  margin-bottom: 4px;
 }
 
-.pricing-price sup {
-  font-size: 24px;
-  font-weight: 400;
-  vertical-align: super;
-  line-height: 0;
-}
-
-.pricing-period {
-  font-size: 13px;
-  color: var(--w40);
-  margin-bottom: 12px;
+.pricing-period-inline {
+  font-size: 15px;
+  color: var(--w60);
+  font-weight: 500;
 }
 
 .pricing-desc {
   font-size: 13px;
   color: var(--w60);
-  line-height: 1.6;
-  margin-bottom: 24px;
-  padding-bottom: 24px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--w10);
 }
 
+/* Feature list */
 .pricing-features {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 28px;
+  gap: 9px;
+  margin-bottom: 24px;
   flex: 1;
 }
 
 .pricing-features li {
   font-size: 14px;
-  color: var(--w80);
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.pricing-features li::before {
+.feat-on {
+  color: var(--w80);
+}
+
+.feat-on::before {
   content: '✓';
   color: var(--light);
   font-weight: 700;
   font-size: 13px;
   flex-shrink: 0;
+  width: 16px;
 }
 
-.pricing-cta {
+.feat-off {
+  color: var(--w30, rgba(255,255,255,0.3));
+}
+
+.feat-off::before {
+  content: '–';
+  color: var(--w30, rgba(255,255,255,0.3));
+  font-weight: 400;
+  font-size: 15px;
+  flex-shrink: 0;
+  width: 16px;
+}
+
+/* Buttons */
+.pricing-btn-dark {
+  width: 100%;
+  padding: 14px;
+  background: rgba(255,255,255,0.08);
+  color: var(--w);
+  border: 1px solid var(--w20);
+  border-radius: 12px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  margin-top: auto;
+}
+
+.pricing-btn-dark:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: var(--w40);
+}
+
+.pricing-btn-green {
   width: 100%;
   padding: 14px;
   background: var(--accent);
@@ -1148,60 +1220,41 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
+  margin-top: auto;
 }
 
-.pricing-cta:hover {
+.pricing-btn-green:hover {
   background: var(--glow);
   transform: translateY(-1px);
 }
 
-.pricing-cta-ghost {
-  width: 100%;
-  padding: 14px;
-  background: transparent;
-  color: var(--w80);
-  border: 1px solid var(--w20);
-  border-radius: 12px;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
-}
-
-.pricing-cta-ghost:hover {
-  border-color: var(--w40);
-  color: var(--w);
-  background: var(--w06);
-}
+/* Keep old classes as aliases so nothing breaks */
+.pricing-cta { display: none; }
+.pricing-cta-ghost { display: none; }
 
 /* ── FOOTER ── */
 
-footer {
-  border-top: 1px solid var(--w10);
-  background: rgba(0,0,0,0.2);
-}
-
-.footer-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 60px 80px 40px;
+.footer {
+  border-top: 1px solid var(--w06);
+  background: rgba(0,0,0,0.15);
   display: flex;
-  justify-content: space-between;
-  gap: 48px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 24px 40px;
+  gap: 0;
+  text-align: center;
 }
 
 .footer-logo {
   font-family: 'Fraunces', Georgia, serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--w);
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .footer-logo img {
@@ -1212,43 +1265,38 @@ footer {
 }
 
 .footer-tagline {
-  font-size: 14px;
-  color: var(--w40);
-  line-height: 1.5;
-  max-width: 240px;
+  font-size: 15px;
+  color: var(--w50, rgba(255,255,255,0.5));
+  margin-bottom: 28px;
 }
 
-.footer-links {
+.footer-nav {
   display: flex;
-  gap: 48px;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 28px;
 }
 
-.footer-links-col {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.footer-links-col h5 {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--w40);
-  margin-bottom: 4px;
-}
-
-.footer-links-col a {
+.footer-nav a {
   font-size: 14px;
+  font-weight: 500;
   color: var(--w60);
   text-decoration: none;
   transition: color 0.2s;
 }
 
-.footer-links-col a:hover {
+.footer-nav a:hover {
   color: var(--w);
 }
 
+.footer-copy {
+  font-size: 13px;
+  color: var(--w30, rgba(255,255,255,0.3));
+}
+
+/* Keep old utility classes in case referenced elsewhere */
 .footer-link-btn {
   background: none;
   border: none;
@@ -1257,32 +1305,9 @@ footer {
   font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 14px;
   color: var(--w60);
-  text-align: left;
   transition: color 0.2s;
 }
-
-.footer-link-btn:hover {
-  color: var(--w);
-}
-
-.footer-copy {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 80px 40px;
-  font-size: 13px;
-  color: var(--w40);
-  border-top: 1px solid var(--w06);
-}
-
-.footer-copy a {
-  color: var(--w40);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.footer-copy a:hover {
-  color: var(--light);
-}
+.footer-link-btn:hover { color: var(--w); }
 
 /* ══════════════════════════════════════════════════════════════════════════════
    PART 4: Modal · Auth · Responsive
@@ -1610,11 +1635,11 @@ footer {
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .about-grid { grid-template-columns: 1fr; gap: 48px; }
   .about-left .section-title { text-align: center; }
-  .section-sub[style] { text-align: center !important; }
   .about-stats { justify-content: center; }
-  .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .pricing-inner { padding: 0 40px; }
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .pricing-card-featured { transform: none; }
-  .pricing-card-featured:hover { transform: translateY(-3px); }
+  .pricing-card-featured:hover { transform: translateY(-2px); }
 }
 
 @media (max-width: 768px) {
@@ -1641,11 +1666,9 @@ footer {
   .section-inner { padding: 0 24px; }
 
   .features-grid { grid-template-columns: 1fr; }
+  .pricing-inner { padding: 0 24px; }
   .pricing-grid { grid-template-columns: 1fr; }
-
-  .footer-inner { padding: 40px 24px 24px; flex-direction: column; gap: 32px; }
-  .footer-copy { padding: 16px 24px 28px; }
-  .footer-links { flex-wrap: wrap; gap: 28px; }
+  .footer-nav { gap: 20px; }
 }
 
 @media (max-width: 480px) {

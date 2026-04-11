@@ -416,16 +416,13 @@ export default function LandingPage() {
 
         {/* ── Pricing ── */}
         <section className="section" id="pricing">
-          <div className="section-inner">
+          <div className="section-inner pricing-inner">
             <div className="section-tag">{t('Pricing', 'Precios')}</div>
-            <h2 className="section-title">
-              {lang === 'es'
-                ? <>Precios simples y <em>transparentes</em></>
-                : <>Simple, <em>transparent</em> pricing</>
-              }
+            <h2 className="pricing-title">
+              {t('Simple, honest pricing', 'Precios simples y honestos')}
             </h2>
-            <p className="section-sub">
-              {t('Start free forever. Upgrade when you need more power.', 'Empieza gratis para siempre. Actualiza cuando necesites más.')}
+            <p className="pricing-sub">
+              {t('Start free, upgrade when you\'re ready. No hidden fees, cancel anytime.', 'Empieza gratis, actualiza cuando estés listo. Sin costos ocultos, cancela cuando quieras.')}
             </p>
 
             <div className="pricing-toggle">
@@ -438,78 +435,76 @@ export default function LandingPage() {
                 <span className="toggle-knob" />
               </button>
               <span className={`toggle-label${yearly ? ' active' : ''}`}>{t('Yearly', 'Anual')}</span>
-              {yearly && (
-                <span className="pricing-badge-discount">
-                  {t('Save 35%', 'Ahorra 35%')}
-                </span>
-              )}
+              <span className={`pricing-badge-discount${yearly ? ' visible' : ''}`}>
+                {t('Save 35%', 'Ahorra 35%')}
+              </span>
             </div>
 
             <div className="pricing-grid">
               {/* Free */}
               <div className="pricing-card">
-                <div className="pricing-badge">{t('Free', 'Gratis')}</div>
-                <div className="pricing-plan">{t('Starter', 'Básico')}</div>
-                <div className="pricing-price">
-                  <sup>$</sup>0
+                <div className="pricing-plan-label">{t('FREE', 'GRATIS')}</div>
+                <div className="pricing-price-row">
+                  <span className="pricing-amount">$0</span>
+                  <span className="pricing-period-inline">/{t('forever', 'siempre')}</span>
                 </div>
-                <div className="pricing-period">{t('Forever free', 'Gratis para siempre')}</div>
-                <div className="pricing-desc">
-                  {t('Perfect for getting started with personal finance tracking.', 'Perfecto para comenzar con el seguimiento de finanzas.')}
-                </div>
+                <div className="pricing-desc">{t('Perfect to get started', 'Perfecto para empezar')}</div>
                 <ul className="pricing-features">
-                  <li>{t('Up to 30 transactions/month', 'Hasta 30 transacciones/mes')}</li>
-                  <li>{t('Basic budgets', 'Presupuestos básicos')}</li>
-                  <li>{t('Monthly reports', 'Reportes mensuales')}</li>
-                  <li>{t('EN/ES language support', 'Soporte EN/ES')}</li>
+                  <li className="feat-on">{t('1 bank account', '1 cuenta bancaria')}</li>
+                  <li className="feat-on">{t('Up to 30 transactions/month', 'Hasta 30 transacciones/mes')}</li>
+                  <li className="feat-on">{t('Basic spending categories', 'Categorías básicas de gasto')}</li>
+                  <li className="feat-on">{t('Monthly summary report', 'Reporte mensual')}</li>
+                  <li className="feat-off">{t('AI insights', 'IA insights')}</li>
+                  <li className="feat-off">{t('Bank sync', 'Sincronización bancaria')}</li>
+                  <li className="feat-off">{t('Savings goals', 'Metas de ahorro')}</li>
                 </ul>
-                <button className="pricing-cta-ghost" onClick={() => openModal('signup', 'free')}>
-                  {t('Get Started Free', 'Comenzar Gratis')}
+                <button className="pricing-btn-dark" onClick={() => openModal('signup', 'free')}>
+                  {t('Get started free', 'Empieza gratis')}
                 </button>
               </div>
 
               {/* Pro */}
               <div className="pricing-card pricing-card-featured">
-                <div className="pricing-badge">{t('Most Popular', 'Más Popular')}</div>
-                <div className="pricing-plan">Pro</div>
-                <div className="pricing-price">
-                  <sup>$</sup>{yearly ? '3.25' : '4.99'}
+                <div className="pricing-popular-badge">{t('MOST POPULAR', 'MÁS POPULAR')}</div>
+                <div className="pricing-plan-label">{t('PRO', 'PRO')}</div>
+                <div className="pricing-price-row">
+                  <span className="pricing-amount">${yearly ? '3.25' : '4.99'}</span>
+                  <span className="pricing-period-inline">/{t('month', 'mes')}</span>
                 </div>
-                <div className="pricing-period">{t('per month', 'por mes')}{yearly ? t(' · billed $39/yr', ' · facturado $39/año') : ''}</div>
-                <div className="pricing-desc">
-                  {t('Full power for serious finance management.', 'Toda la potencia para una gestión financiera seria.')}
-                </div>
+                <div className="pricing-desc">{t('Everything you need to take control', 'Todo lo que necesitas para tomar control')}</div>
                 <ul className="pricing-features">
-                  <li>{t('Unlimited transactions', 'Transacciones ilimitadas')}</li>
-                  <li>{t('All budget categories', 'Todas las categorías')}</li>
-                  <li>{t('AI insights & reports', 'IA insights y reportes')}</li>
-                  <li>{t('Bank sync (CO & MX)', 'Sincronización bancaria')}</li>
-                  <li>{t('14-day free trial', 'Prueba gratis 14 días')}</li>
+                  <li className="feat-on">{t('Unlimited accounts', 'Cuentas ilimitadas')}</li>
+                  <li className="feat-on">{t('Unlimited transactions', 'Transacciones ilimitadas')}</li>
+                  <li className="feat-on">{t('AI-powered insights', 'IA insights avanzados')}</li>
+                  <li className="feat-on">{t('Bank sync (CO & MX)', 'Banco sync (CO & MX)')}</li>
+                  <li className="feat-on">{t('Savings goals & budgets', 'Metas y presupuestos')}</li>
+                  <li className="feat-on">{t('Advanced visual reports', 'Reportes visuales avanzados')}</li>
+                  <li className="feat-on">{t('Priority support', 'Soporte prioritario')}</li>
                 </ul>
-                <button className="pricing-cta" onClick={() => openModal('signup', 'pro')}>
-                  {t('Start Free Trial', 'Iniciar Prueba Gratis')} →
+                <button className="pricing-btn-green" onClick={() => openModal('signup', 'pro')}>
+                  {t('Start Pro free 14 days', 'Prueba Pro gratis 14 días')}
                 </button>
               </div>
 
               {/* Family */}
               <div className="pricing-card">
-                <div className="pricing-badge">{t('Family', 'Familia')}</div>
-                <div className="pricing-plan">{t('Family', 'Familia')}</div>
-                <div className="pricing-price">
-                  <sup>$</sup>{yearly ? '6.58' : '9.99'}
+                <div className="pricing-plan-label">{t('FAMILY', 'FAMILIA')}</div>
+                <div className="pricing-price-row">
+                  <span className="pricing-amount">${yearly ? '6.58' : '9.99'}</span>
+                  <span className="pricing-period-inline">/{t('month', 'mes')}</span>
                 </div>
-                <div className="pricing-period">{t('per month', 'por mes')}{yearly ? t(' · billed $79/yr', ' · facturado $79/año') : ''}</div>
-                <div className="pricing-desc">
-                  {t('Shared finances for up to 5 family members.', 'Finanzas compartidas para hasta 5 miembros de la familia.')}
-                </div>
+                <div className="pricing-desc">{t('For the whole household', 'Para todo el hogar')}</div>
                 <ul className="pricing-features">
-                  <li>{t('Everything in Pro', 'Todo lo de Pro')}</li>
-                  <li>{t('Up to 5 members', 'Hasta 5 miembros')}</li>
-                  <li>{t('Shared budgets & goals', 'Presupuestos y metas compartidas')}</li>
-                  <li>{t('Family spending insights', 'Reportes de gasto familiar')}</li>
+                  <li className="feat-on">{t('Everything in Pro', 'Todo lo de Pro')}</li>
+                  <li className="feat-on">{t('Up to 5 members', 'Hasta 5 miembros')}</li>
+                  <li className="feat-on">{t('Shared household budget', 'Presupuesto familiar compartido')}</li>
+                  <li className="feat-on">{t('Individual privacy per member', 'Privacidad individual por miembro')}</li>
+                  <li className="feat-on">{t('Family financial reports', 'Reportes financieros familiares')}</li>
+                  <li className="feat-on">{t('Dedicated support', 'Soporte dedicado')}</li>
+                  <li className="feat-off">{t('Business features', 'Funciones empresariales')}</li>
                 </ul>
-                <button className="pricing-cta-ghost" onClick={() => openModal('signup', 'family')}>
-                  {t('Get Family Plan', 'Obtener Plan Familiar')}
+                <button className="pricing-btn-dark" onClick={() => openModal('signup', 'family')}>
+                  {t('Start free 14 days', 'Empieza gratis 14 días')}
                 </button>
               </div>
             </div>
@@ -517,45 +512,23 @@ export default function LandingPage() {
         </section>
 
         {/* ── Footer ── */}
-        <footer>
-          <div className="footer-inner">
-            <div>
-              <a href="/" className="footer-logo">
-                <img src="/Logo_WeUp.png" alt="WeUp" />
-                WeUp
-              </a>
-              <p className="footer-tagline">
-                {t('Your money, finally under control.', 'Tu dinero, finalmente bajo control.')}
-              </p>
-            </div>
-
-            <div className="footer-links">
-              <div className="footer-links-col">
-                <h5>{t('Product', 'Producto')}</h5>
-                <a href="#features">{t('Features', 'Características')}</a>
-                <a href="#pricing">{t('Pricing', 'Precios')}</a>
-              </div>
-              <div className="footer-links-col">
-                <h5>{t('Company', 'Empresa')}</h5>
-                <a href="#about">{t('About', 'Nosotros')}</a>
-              </div>
-              <div className="footer-links-col">
-                <h5>{t('Account', 'Cuenta')}</h5>
-                <button className="footer-link-btn" onClick={() => openModal('signup')}>
-                  {t('Sign Up', 'Registrarse')}
-                </button>
-                <button className="footer-link-btn" onClick={() => openModal('signin')}>
-                  {t('Sign In', 'Iniciar Sesión')}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="footer-copy">
-            © 2025 WeUp. {t('All rights reserved.', 'Todos los derechos reservados.')}
-            {' · '}
+        <footer className="footer">
+          <a href="/" className="footer-logo">
+            <img src="/Logo_WeUp.png" alt="WeUp" />
+            WeUp
+          </a>
+          <p className="footer-tagline">
+            {t('Your money, finally under control.', 'Tu dinero, finalmente bajo control.')}
+          </p>
+          <nav className="footer-nav">
+            <a href="#features">{t('Features', 'Características')}</a>
+            <a href="#pricing">{t('Pricing', 'Precios')}</a>
+            <a href="#about">{t('About', 'Nosotros')}</a>
             <a href="/privacy">{t('Privacy', 'Privacidad')}</a>
-            {' · '}
             <a href="/terms">{t('Terms', 'Términos')}</a>
+          </nav>
+          <div className="footer-copy">
+            © 2026 WeUp. {t('Made with ♥ for Latin America.', 'Hecho con ♥ para América Latina.')}
           </div>
         </footer>
       </div>
