@@ -212,56 +212,37 @@ export default function LandingPage() {
 
                   <div className="iphone-status-bar">
                     <span className="iphone-time">9:41</span>
-                    <div className="iphone-status-icons">
-                      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
-                        <rect x="0" y="4" width="3" height="8" rx="1" opacity="0.4"/>
-                        <rect x="4.5" y="2.5" width="3" height="9.5" rx="1" opacity="0.6"/>
-                        <rect x="9" y="0.5" width="3" height="11.5" rx="1"/>
-                      </svg>
-                      <svg width="15" height="12" viewBox="0 0 15 12" fill="currentColor">
-                        <path d="M7.5 2.5C9.8 2.5 11.9 3.4 13.4 4.9L14.5 3.8C12.7 2 10.2 1 7.5 1S2.3 2 0.5 3.8L1.6 4.9C3.1 3.4 5.2 2.5 7.5 2.5Z" opacity="0.4"/>
-                        <path d="M7.5 5C9 5 10.3 5.6 11.3 6.6L12.4 5.5C11.1 4.3 9.4 3.5 7.5 3.5S3.9 4.3 2.6 5.5L3.7 6.6C4.7 5.6 6 5 7.5 5Z" opacity="0.6"/>
-                        <circle cx="7.5" cy="10" r="1.5"/>
-                      </svg>
-                      <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor">
-                        <rect x="0" y="1" width="21" height="10" rx="3" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.35"/>
-                        <rect x="1.5" y="2.5" width="16" height="7" rx="2" fill="currentColor" opacity="0.9"/>
-                        <path d="M22 4.5v3c.8-.4 1.3-1 1.3-1.5S22.8 4.9 22 4.5Z" fill="currentColor" opacity="0.4"/>
-                      </svg>
+                    <div className="iphone-status-dots">
+                      <span /><span /><span />
                     </div>
                   </div>
 
                   <div className="iphone-body">
                     <div className="iphone-greeting">{t('Good morning,', 'Buenos días,')}</div>
-                    <div className="iphone-name">Alex 👋</div>
+                    <div className="iphone-name">Ana ✦</div>
 
                     <div className="iphone-bal-card">
-                      <div className="iphone-bal-label">{t('Total Balance', 'Balance Total')}</div>
-                      <div className="iphone-bal-amount">$4,280.50</div>
+                      <div className="iphone-bal-deco" />
+                      <div className="iphone-bal-label">{t('NET BALANCE', 'BALANCE NETO')}</div>
+                      <div className="iphone-bal-amount">$4,280<span className="iphone-bal-cents">.50</span></div>
                       <div className="iphone-bal-row">
                         <div className="iphone-bal-item income">
-                          <span className="bal-icon">↑</span>
-                          <div>
-                            <div className="bal-sub">{t('Income', 'Ingreso')}</div>
-                            <div className="bal-val">$3,200</div>
-                          </div>
+                          <div className="bal-sub">{t('Income', 'Ingreso')}</div>
+                          <div className="bal-val">$6,100</div>
                         </div>
                         <div className="iphone-bal-item expense">
-                          <span className="bal-icon">↓</span>
-                          <div>
-                            <div className="bal-sub">{t('Expenses', 'Gastos')}</div>
-                            <div className="bal-val">$1,840</div>
-                          </div>
+                          <div className="bal-sub">{t('Expenses', 'Gastos')}</div>
+                          <div className="bal-val">$1,820</div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="iphone-section-title">{t('Recent', 'Recientes')}</div>
+                    <div className="iphone-section-title">{t('RECENT', 'RECIENTES')}</div>
                     <div className="iphone-txs">
                       {[
-                        { icon: '🛒', name: t('Grocery', 'Mercado'), cat: t('Food', 'Comida'), amt: '-$48.20', neg: true },
-                        { icon: '💼', name: t('Salary', 'Salario'), cat: t('Income', 'Ingreso'), amt: '+$3,200', neg: false },
-                        { icon: '🚗', name: t('Gas', 'Gasolina'), cat: t('Transport', 'Transporte'), amt: '-$35.00', neg: true },
+                        { icon: '🛒', name: t('Éxito', 'Éxito'),       cat: t('Food', 'Comida'),     amt: '-$84',    neg: true },
+                        { icon: '☕', name: t('Juan Valdez', 'Juan Valdez'), cat: t('Leisure', 'Ocio'), amt: '-$12',  neg: true },
+                        { icon: '💼', name: t('Salary', 'Salario'),     cat: t('Income', 'Ingreso'),  amt: '+$3,050', neg: false },
                       ].map((tx, i) => (
                         <div className="iphone-tx" key={i}>
                           <div className="iphone-tx-icon">{tx.icon}</div>
@@ -277,13 +258,19 @@ export default function LandingPage() {
                     <div className="iphone-insight">
                       <div className="iphone-insight-header">
                         <span className="iphone-insight-dot" />
-                        <span className="iphone-insight-label">{t('AI Insight', 'IA Financiera')}</span>
+                        <span className="iphone-insight-label">{t('AI INSIGHT', 'IA FINANCIERA')}</span>
                       </div>
                       <div className="iphone-insight-text">
-                        {t("You're 22% under budget this month 🎉", '¡Estás 22% bajo presupuesto! 🎉')}
+                        {lang === 'es'
+                          ? <>Ahorraste <strong>34%</strong> este mes — ¡por encima del promedio! 🎯</>
+                          : <>You saved <strong>34%</strong> this month — above average! 🎯</>}
                       </div>
                       <div className="iphone-insight-bar-track">
-                        <div className="iphone-insight-bar-fill" style={{ width: '78%' }} />
+                        <div className="iphone-insight-bar-fill" style={{ width: '68%' }} />
+                      </div>
+                      <div className="iphone-insight-goal-row">
+                        <span className="iphone-insight-pct">{t('68% to goal', '68% a la meta')}</span>
+                        <span className="iphone-insight-goal">{t('Vacation 🌴', 'Vacaciones 🌴')}</span>
                       </div>
                     </div>
                   </div>
