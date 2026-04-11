@@ -1,6 +1,6 @@
 <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="g" x1="100" y1="25" x2="100" y2="172" gradientUnits="userSpaceOnUse">
+    <linearGradient id="g" x1="100" y1="28" x2="100" y2="172" gradientUnits="userSpaceOnUse">
       <stop offset="0%"   stop-color="#F0F6F2"/>
       <stop offset="35%"  stop-color="#B0D8BF"/>
       <stop offset="100%" stop-color="#3A7852"/>
@@ -13,26 +13,27 @@
   <rect width="200" height="200" rx="36" fill="#0D2218"/>
 
   <!--
-    FIX: sweep=1 (not 0) = upward arches in SVG Y-down coordinate system.
-    Elliptical arcs: ry=71 makes arches TALL (49% of shape height),
-    matching the reference logo proportions.
+    sweep=0 = CCW in SVG Y-down = UPWARD arches (confirmed from project notes).
+    Elliptical arcs (ry=68 >> rx) make each arch cap TALL (47% of shape height)
+    so the shape reads as a W with 3 distinct rounded pillars, not a crown.
 
-    Left arch:   x=10→88,  rx=39 ry=71, shoulder y=96, top y=25
-    Valley 1:    x=88→74,  width=14px, bezier ctrl y=168
-    Middle arch: x=74→146, rx=36 ry=71, shoulder y=96, top y=25
-    Valley 2:    x=146→132, width=14px
-    Right arch:  x=132→186, rx=27 ry=68, shoulder y=96, top y=28
-    Bottom: y=172
+    Left arch:   x=14→90,  rx=38 ry=68, shoulder y=96, top y=28
+    Valley 1:    x=90→76,  14px wide, ctrl y=153, midpoint y≈139
+    Middle arch: x=76→146, rx=35 ry=68, top y=28
+    Valley 2:    x=146→132, 14px wide, ctrl y=153, midpoint y≈139
+    Right arch:  x=132→186, rx=27 ry=64, top y=32 (slightly shorter)
+    Outer walls: straight at x=14 and x=186
+    Bottom: flat y=172
   -->
   <path
     d="
-      M 10,172
-      L 10,96
-      A 39 71 0 0 1 88,96
-      C 88,168 74,168 74,96
-      A 36 71 0 0 1 146,96
-      C 146,168 132,168 132,96
-      A 27 68 0 0 1 186,96
+      M 14,172
+      L 14,96
+      A 38 68 0 0 0 90,96
+      C 90,153 76,153 76,96
+      A 35 68 0 0 0 146,96
+      C 146,153 132,153 132,96
+      A 27 64 0 0 0 186,96
       L 186,172
       Z
     "
