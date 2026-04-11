@@ -33,7 +33,7 @@ function Logo() {
       }}
     >
       <img
-        src="/Logo_WeUp.png"
+        src="/Logo_WeUp.svg"
         alt="WeUp"
         style={{ height: 36, width: 36, objectFit: 'contain', borderRadius: 10, flexShrink: 0 }}
       />

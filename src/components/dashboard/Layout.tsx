@@ -65,7 +65,7 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <img src="/Logo_WeUp.png" alt="WeUp" style={{ height: 30, width: 30, objectFit: 'contain', borderRadius: 10 }} />
+        <img src="/Logo_WeUp.svg" alt="WeUp" style={{ height: 30, width: 30, objectFit: 'contain', borderRadius: 10 }} />
         <span>WeUp</span>
       </div>
 
@@ -124,7 +124,7 @@ function MobileHeader() {
   return (
     <div className="mobile-header">
       <div className="mobile-header-logo">
-        <img src="/Logo_WeUp.png" alt="WeUp" style={{ height: 28, width: 28, objectFit: 'contain', borderRadius: 10 }} />
+        <img src="/Logo_WeUp.svg" alt="WeUp" style={{ height: 28, width: 28, objectFit: 'contain', borderRadius: 10 }} />
         <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 18, color: '#fff' }}>WeUp</span>
       </div>
       <div className="mobile-header-avatar" onClick={() => setView('settings')}>{initials}</div>

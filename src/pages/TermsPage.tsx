@@ -18,7 +18,7 @@ export default function TermsPage() {
       {/* Nav */}
       <nav className="policy-nav">
         <Link to="/" className="policy-nav-logo">
-          <span className="policy-nav-dot" />
+          <img src="/Logo_WeUp.svg" alt="WeUp" style={{height:28,width:28,objectFit:"contain",borderRadius:8}} />
           WeUp
         </Link>
         <div className="policy-nav-right">

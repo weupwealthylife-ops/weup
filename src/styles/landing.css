@@ -1751,3 +1751,153 @@ body {
   .modal { padding: 28px 20px; }
   .pricing-card-featured { transform: none; order: -1; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   UX/UI IMPROVEMENTS
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent sticky nav from covering section anchors */
+.section, .stats-strip {
+  scroll-margin-top: 80px;
+}
+
+/* Logo image: show fully, correct sizing */
+.nav-logo img,
+.modal-logo img,
+.footer-logo img,
+.upgrade-nav-logo img,
+.policy-nav-logo img {
+  height: 34px;
+  width: 34px;
+  object-fit: contain;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+/* Better nav link focus states */
+.nav-center a:focus-visible,
+.nav-cta:focus-visible,
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Feat card: equal height columns */
+.features-grid {
+  align-items: stretch;
+}
+
+.feat-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.feat-desc {
+  flex: 1;
+}
+
+/* Section tag: consistent margin */
+.section-tag {
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+/* Improve about section sub-text alignment on left */
+.about-left .section-sub {
+  text-align: left;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Pricing card: consistent height columns */
+.pricing-grid {
+  align-items: stretch;
+}
+
+.pricing-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero social proof: fix avatar overlap z-index */
+.hero-social-avatars .avatar-circle {
+  z-index: 0;
+}
+
+.hero-social-avatars .avatar-circle:nth-child(1) { z-index: 4; }
+.hero-social-avatars .avatar-circle:nth-child(2) { z-index: 3; }
+.hero-social-avatars .avatar-circle:nth-child(3) { z-index: 2; }
+.hero-social-avatars .avatar-circle:nth-child(4) { z-index: 1; }
+
+/* Footer nav links: better spacing */
+.footer-nav a,
+.footer-nav .link-style {
+  transition: color 0.2s;
+  text-decoration: none;
+  color: var(--w60);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.footer-nav a:hover {
+  color: var(--w);
+}
+
+/* Modal: better max-height on small screens */
+@media (max-height: 700px) {
+  .modal {
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+}
+
+/* Policy nav logo (fix for svg) */
+.policy-nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+/* iphone-name: consistent with design */
+.iphone-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Balance label: more visible */
+.iphone-bal-label {
+  font-size: 9px;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 2px;
+}
+
+/* Transaction icons: match screenshot */
+.iphone-tx-icon {
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Pricing inner: consistent with section-inner */
+@media (max-width: 768px) {
+  .pricing-inner { padding: 0 24px; }
+  .pricing-title { font-size: 32px; }
+  .pricing-toggle { flex-wrap: wrap; }
+}

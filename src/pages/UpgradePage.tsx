@@ -339,7 +339,7 @@ function UpgradeNav({ userName }: { userName: string }) {
   return (
     <nav className="upgrade-nav">
       <Link to="/dashboard" className="upgrade-nav-logo">
-        <img src="/Logo_WeUp.png" alt="WeUp" />
+        <img src="/Logo_WeUp.svg" alt="WeUp" />
         WeUp
       </Link>
       {userName && <span className="upgrade-nav-user">{userName}</span>}

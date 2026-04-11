@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { sb } from '../lib/supabase'
 import '../styles/landing.css'
 
@@ -131,7 +131,7 @@ export default function LandingPage() {
         {/* ── Nav ── */}
         <nav className="nav">
           <a href="/" className="nav-logo">
-            <img src="/Logo_WeUp.png" alt="WeUp" />
+            <img src="/Logo_WeUp.svg" alt="WeUp" />
             WeUp
           </a>
 
@@ -500,10 +500,10 @@ export default function LandingPage() {
 
         {/* ── Footer ── */}
         <footer className="footer">
-          <a href="/" className="footer-logo">
-            <img src="/Logo_WeUp.png" alt="WeUp" />
+          <Link to="/" className="footer-logo">
+            <img src="/Logo_WeUp.svg" alt="WeUp" />
             WeUp
-          </a>
+          </Link>
           <p className="footer-tagline">
             {t('Your money, finally under control.', 'Tu dinero, finalmente bajo control.')}
           </p>
@@ -511,8 +511,8 @@ export default function LandingPage() {
             <a href="#features">{t('Features', 'Características')}</a>
             <a href="#pricing">{t('Pricing', 'Precios')}</a>
             <a href="#about">{t('About', 'Nosotros')}</a>
-            <a href="/privacy">{t('Privacy', 'Privacidad')}</a>
-            <a href="/terms">{t('Terms', 'Términos')}</a>
+            <Link to="/privacy">{t('Privacy', 'Privacidad')}</Link>
+            <Link to="/terms">{t('Terms', 'Términos')}</Link>
           </nav>
           <div className="footer-copy">
             © 2026 WeUp. {t('Made with ♥ for Latin America.', 'Hecho con ♥ para América Latina.')}
@@ -527,7 +527,7 @@ export default function LandingPage() {
             <button className="modal-close" onClick={() => setModalOpen(false)} aria-label="Close">✕</button>
 
             <div className="modal-logo">
-              <img src="/Logo_WeUp.png" alt="WeUp" />
+              <img src="/Logo_WeUp.svg" alt="WeUp" />
               WeUp
             </div>
             <p className="modal-sub">
