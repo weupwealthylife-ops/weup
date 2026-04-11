@@ -1,40 +1,40 @@
 <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="g" x1="100" y1="30" x2="100" y2="174" gradientUnits="userSpaceOnUse">
-      <stop offset="0%"   stop-color="#EBF7EF"/>
-      <stop offset="48%"  stop-color="#9ECBAD"/>
-      <stop offset="100%" stop-color="#4A8766"/>
+    <linearGradient id="g" x1="100" y1="28" x2="100" y2="168" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#E6F4EC"/>
+      <stop offset="35%"  stop-color="#A8D5B8"/>
+      <stop offset="100%" stop-color="#3D7A56"/>
     </linearGradient>
     <clipPath id="bg">
-      <rect width="200" height="200" rx="40"/>
+      <rect width="200" height="200" rx="36"/>
     </clipPath>
   </defs>
 
   <!-- Dark green background -->
-  <rect width="200" height="200" rx="40" fill="#0D2318"/>
+  <rect width="200" height="200" rx="36" fill="#0D2318"/>
 
-  <!-- W mark: 3 arched pillars with deep organic valleys -->
   <!--
-    Arch 1 (left):  x=14→100, radius=43, top y=32
-    Valley 1:       S-curve (100,110)→(66,110) dipping to ~y=148
-    Arch 2 (mid):   x=66→152, radius=43, top y=32
-    Valley 2:       S-curve (152,110)→(118,110) dipping to ~y=148
-    Arch 3 (right): x=118→188, radius=35, top y=40 (slightly narrower)
+    W mark: 3 wide semicircular arches with very deep organic valleys
+    Arch 1 (left):   x=12→92,  radius=40, base y=78, top y=38
+    Arch 2 (mid):    x=62→142, radius=40, base y=78, top y=38
+    Arch 3 (right):  x=112→182, radius=35, base y=78, top y=43
+    Valley S-curves: legs descend to y=104, control pts at y=172 (nearly at bottom)
+    creating extremely deep organic valleys as in the reference logo
   -->
   <path
     d="
-      M 14,174
-      L 14,75
-      A 43 43 0 0 0 100,75
-      L 100,110
-      C 100,158 66,158 66,110
-      L 66,75
-      A 43 43 0 0 0 152,75
-      L 152,110
-      C 152,158 118,158 118,110
-      L 118,75
-      A 35 35 0 0 0 188,75
-      L 188,174
+      M 12,168
+      L 12,78
+      A 40 40 0 0 0 92,78
+      L 92,104
+      C 92,172 62,172 62,104
+      L 62,78
+      A 40 40 0 0 0 142,78
+      L 142,104
+      C 142,172 112,172 112,104
+      L 112,78
+      A 35 35 0 0 0 182,78
+      L 182,168
       Z
     "
     fill="url(#g)"
