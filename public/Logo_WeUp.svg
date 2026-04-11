@@ -1,6 +1,6 @@
 <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="g" x1="98" y1="22" x2="98" y2="178" gradientUnits="userSpaceOnUse">
+    <linearGradient id="g" x1="100" y1="25" x2="100" y2="172" gradientUnits="userSpaceOnUse">
       <stop offset="0%"   stop-color="#F0F6F2"/>
       <stop offset="35%"  stop-color="#B0D8BF"/>
       <stop offset="100%" stop-color="#3A7852"/>
@@ -10,30 +10,30 @@
     </clipPath>
   </defs>
 
-  <!-- Background exactly matching nav dark green -->
   <rect width="200" height="200" rx="36" fill="#0D2218"/>
 
   <!--
-    W mark: valleys start directly at arch shoulders (no straight legs),
-    creating a deep organic W that reads as a W, not a crown.
+    FIX: sweep=1 (not 0) = upward arches in SVG Y-down coordinate system.
+    Elliptical arcs: ry=71 makes arches TALL (49% of shape height),
+    matching the reference logo proportions.
 
-    Left arch:   x=14→90,   r=38, shoulder y=60, top y=22
-    Valley 1:    x=90→74,   width=16px, midpoint dips to y≈153 (ctrl y=184)
-    Middle arch: x=74→142,  r=34, shoulder y=60, top y=26
-    Valley 2:    x=142→128, width=14px, midpoint dips to y≈153
-    Right arch:  x=128→182, r=27, shoulder y=60, top y=33
-    Bottom: flat at y=178
+    Left arch:   x=10→88,  rx=39 ry=71, shoulder y=96, top y=25
+    Valley 1:    x=88→74,  width=14px, bezier ctrl y=168
+    Middle arch: x=74→146, rx=36 ry=71, shoulder y=96, top y=25
+    Valley 2:    x=146→132, width=14px
+    Right arch:  x=132→186, rx=27 ry=68, shoulder y=96, top y=28
+    Bottom: y=172
   -->
   <path
     d="
-      M 14,178
-      L 14,60
-      A 38 38 0 0 0 90,60
-      C 90,184 74,184 74,60
-      A 34 34 0 0 0 142,60
-      C 142,184 128,184 128,60
-      A 27 27 0 0 0 182,60
-      L 182,178
+      M 10,172
+      L 10,96
+      A 39 71 0 0 1 88,96
+      C 88,168 74,168 74,96
+      A 36 71 0 0 1 146,96
+      C 146,168 132,168 132,96
+      A 27 68 0 0 1 186,96
+      L 186,172
       Z
     "
     fill="url(#g)"
