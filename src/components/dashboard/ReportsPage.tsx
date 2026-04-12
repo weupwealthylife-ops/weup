@@ -18,7 +18,7 @@ const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','
 const MONTHS_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
 export function ReportsPage() {
-  const { transactions, lang, viewMonth, viewYear, changeMonth } = useDashboard()
+  const { transactions, lang, currency, viewMonth, viewYear, changeMonth } = useDashboard()
 
   const t = (en: string, es: string) => lang === 'es' ? es : en
   const MONTHS = lang === 'es' ? MONTHS_ES : MONTHS_EN
@@ -155,20 +155,20 @@ export function ReportsPage() {
         <div className="dash-card">
           <div className="card-icon icon-income">💰</div>
           <div className="card-label">{t('Income', 'Ingresos')}</div>
-          <div className="card-value" style={{ color: 'var(--income)' }}>{fmt(currentIncome)}</div>
+          <div className="card-value" style={{ color: 'var(--income)' }}>{fmt(currentIncome, currency)}</div>
           <div className="card-sub">{monthName}</div>
         </div>
         <div className="dash-card">
           <div className="card-icon icon-expense">💸</div>
           <div className="card-label">{t('Expenses', 'Gastos')}</div>
-          <div className="card-value" style={{ color: 'var(--expense)' }}>{fmt(currentExpenses)}</div>
+          <div className="card-value" style={{ color: 'var(--expense)' }}>{fmt(currentExpenses, currency)}</div>
           <div className="card-sub">{monthName}</div>
         </div>
         <div className="dash-card">
           <div className="card-icon icon-savings">🏦</div>
           <div className="card-label">{t('Saved', 'Ahorrado')}</div>
           <div className="card-value" style={{ color: currentIncome - currentExpenses >= 0 ? 'var(--income)' : 'var(--expense)' }}>
-            {fmt(Math.abs(currentIncome - currentExpenses))}
+            {fmt(Math.abs(currentIncome - currentExpenses, currency))}
           </div>
           <div className="card-sub">
             {currentIncome - currentExpenses >= 0
@@ -236,7 +236,7 @@ export function ReportsPage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                       <span style={{ fontSize: 12, color: 'var(--text3)' }}>{pct.toFixed(1)}%</span>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{fmt(amount)}</span>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{fmt(amount, currency)}</span>
                     </div>
                   </div>
                   <div style={{ height: 5, background: 'var(--bg2)', borderRadius: 3, overflow: 'hidden' }}>

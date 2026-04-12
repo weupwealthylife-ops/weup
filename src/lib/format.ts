@@ -1,8 +1,17 @@
-export function fmt(n: number): string {
-  return new Intl.NumberFormat('en-US', {
+import type { Currency } from '../types/dashboard'
+
+export const CURRENCIES: Record<Currency, { code: string; locale: string; label: string; flag: string }> = {
+  USD: { code: 'USD', locale: 'en-US', label: 'USD – US Dollar',      flag: '🇺🇸' },
+  COP: { code: 'COP', locale: 'es-CO', label: 'COP – Colombian Peso', flag: '🇨🇴' },
+  MXN: { code: 'MXN', locale: 'es-MX', label: 'MXN – Mexican Peso',   flag: '🇲🇽' },
+}
+
+export function fmt(n: number, currency: Currency = 'USD'): string {
+  const c = CURRENCIES[currency]
+  return new Intl.NumberFormat(c.locale, {
     style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 2,
+    currency: c.code,
+    maximumFractionDigits: currency === 'COP' ? 0 : 2,
   }).format(n)
 }
 

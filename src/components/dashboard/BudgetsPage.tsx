@@ -4,7 +4,7 @@ import { fmt } from '../../lib/format'
 import { BUDGET_CATS } from '../../lib/categories'
 
 export function BudgetsPage() {
-  const { transactions, budgets, lang, viewMonth, viewYear, changeMonth, openBudgetModal } = useDashboard()
+  const { transactions, budgets, lang, currency, viewMonth, viewYear, changeMonth, openBudgetModal } = useDashboard()
 
   const t = (en: string, es: string) => lang === 'es' ? es : en
 
@@ -61,9 +61,9 @@ export function BudgetsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
             <div className="card-label">{t('Total budget used', 'Presupuesto total usado')}</div>
-            <div className="card-value">{fmt(totalSpent)}</div>
+            <div className="card-value">{fmt(totalSpent, currency)}</div>
             <div className="card-sub">
-              {t('of', 'de')} {fmt(totalBudget)} {t('budget', 'presupuesto')}
+              {t('of', 'de')} {fmt(totalBudget, currency)} {t('budget', 'presupuesto')}
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -71,7 +71,7 @@ export function BudgetsPage() {
               {totalPct.toFixed(0)}%
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
-              {fmt(Math.max(0, totalBudget - totalSpent))} {t('remaining', 'restante')}
+              {fmt(Math.max(0, totalBudget - totalSpent, currency))} {t('remaining', 'restante')}
             </div>
           </div>
         </div>
@@ -115,18 +115,18 @@ export function BudgetsPage() {
                         {lang === 'es' ? cat.es : cat.en}
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 1 }}>
-                        {fmt(catSpent)} {t('of', 'de')} {fmt(budget)}
+                        {fmt(catSpent, currency)} {t('of', 'de')} {fmt(budget, currency)}
                       </div>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
                     {over ? (
                       <span className="badge badge-down">
-                        {t('Over by', 'Excedido')} {fmt(catSpent - budget)}
+                        {t('Over by', 'Excedido')} {fmt(catSpent - budget, currency)}
                       </span>
                     ) : (
                       <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text2)' }}>
-                        {fmt(remaining)} {t('left', 'restante')}
+                        {fmt(remaining, currency)} {t('left', 'restante')}
                       </span>
                     )}
                     <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>

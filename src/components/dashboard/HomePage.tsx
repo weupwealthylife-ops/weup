@@ -63,7 +63,7 @@ function TxRow({ tx, lang, onEdit, onDelete }: {
         </div>
         <div className="tx-right">
           <div className={`tx-amt ${tx.type === 'income' ? 'pos' : 'neg'}`}>
-            {tx.type === 'income' ? '+' : '-'}{fmt(Number(tx.amount))}
+            {tx.type === 'income' ? '+' : '-'}{fmt(Number(tx.amount), currency)}
           </div>
           <div className="tx-date">
             {new Date(tx.date).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'short', day: 'numeric' })}
@@ -189,25 +189,25 @@ export function HomePage() {
       <div className="cards-grid">
         <div className="dash-card card-hero">
           <div className="card-label">{t('Net Balance', 'Balance Neto')}</div>
-          <div className="card-value">{fmt(balance)}</div>
+          <div className="card-value">{fmt(balance, currency)}</div>
           <div className="card-sub">{t('This month', 'Este mes')}</div>
         </div>
         <div className="dash-card">
           <div className="card-icon icon-income">💰</div>
           <div className="card-label">{t('Income', 'Ingresos')}</div>
-          <div className="card-value" style={{ color: 'var(--income)' }}>{fmt(income)}</div>
+          <div className="card-value" style={{ color: 'var(--income)' }}>{fmt(income, currency)}</div>
           <div className="card-sub"><span className="badge badge-up">+{expRate}%</span> {t('vs last month', 'vs mes anterior')}</div>
         </div>
         <div className="dash-card">
           <div className="card-icon icon-expense">💸</div>
           <div className="card-label">{t('Expenses', 'Gastos')}</div>
-          <div className="card-value" style={{ color: 'var(--expense)' }}>{fmt(expenses)}</div>
+          <div className="card-value" style={{ color: 'var(--expense)' }}>{fmt(expenses, currency)}</div>
           <div className="card-sub"><span className="badge badge-down">{expRate}%</span> {t('of income', 'de ingresos')}</div>
         </div>
         <div className="dash-card">
           <div className="card-icon icon-savings">🎯</div>
           <div className="card-label">{t('Saved', 'Ahorrado')}</div>
-          <div className="card-value" style={{ color: 'var(--purple)' }}>{fmt(saved)}</div>
+          <div className="card-value" style={{ color: 'var(--purple)' }}>{fmt(saved, currency)}</div>
           <div className="card-sub">{saveRate}% {t('savings rate', 'tasa de ahorro')}</div>
         </div>
       </div>
@@ -237,7 +237,7 @@ export function HomePage() {
           <div className="weekly-icon">📅</div>
           <div>
             <div className="weekly-label">{t('This week', 'Esta semana')}</div>
-            <div className="weekly-value">{fmt(weekSpent)} {t('spent', 'gastado')}</div>
+            <div className="weekly-value">{fmt(weekSpent, currency)} {t('spent', 'gastado')}</div>
           </div>
         </div>
         <span className={`weekly-badge ${weekClass}`}>{weekBadge}</span>
@@ -288,12 +288,12 @@ export function HomePage() {
                 cutout: '68%',
                 plugins: {
                   legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 14, usePointStyle: true, pointStyle: 'circle' } },
-                  tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.parsed)}` } },
+                  tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.parsed, currency)}` } },
                 },
               }}
             />
             <div className="donut-center">
-              <div className="donut-center-val">{totalExp > 0 ? fmt(totalExp) : '$0'}</div>
+              <div className="donut-center-val">{totalExp > 0 ? fmt(totalExp, currency) : '$0'}</div>
               <div className="donut-center-lbl">{t('expenses', 'gastos')}</div>
             </div>
           </div>

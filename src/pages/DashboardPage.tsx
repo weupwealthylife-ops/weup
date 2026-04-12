@@ -3,7 +3,7 @@ import type { User } from '@supabase/supabase-js'
 import { sb } from '../lib/supabase'
 import { DEFAULT_BUDGETS } from '../lib/categories'
 import { DashboardContext } from '../contexts/DashboardContext'
-import type { Transaction, DashboardView, Lang } from '../types/dashboard'
+import type { Transaction, DashboardView, Lang, Currency } from '../types/dashboard'
 import { AuthGate } from '../components/dashboard/AuthGate'
 import { AppLayout } from '../components/dashboard/Layout'
 import { AddTransactionModal } from '../components/dashboard/AddTransactionModal'
@@ -25,6 +25,13 @@ export default function DashboardPage() {
   // ── UI state ──
   const [view, setView] = useState<DashboardView>('home')
   const [lang, setLang] = useState<Lang>('en')
+  const [currency, setCurrencyState] = useState<Currency>(
+    () => (localStorage.getItem('weup_currency') as Currency) || 'USD'
+  )
+  const setCurrency = useCallback((c: Currency) => {
+    setCurrencyState(c)
+    localStorage.setItem('weup_currency', c)
+  }, [])
   const [viewMonth, setViewMonth] = useState(new Date().getMonth())
   const [viewYear, setViewYear] = useState(new Date().getFullYear())
   const [toast, setToast] = useState('')
@@ -142,6 +149,7 @@ export default function DashboardPage() {
       user: user!,
       transactions, budgets, setBudgets,
       lang, setLang,
+      currency, setCurrency,
       view, setView,
       viewMonth, viewYear, changeMonth,
       showToast,

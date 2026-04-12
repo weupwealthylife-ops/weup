@@ -1,17 +1,19 @@
 import { createContext, useContext } from 'react'
 import type { User } from '@supabase/supabase-js'
-import type { Transaction, DashboardView, Lang } from '../types/dashboard'
+import type { Transaction, DashboardView, Lang, Currency } from '../types/dashboard'
 
 export interface DashboardContextType {
   user: User
   transactions: Transaction[]
   budgets: Record<string, number>
   lang: Lang
+  currency: Currency
   view: DashboardView
   viewMonth: number
   viewYear: number
   setView: (v: DashboardView) => void
   setLang: (l: Lang) => void
+  setCurrency: (c: Currency) => void
   setBudgets: (b: Record<string, number>) => void
   showToast: (msg: string) => void
   openAddModal: () => void

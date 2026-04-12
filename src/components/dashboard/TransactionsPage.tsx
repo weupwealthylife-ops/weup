@@ -24,7 +24,7 @@ function TxRow({ tx, lang, onEdit, onDelete }: {
         </div>
         <div className="tx-right">
           <div className={`tx-amt ${tx.type === 'income' ? 'pos' : 'neg'}`}>
-            {tx.type === 'income' ? '+' : '-'}{fmt(Number(tx.amount))}
+            {tx.type === 'income' ? '+' : '-'}{fmt(Number(tx.amount), currency)}
           </div>
           <div className="tx-date">
             {new Date(tx.date).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'short', day: 'numeric' })}
@@ -49,7 +49,7 @@ function TxRow({ tx, lang, onEdit, onDelete }: {
 }
 
 export function TransactionsPage() {
-  const { transactions, lang, openAddModal, openEditModal, reloadData, showToast, user, viewMonth, viewYear } = useDashboard()
+  const { transactions, lang, currency, openAddModal, openEditModal, reloadData, showToast, user, viewMonth, viewYear } = useDashboard()
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')

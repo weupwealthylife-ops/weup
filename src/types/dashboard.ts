@@ -20,3 +20,4 @@ export interface UserProfile {
 
 export type DashboardView = 'home' | 'transactions' | 'budgets' | 'reports' | 'settings'
 export type Lang = 'en' | 'es'
+export type Currency = 'USD' | 'COP' | 'MXN'
