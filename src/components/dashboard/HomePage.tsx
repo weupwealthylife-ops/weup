@@ -44,8 +44,8 @@ function useAIInsights(income: number, expenses: number, balance: number, txs: T
 }
 
 // ── Transaction list row ──────────────────────────────────────────────────────
-function TxRow({ tx, lang, onEdit, onDelete }: {
-  tx: Transaction; lang: 'en' | 'es'
+function TxRow({ tx, lang, currency, onEdit, onDelete }: {
+  tx: Transaction; lang: 'en' | 'es'; currency: 'USD' | 'COP' | 'MXN'
   onEdit: (tx: Transaction) => void
   onDelete: (id: string, desc: string) => void
 }) {
@@ -270,7 +270,7 @@ export function HomePage() {
               </div>
             ) : (
               monthTxs.slice(0, 8).map(tx => (
-                <TxRow key={tx.id} tx={tx} lang={lang} onEdit={openEditModal} onDelete={handleDelete} />
+                <TxRow key={tx.id} tx={tx} lang={lang} currency={currency} onEdit={openEditModal} onDelete={handleDelete} />
               ))
             )}
           </div>
