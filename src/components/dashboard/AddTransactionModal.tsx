@@ -127,9 +127,9 @@ export function AddTransactionModal({ open, onClose }: Props) {
                   type="button"
                   onClick={() => setDesc(chip)}
                   style={{
-                    background: 'var(--bg)', border: '1.5px solid var(--border2)',
+                    background: '#F1F5F9', border: '1.5px solid rgba(15,23,42,0.14)',
                     borderRadius: 20, padding: '4px 12px', fontSize: 12, fontWeight: 500,
-                    cursor: 'pointer', whiteSpace: 'nowrap', color: 'var(--text2)',
+                    cursor: 'pointer', whiteSpace: 'nowrap', color: '#475569',
                     fontFamily: 'inherit', transition: 'all 0.15s',
                   }}
                 >
@@ -150,9 +150,9 @@ export function AddTransactionModal({ open, onClose }: Props) {
                   background: 'rgba(46,139,87,0.1)', border: '1px solid rgba(46,139,87,0.25)',
                   borderRadius: 20, padding: '4px 12px',
                 }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.06em' }}>AI</span>
-                  <span style={{ fontSize: 12, color: 'var(--text2)' }}>
-                    {t('Suggested category:', 'Categoría sugerida:')} <strong style={{ color: 'var(--accent)' }}>{catOptions.find(c => c.value === category)?.label || category}</strong>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#2E8B57', letterSpacing: '0.06em' }}>AI</span>
+                  <span style={{ fontSize: 12, color: '#475569' }}>
+                    {t('Suggested category:', 'Categoría sugerida:')} <strong style={{ color: '#2E8B57' }}>{catOptions.find(c => c.value === category)?.label || category}</strong>
                   </span>
                 </div>
               </div>

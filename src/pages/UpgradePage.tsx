@@ -227,21 +227,20 @@ export default function UpgradePage() {
           <div className="plan-card">
             <div className="plan-name">Free</div>
             <div className="plan-price">$0</div>
-            <div className="plan-period">forever</div>
-            <div className="plan-trial" />
+            <div className="plan-period">/forever</div>
+            <div className="plan-trial" style={{ color: 'rgba(255,255,255,0.45)', fontWeight: 400 }}>Perfect to get started</div>
             <div className="plan-divider" />
             <ul className="plan-features">
               <li>1 bank account</li>
-              <li>30 transactions / month</li>
-              <li>Basic spending reports</li>
-              <li>Monthly summary</li>
+              <li>Up to 30 transactions/month</li>
+              <li>Basic spending categories</li>
+              <li>Monthly summary report</li>
               <li className="off">AI insights</li>
               <li className="off">Bank sync</li>
               <li className="off">Savings goals</li>
-              <li className="off">Priority support</li>
             </ul>
-            <button className="btn-upgrade current" disabled>
-              {currentPlan === 'free' || !currentPlan ? 'Current plan' : 'Downgrade'}
+            <button className="btn-upgrade ghost" disabled>
+              Get started free
             </button>
           </div>
 
@@ -251,7 +250,7 @@ export default function UpgradePage() {
             <div className="plan-name">Pro</div>
             <div className="plan-price">{PRICES[billing].pro.label}</div>
             <div className="plan-period">{PRICES[billing].pro.period}</div>
-            <div className="plan-trial">14-day free trial · No credit card</div>
+            <div className="plan-trial">Everything you need to take control</div>
             <div className="plan-divider" />
             <ul className="plan-features">
               <li>Unlimited accounts</li>
@@ -260,7 +259,6 @@ export default function UpgradePage() {
               <li>Bank sync (CO & MX)</li>
               <li>Savings goals & budgets</li>
               <li>Advanced visual reports</li>
-              <li>Export CSV & JSON</li>
               <li>Priority support</li>
             </ul>
             {currentPlan === 'pro' ? (
@@ -271,7 +269,7 @@ export default function UpgradePage() {
                 onClick={() => startCheckout('pro')}
                 disabled={loadingPlan !== null}
               >
-                {loadingPlan === 'pro' ? 'Setting up trial…' : <>Start free trial <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></>}
+                {loadingPlan === 'pro' ? 'Setting up…' : 'Start Pro free 14 days'}
               </button>
             )}
           </div>
@@ -282,7 +280,7 @@ export default function UpgradePage() {
             <div className="plan-name">Family</div>
             <div className="plan-price">{PRICES[billing].family.label}</div>
             <div className="plan-period">{PRICES[billing].family.period}</div>
-            <div className="plan-trial">14-day free trial · No credit card</div>
+            <div className="plan-trial">For the whole household</div>
             <div className="plan-divider" />
             <ul className="plan-features">
               <li>Everything in Pro</li>
@@ -291,7 +289,6 @@ export default function UpgradePage() {
               <li>Individual privacy per member</li>
               <li>Family financial reports</li>
               <li>Dedicated support</li>
-              <li>Export CSV & JSON</li>
               <li>Early access to new features</li>
             </ul>
             {currentPlan === 'family' ? (
@@ -302,7 +299,7 @@ export default function UpgradePage() {
                 onClick={() => startCheckout('family')}
                 disabled={loadingPlan !== null}
               >
-                {loadingPlan === 'family' ? 'Setting up trial…' : 'Start free trial'}
+                {loadingPlan === 'family' ? 'Setting up…' : 'Start free 14 days'}
               </button>
             )}
           </div>
@@ -358,7 +355,7 @@ function UpgradeNav({ userName }: { userName: string }) {
     <nav className="upgrade-nav">
       <Link to="/dashboard" className="upgrade-nav-logo">
         <img src="/Logo_WeUp.png" alt="WeUp" />
-        WeUp
+        <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 700 }}>WeUp</span>
       </Link>
       {userName && <span className="upgrade-nav-user">{userName}</span>}
       <Link to="/dashboard" className="upgrade-nav-back">
