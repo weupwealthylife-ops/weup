@@ -190,6 +190,7 @@
 .dash-main {
   margin-left: var(--nav-w); flex: 1;
   padding: 32px 40px; max-width: 1400px;
+  box-sizing: border-box;
 }
 
 /* ── Top bar ── */
@@ -292,6 +293,7 @@
   font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.55;
   overflow: hidden; display: -webkit-box;
   -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  word-wrap: break-word; overflow-wrap: break-word;
 }
 .ai-insight-text strong { color: #fff; font-weight: 600; }
 
@@ -667,8 +669,9 @@
   .dash-main { margin-left: 0; padding: 16px 16px 96px; width: 100%; max-width: 100%; }
   .topbar { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
   .topbar-left h1 { font-size: 20px; }
-  .topbar-right { width: 100%; }
-  .topbar-right .btn { width: 100%; justify-content: center; }
+  .topbar-right { width: 100%; flex-wrap: wrap; justify-content: space-between; }
+  .month-nav { flex: 1; }
+  .topbar-right .btn { flex: 1; justify-content: center; }
   .cards-grid { grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 16px; }
   .dash-card { padding: 16px; }
   .card-value { font-size: 20px; }
@@ -684,6 +687,18 @@
   .amount-input { font-size: 28px; }
   .amount-currency { font-size: 22px; }
   .settings-item { padding: 12px 14px; }
+}
+
+@media (max-width: 480px) {
+  .topbar { gap: 10px; }
+  .topbar-right { gap: 8px; }
+  .month-nav-label { min-width: 80px; font-size: 12px; }
+  .cards-grid { gap: 8px; }
+  .card-value { font-size: 18px; }
+  .card-hero .card-value { font-size: 20px; }
+  .ai-insights { grid-template-columns: 1fr; gap: 8px; }
+  .ai-insight { padding: 12px; }
+  .ai-insight-text { font-size: 12px; }
 }
 
 @media (max-width: 400px) {
