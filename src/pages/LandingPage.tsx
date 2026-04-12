@@ -35,15 +35,39 @@ export default function LandingPage() {
   const [authError, setAuthError] = useState('')
   const [authSuccess, setAuthSuccess] = useState('')
 
+  const [resetLoading, setResetLoading] = useState(false)
   const modalRef = useRef<HTMLDivElement>(null)
 
   const t = (en: string, es: string) => T(en, es, lang)
 
-  // Check session on mount
+  async function handleForgotPassword() {
+    if (!email) {
+      setAuthError(t('Enter your email address above first.', 'Ingresa tu correo electrónico primero.'))
+      return
+    }
+    setResetLoading(true)
+    setAuthError('')
+    await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth?type=recovery`,
+    })
+    setAuthSuccess(t('✅ Password reset email sent! Check your inbox.', '✅ Correo de recuperación enviado. Revisa tu bandeja.'))
+    setResetLoading(false)
+  }
+
+  // Check session on mount + auto-open modal if redirected with plan intent
   useEffect(() => {
     sb.auth.getSession().then(({ data }) => {
       if (data.session) navigate('/dashboard', { replace: true })
     })
+
+    // If redirected from upgrade page with a plan, auto-open signup modal
+    const planParam = new URLSearchParams(window.location.search).get('plan')
+    if (planParam && planParam !== 'free') {
+      setPlanIntent(planParam)
+      sessionStorage.setItem('planIntent', planParam)
+      setAuthTab('signup')
+      setModalOpen(true)
+    }
   }, [navigate])
 
   // Close modal on Escape
@@ -592,8 +616,8 @@ export default function LandingPage() {
                   <div className="form-row">
                     <label className="form-label">{t('Password', 'Contraseña')}</label>
                     {authTab === 'signin' && (
-                      <button type="button" className="form-forgot">
-                        {t('Forgot?', '¿Olvidaste?')}
+                      <button type="button" className="form-forgot" onClick={handleForgotPassword} disabled={resetLoading}>
+                        {resetLoading ? '...' : t('Forgot?', '¿Olvidaste?')}
                       </button>
                     )}
                   </div>

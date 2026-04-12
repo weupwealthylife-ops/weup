@@ -196,13 +196,20 @@ export function HomePage() {
           <div className="card-icon icon-income">💰</div>
           <div className="card-label">{t('Income', 'Ingresos')}</div>
           <div className="card-value" style={{ color: 'var(--income)' }}>{fmt(income, currency)}</div>
-          <div className="card-sub"><span className="badge badge-up">+{expRate}%</span> {t('vs last month', 'vs mes anterior')}</div>
+          <div className="card-sub">
+            {monthTxs.filter(tx => tx.type === 'income').length} {t('entries', 'entradas')}
+          </div>
         </div>
         <div className="dash-card">
           <div className="card-icon icon-expense">💸</div>
           <div className="card-label">{t('Expenses', 'Gastos')}</div>
           <div className="card-value" style={{ color: 'var(--expense)' }}>{fmt(expenses, currency)}</div>
-          <div className="card-sub"><span className="badge badge-down">{expRate}%</span> {t('of income', 'de ingresos')}</div>
+          <div className="card-sub">
+            {income > 0
+              ? <><span className="badge badge-down">{expRate}%</span> {t('of income', 'de ingresos')}</>
+              : <>{monthTxs.filter(tx => tx.type === 'expense').length} {t('entries', 'gastos')}</>
+            }
+          </div>
         </div>
         <div className="dash-card">
           <div className="card-icon icon-savings">🎯</div>

@@ -68,14 +68,18 @@ export default function UpgradePage() {
   }, [navigate, searchParams])
 
   async function updateUserPlan() {
-    const plan = searchParams.get('plan') || 'pro'
+    // Read plan + billing from URL params (persisted through MercadoPago redirect)
+    const plan        = searchParams.get('plan') || 'pro'
+    const planBilling = (searchParams.get('billing') as Billing) || 'monthly'
+
     const { data } = await sb.auth.getSession()
     if (!data.session) return
     const user = data.session.user
+
     await sb.from('profiles').upsert({
       id: user.id,
       plan,
-      plan_billing: billing,
+      plan_billing: planBilling,
       onboarding_completed: true,
       plan_activated_at: new Date().toISOString(),
       trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
@@ -92,7 +96,7 @@ export default function UpgradePage() {
           email: user.email,
           name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
           plan,
-          billing,
+          billing: planBilling,
           timestamp: new Date().toISOString(),
         }),
       }).catch(() => {})

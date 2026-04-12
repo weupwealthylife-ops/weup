@@ -150,8 +150,8 @@ function BottomNav() {
       <button className={`bottom-nav-item${view === 'budgets' ? ' active' : ''}`} onClick={() => setView('budgets')}>
         <span className="bn-icon">📊</span><span>{t('Budget', 'Ppto')}</span>
       </button>
-      <button className={`bottom-nav-item${view === 'reports' ? ' active' : ''}`} onClick={() => setView('reports')}>
-        <span className="bn-icon">📈</span><span>{t('Reports', 'Rep.')}</span>
+      <button className={`bottom-nav-item${view === 'settings' ? ' active' : ''}`} onClick={() => setView('settings')}>
+        <span className="bn-icon">⚙️</span><span>{t('More', 'Más')}</span>
       </button>
     </nav>
   )
