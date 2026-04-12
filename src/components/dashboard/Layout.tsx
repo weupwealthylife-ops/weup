@@ -125,7 +125,7 @@ function MobileHeader() {
     <div className="mobile-header">
       <div className="mobile-header-logo">
         <img src="/Logo_WeUp.png" alt="WeUp" style={{ height: 32, width: 32, objectFit: 'contain', borderRadius: '50%' }} />
-        <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 18, color: '#fff' }}>WeUp</span>
+        <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 18, color: '#fff' }}>WeUp</span>
       </div>
       <div className="mobile-header-avatar" onClick={() => setView('settings')}>{initials}</div>
     </div>

@@ -69,8 +69,8 @@
   object-fit: contain; box-shadow: 0 8px 32px rgba(46,139,87,0.35);
 }
 .gate-wordmark {
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 34px; color: #fff; letter-spacing: -0.02em;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 34px; font-weight: 700; color: #fff; letter-spacing: -0.02em;
 }
 .gate-steps {
   position: relative; z-index: 1;
@@ -131,8 +131,8 @@
 .sidebar-logo {
   display: flex; align-items: center; gap: 10px;
   padding: 24px 24px 28px;
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 22px; color: #fff;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px; font-weight: 700; color: #fff;
   border-bottom: 0.5px solid rgba(255,255,255,0.08);
   margin-bottom: 8px;
 }
@@ -639,8 +639,8 @@
   border-bottom: 0.5px solid rgba(255,255,255,0.08);
 }
 .mobile-header-logo {
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 20px; color: #fff;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 20px; font-weight: 700; color: #fff;
   display: flex; align-items: center; gap: 7px;
 }
 .mobile-header-avatar {
