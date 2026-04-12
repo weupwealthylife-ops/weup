@@ -168,7 +168,7 @@ export function ReportsPage() {
           <div className="card-icon icon-savings">🏦</div>
           <div className="card-label">{t('Saved', 'Ahorrado')}</div>
           <div className="card-value" style={{ color: currentIncome - currentExpenses >= 0 ? 'var(--income)' : 'var(--expense)' }}>
-            {fmt(Math.abs(currentIncome - currentExpenses, currency))}
+            {fmt(Math.abs(currentIncome - currentExpenses), currency)}
           </div>
           <div className="card-sub">
             {currentIncome - currentExpenses >= 0

@@ -89,7 +89,7 @@ function TxRow({ tx, lang, onEdit, onDelete }: {
 
 // ── Main HomePage ─────────────────────────────────────────────────────────────
 export function HomePage() {
-  const { user, transactions, lang, viewMonth, viewYear, changeMonth, openAddModal, openEditModal, reloadData, showToast } = useDashboard()
+  const { user, transactions, lang, currency, viewMonth, viewYear, changeMonth, openAddModal, openEditModal, reloadData, showToast } = useDashboard()
   const name = user.user_metadata?.full_name?.split(' ')[0]
             || user.user_metadata?.name?.split(' ')[0]
             || user.email?.split('@')[0] || ''

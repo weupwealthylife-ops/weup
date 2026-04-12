@@ -71,7 +71,7 @@ export function BudgetsPage() {
               {totalPct.toFixed(0)}%
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
-              {fmt(Math.max(0, totalBudget - totalSpent, currency))} {t('remaining', 'restante')}
+              {fmt(Math.max(0, totalBudget - totalSpent), currency)} {t('remaining', 'restante')}
             </div>
           </div>
         </div>
