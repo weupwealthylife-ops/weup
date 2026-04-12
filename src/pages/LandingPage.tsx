@@ -131,7 +131,7 @@ export default function LandingPage() {
         {/* ── Nav ── */}
         <nav className="nav">
           <a href="/" className="nav-logo">
-            <img src="/Logo_WeUp.svg" alt="WeUp" />
+            <img src="/Logo_WeUp.png" alt="WeUp" />
             WeUp
           </a>
 
@@ -501,7 +501,7 @@ export default function LandingPage() {
         {/* ── Footer ── */}
         <footer className="footer">
           <Link to="/" className="footer-logo">
-            <img src="/Logo_WeUp.svg" alt="WeUp" />
+            <img src="/Logo_WeUp.png" alt="WeUp" />
             WeUp
           </Link>
           <p className="footer-tagline">
@@ -527,7 +527,7 @@ export default function LandingPage() {
             <button className="modal-close" onClick={() => setModalOpen(false)} aria-label="Close">✕</button>
 
             <div className="modal-logo">
-              <img src="/Logo_WeUp.svg" alt="WeUp" />
+              <img src="/Logo_WeUp.png" alt="WeUp" />
               WeUp
             </div>
             <p className="modal-sub">

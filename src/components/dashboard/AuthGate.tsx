@@ -13,7 +13,7 @@ export function AuthGate({ step, error }: AuthGateProps) {
   return (
     <div className="auth-gate">
       <div className="gate-logo-wrap">
-        <img src="/Logo_WeUp.svg" alt="WeUp" className="gate-logo-img" />
+        <img src="/Logo_WeUp.png" alt="WeUp" className="gate-logo-img" />
         <span className="gate-wordmark">WeUp</span>
       </div>
 

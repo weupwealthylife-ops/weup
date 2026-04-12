@@ -136,7 +136,7 @@ function AuthGateScreen({ noSession }: { noSession: boolean }) {
       {!noSession ? (
         <>
           <div className="gate-logo-wrap">
-            <img src="/Logo_WeUp.svg" alt="WeUp" className="gate-logo-img" />
+            <img src="/Logo_WeUp.png" alt="WeUp" className="gate-logo-img" />
             <span className="gate-wordmark">WeUp</span>
           </div>
           <p className="gate-label">Setting things up…</p>
@@ -742,7 +742,7 @@ export default function OnboardingPage() {
       {/* Navigation Bar */}
       <nav className="onboard-nav" aria-label="Onboarding navigation">
         <a href="/" className="nav-logo" aria-label="WeUp home">
-          <img src="/Logo_WeUp.svg" alt="" aria-hidden="true" />
+          <img src="/Logo_WeUp.png" alt="" aria-hidden="true" />
           <span>WeUp</span>
         </a>
 
