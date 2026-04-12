@@ -10,6 +10,11 @@ interface Props {
 
 const today = () => new Date().toISOString().split('T')[0]
 
+const QUICK_DESCS: Record<string, string[]> = {
+  expense: ['Uber','Netflix','Spotify','Groceries','Restaurant','Coffee','Amazon','Gym'],
+  income:  ['Salary','Freelance','Bonus','Transfer','Dividend','Rental income'],
+}
+
 export function AddTransactionModal({ open, onClose }: Props) {
   const { user, lang, reloadData, showToast } = useDashboard()
   const [type, setType]         = useState<'expense' | 'income'>('expense')
@@ -114,6 +119,24 @@ export function AddTransactionModal({ open, onClose }: Props) {
           {/* Description */}
           <div className="form-group">
             <label className="form-label">{t('Description', 'Descripción')}</label>
+            {/* Quick-pick chips */}
+            <div style={{ overflowX: 'auto', display: 'flex', gap: 6, paddingBottom: 4, scrollbarWidth: 'none', marginBottom: 6 }}>
+              {(QUICK_DESCS[type] ?? []).map(chip => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => setDesc(chip)}
+                  style={{
+                    background: 'var(--bg)', border: '1.5px solid var(--border2)',
+                    borderRadius: 20, padding: '4px 12px', fontSize: 12, fontWeight: 500,
+                    cursor: 'pointer', whiteSpace: 'nowrap', color: 'var(--text2)',
+                    fontFamily: 'inherit', transition: 'all 0.15s',
+                  }}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
             <input
               type="text" className="form-input"
               placeholder={t('What was it for?', '¿Para qué fue?')}
@@ -121,8 +144,17 @@ export function AddTransactionModal({ open, onClose }: Props) {
               onChange={e => setDesc(e.target.value)}
             />
             {category && (
-              <div style={{ fontSize: 12, color: 'var(--accent)', marginTop: 4 }}>
-                ✨ {t('Auto-categorized as:', 'Categoría sugerida:')} {category}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  background: 'rgba(46,139,87,0.1)', border: '1px solid rgba(46,139,87,0.25)',
+                  borderRadius: 20, padding: '4px 12px',
+                }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.06em' }}>AI</span>
+                  <span style={{ fontSize: 12, color: 'var(--text2)' }}>
+                    {t('Suggested category:', 'Categoría sugerida:')} <strong style={{ color: 'var(--accent)' }}>{catOptions.find(c => c.value === category)?.label || category}</strong>
+                  </span>
+                </div>
               </div>
             )}
           </div>
