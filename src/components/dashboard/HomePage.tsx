@@ -89,7 +89,7 @@ function TxRow({ tx, lang, currency, onEdit, onDelete }: {
 
 // ── Main HomePage ─────────────────────────────────────────────────────────────
 export function HomePage() {
-  const { user, transactions, lang, currency, viewMonth, viewYear, changeMonth, openAddModal, openEditModal, reloadData, showToast } = useDashboard()
+  const { user, transactions, lang, currency, viewMonth, viewYear, changeMonth, openAddModal, openEditModal, reloadData, showToast, setView } = useDashboard()
   const name = user.user_metadata?.full_name?.split(' ')[0]
             || user.user_metadata?.name?.split(' ')[0]
             || user.email?.split('@')[0] || ''
@@ -248,7 +248,7 @@ export function HomePage() {
         <div className="dash-card">
           <div className="section-header">
             <div className="section-title">{t('Recent transactions', 'Transacciones recientes')}</div>
-            <button className="section-link" onClick={() => {}}>
+            <button className="section-link" onClick={() => setView('transactions')}>
               {t('View all', 'Ver todas')}
             </button>
           </div>

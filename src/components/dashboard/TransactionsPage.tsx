@@ -5,8 +5,8 @@ import { CAT_ICONS, CAT_COLORS, CAT_LABELS_EN, CAT_LABELS_ES } from '../../lib/c
 import { sb } from '../../lib/supabase'
 import type { Transaction } from '../../types/dashboard'
 
-function TxRow({ tx, lang, onEdit, onDelete }: {
-  tx: Transaction; lang: 'en' | 'es'
+function TxRow({ tx, lang, currency, onEdit, onDelete }: {
+  tx: Transaction; lang: 'en' | 'es'; currency: 'USD' | 'COP' | 'MXN'
   onEdit: (tx: Transaction) => void
   onDelete: (id: string) => void
 }) {
@@ -162,7 +162,7 @@ export function TransactionsPage() {
             </div>
           ) : (
             filtered.map(tx => (
-              <TxRow key={tx.id} tx={tx} lang={lang} onEdit={openEditModal} onDelete={handleDelete} />
+              <TxRow key={tx.id} tx={tx} lang={lang} currency={currency} onEdit={openEditModal} onDelete={handleDelete} />
             ))
           )}
         </div>

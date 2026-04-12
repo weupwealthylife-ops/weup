@@ -11,7 +11,8 @@ export function fmt(n: number, currency: Currency = 'USD'): string {
   return new Intl.NumberFormat(c.locale, {
     style: 'currency',
     currency: c.code,
-    maximumFractionDigits: currency === 'COP' ? 0 : 2,
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
   }).format(n)
 }
 

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale, LinearScale, BarElement, PointElement, LineElement,
@@ -19,11 +19,12 @@ const MONTHS_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','
 
 export function ReportsPage() {
   const { transactions, lang, currency, viewMonth, viewYear, changeMonth } = useDashboard()
+  const [selectedDate, setSelectedDate] = useState('')
 
   const t = (en: string, es: string) => lang === 'es' ? es : en
   const MONTHS = lang === 'es' ? MONTHS_ES : MONTHS_EN
 
-  // Last 6 months data
+  // Last 6 months data — derived from real transactions
   const last6 = useMemo(() => {
     const result = []
     for (let i = 5; i >= 0; i--) {
@@ -36,7 +37,7 @@ export function ReportsPage() {
       })
       const income   = txs.filter(tx => tx.type === 'income').reduce((s, tx) => s + Number(tx.amount), 0)
       const expenses = txs.filter(tx => tx.type === 'expense').reduce((s, tx) => s + Number(tx.amount), 0)
-      result.push({ label: MONTHS[m], income, expenses })
+      result.push({ label: MONTHS[m], income, expenses, month: m, year: y })
     }
     return result
   }, [transactions, viewMonth, viewYear, MONTHS])
@@ -65,11 +66,21 @@ export function ReportsPage() {
   const currentIncome   = currentMonthTxs.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0)
   const currentExpenses = currentMonthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)
 
+  // Daily transactions for the selected date
+  const dayTxs = useMemo(() => {
+    if (!selectedDate) return []
+    return transactions
+      .filter(tx => tx.date === selectedDate)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  }, [transactions, selectedDate])
+
+  const dayIncome   = dayTxs.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0)
+  const dayExpenses = dayTxs.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)
+
   const monthName = new Date(viewYear, viewMonth).toLocaleDateString(
     lang === 'es' ? 'es-CO' : 'en-US', { month: 'long', year: 'numeric' }
   )
 
-  // Bar chart data
   const barData = {
     labels: last6.map(d => d.label),
     datasets: [
@@ -90,7 +101,6 @@ export function ReportsPage() {
     ],
   }
 
-  // Line chart data (savings = income - expenses)
   const lineData = {
     labels: last6.map(d => d.label),
     datasets: [
@@ -116,20 +126,13 @@ export function ReportsPage() {
         grid: { color: 'rgba(0,0,0,0.05)' },
         ticks: {
           font: { size: 11 },
-          callback: (v: number | string) => '$' + Number(v).toLocaleString(),
+          callback: (v: number | string) => fmt(Number(v), currency),
         },
       },
     },
   }
 
-  const lineOptions = {
-    ...chartOptions,
-    plugins: {
-      ...chartOptions.plugins,
-      legend: { display: false },
-    },
-  }
-
+  const lineOptions = { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } } }
   const labels = lang === 'es' ? CAT_LABELS_ES : CAT_LABELS_EN
 
   return (
@@ -171,9 +174,7 @@ export function ReportsPage() {
             {fmt(Math.abs(currentIncome - currentExpenses), currency)}
           </div>
           <div className="card-sub">
-            {currentIncome - currentExpenses >= 0
-              ? t('surplus', 'superávit')
-              : t('deficit', 'déficit')}
+            {currentIncome - currentExpenses >= 0 ? t('surplus', 'superávit') : t('deficit', 'déficit')}
           </div>
         </div>
       </div>
@@ -207,6 +208,84 @@ export function ReportsPage() {
             <Line data={lineData} options={lineOptions as never} />
           </div>
         </div>
+      </div>
+
+      {/* Date picker — daily transaction view */}
+      <div className="dash-card" style={{ marginBottom: 24 }}>
+        <div className="section-header">
+          <span className="section-title">📅 {t('Day view', 'Vista por día')}</span>
+          {selectedDate && (
+            <button
+              onClick={() => setSelectedDate('')}
+              style={{ fontSize: 12, color: 'var(--text3)', background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              {t('Clear', 'Limpiar')}
+            </button>
+          )}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: selectedDate ? 16 : 0 }}>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={e => setSelectedDate(e.target.value)}
+            style={{
+              padding: '9px 14px', borderRadius: 10,
+              border: '1.5px solid var(--border2)', background: 'var(--bg)',
+              color: 'var(--text)', fontSize: 14, fontFamily: 'inherit',
+              cursor: 'pointer', outline: 'none',
+            }}
+          />
+          {selectedDate && (
+            <div style={{ display: 'flex', gap: 16 }}>
+              <span style={{ fontSize: 13, color: 'var(--income)', fontWeight: 600 }}>
+                +{fmt(dayIncome, currency)}
+              </span>
+              <span style={{ fontSize: 13, color: 'var(--expense)', fontWeight: 600 }}>
+                -{fmt(dayExpenses, currency)}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {selectedDate && (
+          dayTxs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text3)', fontSize: 14 }}>
+              {t('No transactions on this date', 'Sin transacciones en esta fecha')}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {dayTxs.map(tx => (
+                <div key={tx.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '11px 14px', borderRadius: 10,
+                  background: 'var(--bg)', marginBottom: 2,
+                }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10, fontSize: 16, flexShrink: 0,
+                    background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {CAT_ICONS[tx.category] || '📦'}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {tx.description || 'Transaction'}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 1 }}>
+                      {labels[tx.category] || tx.category}
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize: 14, fontWeight: 600,
+                    color: tx.type === 'income' ? 'var(--income)' : 'var(--expense)',
+                    flexShrink: 0,
+                  }}>
+                    {tx.type === 'income' ? '+' : '-'}{fmt(Number(tx.amount), currency)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        )}
       </div>
 
       {/* Category breakdown */}

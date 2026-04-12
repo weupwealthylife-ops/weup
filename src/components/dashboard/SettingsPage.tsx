@@ -364,21 +364,13 @@ export function SettingsPage() {
         </Section>
       </div>
 
-      {/* ── Danger Zone (full width) ── */}
+      {/* ── Delete account (full width) ── */}
       <div className="dash-card" style={{
         marginBottom: 24, padding: '20px 24px',
         border: '1px solid rgba(239,68,68,0.2)',
         background: 'rgba(239,68,68,0.02)',
       }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, color: 'var(--expense)',
-          letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4,
-        }}>
-          ⚠️ {t('Danger zone', 'Zona de peligro')}
-        </div>
-
-        {/* Delete account */}
-        <div style={{ paddingTop: 14 }}>
+        <div style={{ paddingTop: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
             <div>
               <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>
