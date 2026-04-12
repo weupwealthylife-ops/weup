@@ -93,25 +93,8 @@ export default function DashboardPage() {
   }, [loadTransactions, loadBudgets])
 
   useEffect(() => {
-    sb.auth.onAuthStateChange((event, session) => {
+    sb.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') window.location.href = '/'
-      // Send login notification once per browser session
-      if (event === 'SIGNED_IN' && session?.user && !sessionStorage.getItem('weup_notified')) {
-        sessionStorage.setItem('weup_notified', '1')
-        const webhookUrl = import.meta.env.VITE_NOTIFY_WEBHOOK
-        if (webhookUrl) {
-          fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: session.user.email,
-              name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-              plan: 'Free',
-              timestamp: new Date().toISOString(),
-            }),
-          }).catch(() => {})
-        }
-      }
     })
 
     ;(async () => {

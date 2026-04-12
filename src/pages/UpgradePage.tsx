@@ -71,14 +71,32 @@ export default function UpgradePage() {
     const plan = searchParams.get('plan') || 'pro'
     const { data } = await sb.auth.getSession()
     if (!data.session) return
+    const user = data.session.user
     await sb.from('profiles').upsert({
-      id: data.session.user.id,
+      id: user.id,
       plan,
       plan_billing: billing,
       onboarding_completed: true,
       plan_activated_at: new Date().toISOString(),
       trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
     }, { onConflict: 'id' })
+
+    // Notify owner of new plan purchase
+    const webhookUrl = import.meta.env.VITE_NOTIFY_WEBHOOK
+    if (webhookUrl) {
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'PLAN_PURCHASED',
+          email: user.email,
+          name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          plan,
+          billing,
+          timestamp: new Date().toISOString(),
+        }),
+      }).catch(() => {})
+    }
   }
 
   async function startCheckout(plan: 'pro' | 'family') {
