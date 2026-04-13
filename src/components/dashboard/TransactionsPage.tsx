@@ -49,7 +49,7 @@ function TxRow({ tx, lang, currency, onEdit, onDelete }: {
 }
 
 export function TransactionsPage() {
-  const { transactions, lang, currency, openAddModal, openEditModal, reloadData, showToast, user, viewMonth, viewYear } = useDashboard()
+  const { transactions, lang, currency, openAddModal, openEditModal, reloadData, showToast, user, viewMonth, viewYear, changeMonth } = useDashboard()
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
@@ -95,6 +95,13 @@ export function TransactionsPage() {
           <p>{t('Your full transaction history', 'Tu historial completo de transacciones')}</p>
         </div>
         <div className="topbar-right">
+          <div className="month-nav">
+            <button className="month-nav-btn" onClick={() => changeMonth(-1)}>‹</button>
+            <span className="month-nav-label">
+              {new Date(viewYear, viewMonth).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'long', year: 'numeric' })}
+            </span>
+            <button className="month-nav-btn" onClick={() => changeMonth(1)}>›</button>
+          </div>
           <button className="btn btn-primary" onClick={openAddModal}>
             <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
             {t('Add', 'Agregar')}
@@ -108,7 +115,7 @@ export function TransactionsPage() {
           <div className="tx-search-wrap">
             <span className="tx-search-icon">🔍</span>
             <input
-              type="text" className="tx-search form-input"
+              type="text" className="tx-search"
               placeholder={t('Search transactions...', 'Buscar transacciones...')}
               value={search} onChange={e => setSearch(e.target.value)}
             />

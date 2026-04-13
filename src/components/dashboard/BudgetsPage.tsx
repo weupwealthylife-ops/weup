@@ -45,9 +45,7 @@ export function BudgetsPage() {
         <div className="topbar-right">
           <div className="month-nav">
             <button className="month-nav-btn" onClick={() => changeMonth(-1)}>‹</button>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text2)', padding: '0 8px', whiteSpace: 'nowrap' }}>
-              {monthName}
-            </span>
+            <span className="month-nav-label">{monthName}</span>
             <button className="month-nav-btn" onClick={() => changeMonth(1)}>›</button>
           </div>
           <button className="btn btn-primary" onClick={openBudgetModal}>

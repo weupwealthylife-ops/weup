@@ -77,6 +77,7 @@ export function EditTransactionModal({ open, tx, onClose }: Props) {
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-handle" />
         <div className="modal-header">
           <div className="modal-title">{t('Edit transaction', 'Editar transacción')}</div>
           <button className="modal-close" onClick={onClose}>✕</button>
@@ -108,7 +109,7 @@ export function EditTransactionModal({ open, tx, onClose }: Props) {
               <span className="amount-currency">$</span>
               <input
                 type="number" min="0.01" step="0.01" required
-                className="form-input amount-input"
+                className="amount-input"
                 placeholder="0.00"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
