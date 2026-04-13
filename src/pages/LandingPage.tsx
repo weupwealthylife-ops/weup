@@ -290,7 +290,7 @@ export default function LandingPage() {
                           : <>You saved <strong>34%</strong> this month — above average! 🎯</>}
                       </div>
                       <div className="iphone-insight-bar-track">
-                        <div className="iphone-insight-bar-fill" style={{ width: '68%' }} />
+                        <div className="iphone-insight-bar-fill" />
                       </div>
                       <div className="iphone-insight-goal-row">
                         <span className="iphone-insight-pct">{t('68% to goal', '68% a la meta')}</span>

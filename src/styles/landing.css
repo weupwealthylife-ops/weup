@@ -5,19 +5,19 @@
 /* ── CSS Variables ── */
 :root {
   --green:   #2D6A4F;
-  --light:   #74C69D;
+  --light:   #1C6E40;       /* darker for readable contrast on light bg */
   --glow:    #52B788;
-  --dark:    #0D2218;
-  --surface: #112A1E;
-  --card:    #163524;
-  --w:       #ffffff;
-  --w80:     rgba(255,255,255,0.80);
-  --w60:     rgba(255,255,255,0.60);
-  --w40:     rgba(255,255,255,0.40);
-  --w20:     rgba(255,255,255,0.20);
-  --w10:     rgba(255,255,255,0.10);
-  --w06:     rgba(255,255,255,0.06);
-  --accent:  #52B788;
+  --dark:    #EEF8F3;       /* light mint green (was #0D2218) */
+  --surface: #E2F4EB;       /* slightly deeper surface */
+  --card:    #FFFFFF;       /* white cards (was #163524) */
+  --w:       #0D2218;       /* dark text (was #ffffff) */
+  --w80:     rgba(13,34,24,0.82);
+  --w60:     rgba(13,34,24,0.62);
+  --w40:     rgba(13,34,24,0.42);
+  --w20:     rgba(13,34,24,0.20);
+  --w10:     rgba(13,34,24,0.10);
+  --w06:     rgba(13,34,24,0.06);
+  --accent:  #2E8B57;       /* slightly richer for light-bg contrast */
 }
 
 /* ── Reset ── */
@@ -25,8 +25,8 @@
 
 body {
   font-family: 'DM Sans', system-ui, sans-serif;
-  background: var(--dark);
-  color: var(--w);
+  background: #EEF8F3;
+  color: #0D2218;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -45,7 +45,7 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: #0D2218;
+  background: #EEF8F3;
 }
 
 .landing-bg::before {
@@ -53,10 +53,10 @@ body {
   position: absolute;
   top: -150px;
   left: -150px;
-  width: 600px;
-  height: 600px;
+  width: 700px;
+  height: 700px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(82,183,136,0.06) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(46,139,87,0.14) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -65,10 +65,10 @@ body {
   position: absolute;
   bottom: -100px;
   right: -100px;
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(45,106,79,0.07) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(95,220,154,0.12) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -85,10 +85,10 @@ body {
   justify-content: space-between;
   padding: 0 48px;
   height: 68px;
-  background: rgba(13,34,24,0.85);
+  background: rgba(238,248,243,0.90);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(13,34,24,0.08);
 }
 
 .nav-logo {
@@ -169,21 +169,22 @@ body {
 .nav-cta {
   padding: 9px 22px;
   background: var(--accent);
-  color: #0D2218;
+  color: #ffffff;
   border: none;
   border-radius: 50px;
   font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   white-space: nowrap;
   letter-spacing: 0.01em;
 }
 
 .nav-cta:hover {
-  background: #74C69D;
+  background: #1A5C3A;
   transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(46,139,87,0.25);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -212,8 +213,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: rgba(95,220,154,0.08);
-  border: 1px solid rgba(95,220,154,0.25);
+  background: rgba(46,139,87,0.10);
+  border: 1px solid rgba(46,139,87,0.22);
   border-radius: 100px;
   padding: 6px 16px;
   font-size: 11px;
@@ -480,7 +481,7 @@ body {
   border-radius: 0 2px 2px 0;
 }
 
-/* ── Screen ── */
+/* ── Screen ── keeps dark theme regardless of page theme */
 .iphone-screen {
   width: 100%;
   height: 100%;
@@ -490,6 +491,17 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
+  /* Re-declare dark-theme variables so children get white text */
+  --light:  #74C69D;
+  --glow:   #52B788;
+  --accent: #52B788;
+  --w:      #ffffff;
+  --w80:    rgba(255,255,255,0.80);
+  --w60:    rgba(255,255,255,0.60);
+  --w40:    rgba(255,255,255,0.40);
+  --w20:    rgba(255,255,255,0.20);
+  --w10:    rgba(255,255,255,0.10);
+  --w06:    rgba(255,255,255,0.06);
 }
 
 /* Status bar dots (●●●) */
@@ -761,7 +773,53 @@ body {
   height: 100%;
   background: linear-gradient(90deg, #2D6A4F, #74C69D);
   border-radius: 4px;
+  animation: barExpand 1s cubic-bezier(0.34,1,0.64,1) both 1.8s;
 }
+
+@keyframes barExpand {
+  from { width: 0%; }
+  to   { width: 68%; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ENTRANCE ANIMATIONS
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Shared fade-up entrance */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Slide-in from right for the iPhone */
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(48px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* iPhone screen content item entrance */
+@keyframes iphoneItemIn {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Hero left — staggered elements ── */
+.hero-badge    { animation: fadeUp 0.65s ease both 0.05s; }
+.hero-headline { animation: fadeUp 0.65s ease both 0.15s; }
+.hero-sub      { animation: fadeUp 0.65s ease both 0.25s; }
+.hero-actions  { animation: fadeUp 0.65s ease both 0.35s; }
+.hero-social   { animation: fadeUp 0.65s ease both 0.45s; }
+
+/* ── Hero right — iPhone slides in ── */
+.hero-right { animation: slideFromRight 0.85s cubic-bezier(0.34,1.2,0.64,1) both 0.1s; }
+
+/* ── iPhone content — staggered items ── */
+.iphone-body .iphone-greeting     { animation: iphoneItemIn 0.45s ease both 0.50s; opacity: 0; }
+.iphone-body .iphone-name         { animation: iphoneItemIn 0.45s ease both 0.60s; opacity: 0; }
+.iphone-body .iphone-bal-card     { animation: iphoneItemIn 0.50s ease both 0.75s; opacity: 0; }
+.iphone-body .iphone-section-title{ animation: iphoneItemIn 0.40s ease both 1.00s; opacity: 0; }
+.iphone-body .iphone-txs          { animation: iphoneItemIn 0.50s ease both 1.10s; opacity: 0; }
+.iphone-body .iphone-insight      { animation: iphoneItemIn 0.50s ease both 1.40s; opacity: 0; }
 
 .iphone-insight-goal-row {
   display: flex;
@@ -787,9 +845,9 @@ body {
 .stats-strip {
   display: flex;
   align-items: stretch;
-  border-top: 1px solid var(--w10);
-  border-bottom: 1px solid var(--w10);
-  background: rgba(95,220,154,0.03);
+  border-top: 1px solid rgba(13,34,24,0.09);
+  border-bottom: 1px solid rgba(13,34,24,0.09);
+  background: rgba(46,139,87,0.06);
   max-width: 100%;
 }
 
@@ -811,7 +869,7 @@ body {
   top: 20%;
   height: 60%;
   width: 1px;
-  background: var(--w10);
+  background: rgba(13,34,24,0.10);
 }
 
 .stat-num {
@@ -838,7 +896,7 @@ body {
 }
 
 .section-dark {
-  background: rgba(0,0,0,0.2);
+  background: rgba(13,34,24,0.04);
 }
 
 .section-inner {
@@ -854,8 +912,8 @@ body {
   color: var(--light);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  background: rgba(95,220,154,0.08);
-  border: 1px solid rgba(95,220,154,0.2);
+  background: rgba(46,139,87,0.10);
+  border: 1px solid rgba(46,139,87,0.22);
   border-radius: 100px;
   padding: 4px 14px;
   margin-bottom: 20px;
@@ -898,15 +956,17 @@ body {
 
 .feat-card {
   background: var(--card);
-  border: 1px solid var(--w10);
+  border: 1px solid rgba(13,34,24,0.08);
   border-radius: 20px;
   padding: 28px;
-  transition: border-color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 12px rgba(13,34,24,0.05);
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .feat-card:hover {
-  border-color: rgba(95,220,154,0.25);
+  border-color: rgba(46,139,87,0.30);
   transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(46,139,87,0.12);
 }
 
 .feat-icon {
@@ -980,14 +1040,16 @@ body {
 
 .about-card {
   background: var(--card);
-  border: 1px solid var(--w10);
+  border: 1px solid rgba(13,34,24,0.08);
   border-radius: 20px;
   padding: 28px;
-  transition: border-color 0.2s;
+  box-shadow: 0 2px 12px rgba(13,34,24,0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .about-card:hover {
-  border-color: rgba(95,220,154,0.2);
+  border-color: rgba(46,139,87,0.28);
+  box-shadow: 0 6px 24px rgba(46,139,87,0.10);
 }
 
 .about-diamond {
@@ -1085,7 +1147,7 @@ body {
   position: relative;
   width: 44px;
   height: 24px;
-  background: var(--w20);
+  background: rgba(13,34,24,0.18);
   border: none;
   border-radius: 100px;
   cursor: pointer;
@@ -1105,7 +1167,7 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--w);
+  background: #ffffff;
   transition: transform 0.2s;
   display: block;
 }
@@ -1139,24 +1201,35 @@ body {
 
 /* Base card */
 .pricing-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--w10);
+  background: #ffffff;
+  border: 1px solid rgba(13,34,24,0.10);
   border-radius: 20px;
   padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 14px rgba(13,34,24,0.06);
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .pricing-card:hover {
   transform: translateY(-2px);
-  border-color: var(--w20);
+  border-color: rgba(46,139,87,0.28);
+  box-shadow: 0 8px 28px rgba(46,139,87,0.10);
 }
 
-/* Featured Pro card */
+/* Featured Pro card — keep dark regardless of page theme */
 .pricing-card-featured {
   background: #1A4D2E;
   border-color: rgba(95,220,154,0.25);
+  /* Restore dark-theme variables */
+  --light:  #74C69D;
+  --w:      #ffffff;
+  --w80:    rgba(255,255,255,0.80);
+  --w60:    rgba(255,255,255,0.60);
+  --w40:    rgba(255,255,255,0.40);
+  --w20:    rgba(255,255,255,0.20);
+  --w10:    rgba(255,255,255,0.10);
+  --w06:    rgba(255,255,255,0.06);
 }
 
 .pricing-card-featured:hover {
@@ -1268,9 +1341,9 @@ body {
 .pricing-btn-dark {
   width: 100%;
   padding: 14px;
-  background: rgba(255,255,255,0.08);
+  background: transparent;
   color: var(--w);
-  border: 1px solid var(--w20);
+  border: 1.5px solid rgba(13,34,24,0.18);
   border-radius: 12px;
   font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 15px;
@@ -1281,8 +1354,8 @@ body {
 }
 
 .pricing-btn-dark:hover {
-  background: rgba(255,255,255,0.12);
-  border-color: var(--w40);
+  background: rgba(13,34,24,0.05);
+  border-color: rgba(13,34,24,0.32);
 }
 
 .pricing-btn-green {
@@ -1309,17 +1382,26 @@ body {
 .pricing-cta { display: none; }
 .pricing-cta-ghost { display: none; }
 
-/* ── FOOTER ── */
+/* ── FOOTER — always dark ── */
 
 .footer {
   border-top: 1px solid rgba(255,255,255,0.07);
-  background: rgba(8,18,13,0.4);
+  background: #0D1F14;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 56px 24px 40px;
   gap: 0;
   text-align: center;
+  /* Restore dark-theme variables */
+  --w:    #ffffff;
+  --w80:  rgba(255,255,255,0.80);
+  --w60:  rgba(255,255,255,0.60);
+  --w50:  rgba(255,255,255,0.50);
+  --w40:  rgba(255,255,255,0.40);
+  --w30:  rgba(255,255,255,0.30);
+  --w20:  rgba(255,255,255,0.20);
+  --w10:  rgba(255,255,255,0.10);
 }
 
 .footer-logo {
@@ -1411,12 +1493,25 @@ body {
   to   { opacity: 1; }
 }
 
-/* ── MODAL ── */
+/* ── MODAL — always dark ── */
 
 .modal {
   background: #0F2419;
-  border: 1px solid var(--w10);
+  border: 1px solid rgba(255,255,255,0.10);
   border-radius: 24px;
+  /* Restore dark-theme variables */
+  --light:  #74C69D;
+  --glow:   #52B788;
+  --accent: #52B788;
+  --w:      #ffffff;
+  --w80:    rgba(255,255,255,0.80);
+  --w60:    rgba(255,255,255,0.60);
+  --w50:    rgba(255,255,255,0.50);
+  --w40:    rgba(255,255,255,0.40);
+  --w30:    rgba(255,255,255,0.30);
+  --w20:    rgba(255,255,255,0.20);
+  --w10:    rgba(255,255,255,0.10);
+  --w06:    rgba(255,255,255,0.06);
   padding: 36px;
   width: 100%;
   max-width: 420px;
