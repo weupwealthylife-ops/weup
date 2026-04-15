@@ -70,8 +70,8 @@ function TxRow({ tx, lang, currency, onEdit, onDelete }: {
             {new Date(tx.date).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'short', day: 'numeric' })}
           </div>
           <div className="tx-actions">
-            <button className="tx-act" onClick={() => onEdit(tx)} title="Edit">✏️</button>
-            <button className="tx-act del" onClick={() => setConfirm(true)} title="Delete">🗑</button>
+            <button className="tx-act" onClick={() => onEdit(tx)} title="Edit" aria-label="Edit transaction">✏️</button>
+            <button className="tx-act del" onClick={() => setConfirm(true)} title="Delete" aria-label="Delete transaction">🗑</button>
           </div>
         </div>
       </div>
@@ -175,9 +175,9 @@ export function HomePage() {
         </div>
         <div className="topbar-right" style={{ gap: 10 }}>
           <div className="month-nav">
-            <button className="month-nav-btn" onClick={() => changeMonth(-1)}>‹</button>
+            <button className="month-nav-btn" onClick={() => changeMonth(-1)} aria-label="Previous month">‹</button>
             <span className="month-nav-label">{monthLabel(viewMonth, viewYear, lang)}</span>
-            <button className="month-nav-btn" onClick={() => changeMonth(1)} disabled={isCurrentMonth}>›</button>
+            <button className="month-nav-btn" onClick={() => changeMonth(1)} disabled={isCurrentMonth} aria-label="Next month">›</button>
           </div>
           <button className="btn btn-primary" onClick={openAddModal}>
             <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>

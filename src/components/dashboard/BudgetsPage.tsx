@@ -45,9 +45,9 @@ export function BudgetsPage() {
         </div>
         <div className="topbar-right">
           <div className="month-nav">
-            <button className="month-nav-btn" onClick={() => changeMonth(-1)}>‹</button>
+            <button className="month-nav-btn" onClick={() => changeMonth(-1)} aria-label="Previous month">‹</button>
             <span className="month-nav-label">{monthName}</span>
-            <button className="month-nav-btn" onClick={() => changeMonth(1)}>›</button>
+            <button className="month-nav-btn" onClick={() => changeMonth(1)} aria-label="Next month">›</button>
           </div>
           <button className="btn btn-primary" onClick={openBudgetModal}>
             ✏️ {t('Edit budgets', 'Editar presupuestos')}

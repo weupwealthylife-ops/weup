@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useDashboard } from '../../contexts/DashboardContext'
 import { sb } from '../../lib/supabase'
 import { BUDGET_CATS } from '../../lib/categories'
+import { CURRENCIES } from '../../lib/format'
 
 interface Props {
   open: boolean
@@ -9,7 +10,8 @@ interface Props {
 }
 
 export function BudgetModal({ open, onClose }: Props) {
-  const { user, budgets, setBudgets, lang, showToast } = useDashboard()
+  const { user, budgets, setBudgets, lang, currency, showToast } = useDashboard()
+  const currencySymbol = CURRENCIES[currency]?.symbol ?? '$'
   const [values, setValues] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
 
@@ -76,7 +78,7 @@ export function BudgetModal({ open, onClose }: Props) {
                   {lang === 'es' ? cat.es : cat.en}
                 </label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                  <span style={{ fontSize: 14, color: 'var(--text3)' }}>$</span>
+                  <span style={{ fontSize: 14, color: 'var(--text3)' }}>{currencySymbol}</span>
                   <input
                     type="number" min="0" step="10"
                     className="form-input"

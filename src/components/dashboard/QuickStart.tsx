@@ -19,10 +19,9 @@ export function QuickStart() {
   const visitedReports  = `weup_visited_reports_${user.id}`
   const visitedSettings = `weup_visited_settings_${user.id}`
 
-  const [dismissed, setDismissed]       = useState(() => !!localStorage.getItem(dismissKey))
-  const [reportsVisited, setRV]         = useState(() => !!localStorage.getItem(visitedReports))
-  const [settingsVisited, setSV]        = useState(() => !!localStorage.getItem(visitedSettings))
-  const [celebrationSeen, setCelebSeen] = useState(false)
+  const [dismissed, setDismissed] = useState(() => !!localStorage.getItem(dismissKey))
+  const [reportsVisited, setRV]   = useState(() => !!localStorage.getItem(visitedReports))
+  const [settingsVisited, setSV]  = useState(() => !!localStorage.getItem(visitedSettings))
 
   // Listen for navigation events set by Layout
   useEffect(() => {
@@ -84,11 +83,6 @@ export function QuickStart() {
   const doneCount  = steps.filter(s => s.done).length
   const allDone    = doneCount === steps.length
   const pct        = Math.round((doneCount / steps.length) * 100)
-
-  // Once all done, show celebration until user dismisses
-  useEffect(() => {
-    if (allDone && !celebrationSeen) setCelebSeen(false)
-  }, [allDone, celebrationSeen])
 
   function dismiss() {
     localStorage.setItem(dismissKey, '1')

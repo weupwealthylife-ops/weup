@@ -117,7 +117,7 @@ export function SettingsPage() {
     }
     const header = 'Date,Type,Category,Description,Amount'
     const rows   = transactions.map(tx =>
-      `${tx.date},${tx.type},${tx.category},"${tx.description.replace(/"/g, '""')}",${tx.amount}`
+      `${tx.date},${tx.type},${tx.category},"${(tx.description || '').replace(/"/g, '""')}",${Number(tx.amount).toFixed(2)}`
     )
     const blob = new Blob([[header, ...rows].join('\n')], { type: 'text/csv' })
     const url  = URL.createObjectURL(blob)
@@ -130,7 +130,7 @@ export function SettingsPage() {
   function handleExportExcel() {
     if (!transactions.length) { showToast(t('No transactions to export', 'No hay transacciones para exportar')); return }
     const header = '<tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th></tr>'
-    const rows = transactions.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.category}</td><td>${tx.description}</td><td>${tx.amount}</td></tr>`).join('')
+    const rows = transactions.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.category}</td><td>${tx.description || ''}</td><td>${Number(tx.amount).toFixed(2)}</td></tr>`).join('')
     const html = `<html><head><meta charset="utf-8"></head><body><table>${header}${rows}</table></body></html>`
     const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -141,8 +141,12 @@ export function SettingsPage() {
 
   function handleExportPDF() {
     if (!transactions.length) { showToast(t('No transactions to export', 'No hay transacciones para exportar')); return }
-    const rows = transactions.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.category}</td><td>${tx.description}</td><td>${Number(tx.amount).toFixed(2)}</td></tr>`).join('')
-    const win = window.open('', '_blank')!
+    const rows = transactions.map(tx => `<tr><td>${tx.date}</td><td>${tx.type}</td><td>${tx.category}</td><td>${tx.description || ''}</td><td>${Number(tx.amount).toFixed(2)}</td></tr>`).join('')
+    const win = window.open('', '_blank')
+    if (!win) {
+      showToast(t('❌ Pop-up blocked — allow pop-ups and try again', '❌ Ventana bloqueada — permite ventanas emergentes'))
+      return
+    }
     win.document.write(`<!DOCTYPE html><html><head><title>WeUp Transactions</title><style>body{font-family:sans-serif;padding:24px}h2{margin-bottom:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px 12px;text-align:left;font-size:13px}th{background:#f0f0f0;font-weight:600}tr:nth-child(even){background:#fafafa}@media print{button{display:none}}</style></head><body><h2>WeUp — Transaction History</h2><p style="color:#666;margin-bottom:16px">${transactions.length} transactions exported on ${new Date().toLocaleDateString()}</p><button onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;cursor:pointer">Print / Save as PDF</button><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table></body></html>`)
     win.document.close()
     showToast(t('✅ PDF ready!', '✅ ¡PDF listo!'))
