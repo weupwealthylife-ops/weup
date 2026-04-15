@@ -8,6 +8,7 @@ import { Bar, Line } from 'react-chartjs-2'
 import { useDashboard } from '../../contexts/DashboardContext'
 import { fmt } from '../../lib/format'
 import { CAT_ICONS, CAT_LABELS_EN, CAT_LABELS_ES } from '../../lib/categories'
+import { TipBanner } from './TipBanner'
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, PointElement, LineElement,
@@ -150,6 +151,12 @@ export function ReportsPage() {
           </div>
         </div>
       </div>
+
+      <TipBanner
+        pageKey="reports"
+        en="Tip: Use the month arrows to compare your income and spending across different months."
+        es="Tip: Usa las flechas de mes para comparar tus ingresos y gastos en diferentes meses."
+      />
 
       {/* Summary cards */}
       <div className="cards-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)', marginBottom: 24 }}>

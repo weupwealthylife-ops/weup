@@ -5,6 +5,7 @@ import { useDashboard } from '../../contexts/DashboardContext'
 import { fmt, monthLabel } from '../../lib/format'
 import { CAT_ICONS, CAT_COLORS, CAT_LABELS_EN, CAT_LABELS_ES } from '../../lib/categories'
 import { sb } from '../../lib/supabase'
+import { QuickStart } from './QuickStart'
 import type { Transaction } from '../../types/dashboard'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -184,6 +185,9 @@ export function HomePage() {
           </button>
         </div>
       </div>
+
+      {/* Quick start checklist — visible until all steps done or dismissed */}
+      <QuickStart />
 
       {/* Summary cards */}
       <div className="cards-grid">

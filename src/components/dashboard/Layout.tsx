@@ -1,10 +1,11 @@
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useDashboard } from '../../contexts/DashboardContext'
 import { HomePage }        from './HomePage'
 import { TransactionsPage } from './TransactionsPage'
 import { BudgetsPage }     from './BudgetsPage'
 import { ReportsPage }     from './ReportsPage'
 import { SettingsPage }    from './SettingsPage'
+import { OnboardingWelcome } from './OnboardingWelcome'
 import { sb } from '../../lib/supabase'
 
 // ── SVG icons ────────────────────────────────────────────────────────────────
@@ -159,7 +160,13 @@ function BottomNav() {
 
 // ── App Layout ────────────────────────────────────────────────────────────────
 export function AppLayout({ children }: { children: ReactNode }) {
-  const { view } = useDashboard()
+  const { view, user } = useDashboard()
+
+  // Track page visits for the QuickStart checklist
+  useEffect(() => {
+    if (view === 'reports')  localStorage.setItem(`weup_visited_reports_${user.id}`,  '1')
+    if (view === 'settings') localStorage.setItem(`weup_visited_settings_${user.id}`, '1')
+  }, [view, user.id])
 
   return (
     <>
@@ -175,6 +182,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
       <BottomNav />
+      <OnboardingWelcome />
       {children}
     </>
   )

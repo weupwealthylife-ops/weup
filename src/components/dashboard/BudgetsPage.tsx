@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useDashboard } from '../../contexts/DashboardContext'
 import { fmt } from '../../lib/format'
 import { BUDGET_CATS } from '../../lib/categories'
+import { TipBanner } from './TipBanner'
 
 export function BudgetsPage() {
   const { transactions, budgets, lang, currency, viewMonth, viewYear, changeMonth, openBudgetModal } = useDashboard()
@@ -53,6 +54,12 @@ export function BudgetsPage() {
           </button>
         </div>
       </div>
+
+      <TipBanner
+        pageKey="budgets"
+        en="Tip: Set a limit for each spending category — we'll warn you before you overspend."
+        es="Tip: Fija un límite por categoría de gasto — te avisaremos antes de que te pases."
+      />
 
       {/* Overall summary card */}
       <div className="dash-card card-hero" style={{ marginBottom: 24 }}>

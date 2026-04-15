@@ -3,6 +3,7 @@ import { useDashboard } from '../../contexts/DashboardContext'
 import { fmt } from '../../lib/format'
 import { CAT_ICONS, CAT_COLORS, CAT_LABELS_EN, CAT_LABELS_ES } from '../../lib/categories'
 import { sb } from '../../lib/supabase'
+import { TipBanner } from './TipBanner'
 import type { Transaction } from '../../types/dashboard'
 
 function TxRow({ tx, lang, currency, onEdit, onDelete }: {
@@ -108,6 +109,12 @@ export function TransactionsPage() {
           </button>
         </div>
       </div>
+
+      <TipBanner
+        pageKey="transactions"
+        en="Tip: Just type a description — AI auto-categorizes your transaction for you."
+        es="Tip: Solo escribe una descripción — la IA categorizará tu transacción automáticamente."
+      />
 
       <div className="dash-card">
         {/* Search + filters */}
