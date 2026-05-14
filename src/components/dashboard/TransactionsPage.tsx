@@ -28,7 +28,7 @@ function TxRow({ tx, lang, currency, onEdit, onDelete }: {
             {tx.type === 'income' ? '+' : '-'}{fmt(Number(tx.amount), currency)}
           </div>
           <div className="tx-date">
-            {new Date(tx.date).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'short', day: 'numeric' })}
+            {(() => { const [y,m,d] = tx.date.split('-').map(Number); return new Date(y, m-1, d).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'short', day: 'numeric' }) })()}
           </div>
           <div className="tx-actions">
             <button className="tx-act" onClick={() => onEdit(tx)} title="Edit" aria-label="Edit transaction">✏️</button>
@@ -59,8 +59,8 @@ export function TransactionsPage() {
   const t = (en: string, es: string) => lang === 'es' ? es : en
 
   const monthTxs = useMemo(() => transactions.filter(tx => {
-    const d = new Date(tx.date)
-    return d.getMonth() === viewMonth && d.getFullYear() === viewYear
+    const [y, m] = tx.date.split('-').map(Number)
+    return (m - 1) === viewMonth && y === viewYear
   }), [transactions, viewMonth, viewYear])
 
   const filtered = useMemo(() => {

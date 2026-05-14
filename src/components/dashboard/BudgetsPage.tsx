@@ -10,8 +10,8 @@ export function BudgetsPage() {
   const t = (en: string, es: string) => lang === 'es' ? es : en
 
   const monthTxs = useMemo(() => transactions.filter(tx => {
-    const d = new Date(tx.date)
-    return d.getMonth() === viewMonth && d.getFullYear() === viewYear && tx.type === 'expense'
+    const [y, m] = tx.date.split('-').map(Number)
+    return (m - 1) === viewMonth && y === viewYear && tx.type === 'expense'
   }), [transactions, viewMonth, viewYear])
 
   const spent = useMemo(() => {

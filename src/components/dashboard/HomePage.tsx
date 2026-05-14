@@ -67,7 +67,7 @@ function TxRow({ tx, lang, currency, onEdit, onDelete }: {
             {tx.type === 'income' ? '+' : '-'}{fmt(Number(tx.amount), currency)}
           </div>
           <div className="tx-date">
-            {new Date(tx.date).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'short', day: 'numeric' })}
+            {(() => { const [y,m,d] = tx.date.split('-').map(Number); return new Date(y, m-1, d).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-US', { month: 'short', day: 'numeric' }) })()}
           </div>
           <div className="tx-actions">
             <button className="tx-act" onClick={() => onEdit(tx)} title="Edit" aria-label="Edit transaction">✏️</button>
@@ -104,10 +104,10 @@ export function HomePage() {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
 
-  // ── Monthly filtered data ──
+  // ── Monthly filtered data ── (split string to avoid UTC timezone shifts)
   const monthTxs = useMemo(() => transactions.filter(t => {
-    const d = new Date(t.date)
-    return d.getMonth() === viewMonth && d.getFullYear() === viewYear
+    const [y, m] = t.date.split('-').map(Number)
+    return (m - 1) === viewMonth && y === viewYear
   }), [transactions, viewMonth, viewYear])
 
   const income   = useMemo(() => monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0), [monthTxs])
@@ -117,15 +117,16 @@ export function HomePage() {
   const saveRate = income > 0 ? Math.round((saved / income) * 100) : 0
   const expRate  = income > 0 ? Math.round((expenses / income) * 100) : 0
 
-  // ── Weekly ── (parse as local noon to avoid UTC timezone shifts)
+  // ── Weekly ── (compare date strings directly to avoid UTC timezone shifts)
   const { weekSpent, weekBadge, weekClass } = useMemo(() => {
     const now = new Date()
     const startOfWeek = new Date(now)
     startOfWeek.setDate(now.getDate() - now.getDay())
     startOfWeek.setHours(0, 0, 0, 0)
     const weekTxs = transactions.filter(t => {
-      const d = new Date(t.date + 'T12:00:00')
-      return d >= startOfWeek && d <= now
+      const [y, mo, d] = t.date.split('-').map(Number)
+      const txDate = new Date(y, mo - 1, d) // local midnight — no UTC shift
+      return txDate >= startOfWeek && txDate <= now
     })
     const ws = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)
     const avgWeekly = expenses / 4.3

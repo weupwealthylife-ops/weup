@@ -33,8 +33,8 @@ export function ReportsPage() {
       let y = viewYear
       while (m < 0) { m += 12; y-- }
       const txs = transactions.filter(tx => {
-        const d = new Date(tx.date)
-        return d.getMonth() === m && d.getFullYear() === y
+        const [ty, tm] = tx.date.split('-').map(Number)
+        return (tm - 1) === m && ty === y
       })
       const income   = txs.filter(tx => tx.type === 'income').reduce((s, tx) => s + Number(tx.amount), 0)
       const expenses = txs.filter(tx => tx.type === 'expense').reduce((s, tx) => s + Number(tx.amount), 0)
@@ -47,8 +47,8 @@ export function ReportsPage() {
   const catBreakdown = useMemo(() => {
     const map: Record<string, number> = {}
     transactions.filter(tx => {
-      const d = new Date(tx.date)
-      return d.getMonth() === viewMonth && d.getFullYear() === viewYear && tx.type === 'expense'
+      const [y, m] = tx.date.split('-').map(Number)
+      return (m - 1) === viewMonth && y === viewYear && tx.type === 'expense'
     }).forEach(tx => {
       map[tx.category] = (map[tx.category] || 0) + Number(tx.amount)
     })
@@ -60,8 +60,8 @@ export function ReportsPage() {
   const totalExpenses = catBreakdown.reduce((s, [, v]) => s + v, 0)
 
   const currentMonthTxs = useMemo(() => transactions.filter(tx => {
-    const d = new Date(tx.date)
-    return d.getMonth() === viewMonth && d.getFullYear() === viewYear
+    const [y, m] = tx.date.split('-').map(Number)
+    return (m - 1) === viewMonth && y === viewYear
   }), [transactions, viewMonth, viewYear])
 
   const currentIncome   = currentMonthTxs.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0)
