@@ -50,7 +50,7 @@ export function AddTransactionModal({ open, onClose }: Props) {
     if (!amount || Number(amount) <= 0) return
     setSaving(true)
     try {
-      await sb.from('transactions').insert({
+      const { error } = await sb.from('transactions').insert({
         user_id: user.id,
         type,
         amount: Number(amount),
@@ -58,10 +58,12 @@ export function AddTransactionModal({ open, onClose }: Props) {
         category: category || 'other',
         date,
       })
+      if (error) throw error
       showToast(t('✅ Transaction added!', '✅ ¡Transacción agregada!'))
       await reloadData()
       handleClose()
-    } catch {
+    } catch (err) {
+      console.error('Add transaction error:', err)
       showToast(t('❌ Error saving transaction', '❌ Error al guardar'))
     } finally {
       setSaving(false)

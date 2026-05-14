@@ -51,17 +51,19 @@ export function EditTransactionModal({ open, tx, onClose }: Props) {
     if (!tx || !amount || Number(amount) <= 0) return
     setSaving(true)
     try {
-      await sb.from('transactions').update({
+      const { error } = await sb.from('transactions').update({
         type,
         amount: Number(amount),
         description: desc.trim() || null,
         category: category || 'other',
         date,
       }).eq('id', tx.id).eq('user_id', user.id)
+      if (error) throw error
       showToast(t('✅ Transaction updated!', '✅ ¡Transacción actualizada!'))
       await reloadData()
       onClose()
-    } catch {
+    } catch (err) {
+      console.error('Edit transaction error:', err)
       showToast(t('❌ Error updating transaction', '❌ Error al actualizar'))
     } finally {
       setSaving(false)

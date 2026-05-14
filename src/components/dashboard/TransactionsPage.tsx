@@ -74,7 +74,8 @@ export function TransactionsPage() {
   }, [monthTxs, search, catFilter, activeCatTab, typeFilter])
 
   async function handleDelete(id: string) {
-    await sb.from('transactions').delete().eq('id', id).eq('user_id', user.id)
+    const { error } = await sb.from('transactions').delete().eq('id', id).eq('user_id', user.id)
+    if (error) { console.error('Delete error:', error); showToast(t('❌ Error deleting transaction', '❌ Error al eliminar')); return }
     showToast(t('🗑 Transaction deleted', '🗑 Transacción eliminada'))
     await reloadData()
   }

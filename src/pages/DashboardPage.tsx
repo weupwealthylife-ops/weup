@@ -44,11 +44,12 @@ export default function DashboardPage() {
 
   // ── Data loaders ──
   const loadTransactions = useCallback(async (uid: string) => {
-    const { data } = await sb
+    const { data, error } = await sb
       .from('transactions')
       .select('*')
       .eq('user_id', uid)
       .order('date', { ascending: false })
+    if (error) { console.error('loadTransactions error:', error); return }
     if (data) setTransactions(data)
   }, [])
 
