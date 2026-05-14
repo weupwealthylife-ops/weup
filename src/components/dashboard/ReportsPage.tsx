@@ -189,7 +189,7 @@ export function ReportsPage() {
 
       {/* ── KPI cards ── */}
       <div className="cards-grid" style={{ marginBottom: 24 }}>
-        <div className="dash-card">
+        <div className="dash-card card-accent-income">
           <div className="card-icon icon-income">💰</div>
           <div className="card-label">{t('Income', 'Ingresos')}</div>
           <div className="card-value" style={{ color: 'var(--income)' }}>{fmt(currentIncome, currency)}</div>
@@ -201,7 +201,7 @@ export function ReportsPage() {
               : monthName}
           </div>
         </div>
-        <div className="dash-card">
+        <div className="dash-card card-accent-expense">
           <div className="card-icon icon-expense">💸</div>
           <div className="card-label">{t('Expenses', 'Gastos')}</div>
           <div className="card-value" style={{ color: 'var(--expense)' }}>{fmt(currentExpenses, currency)}</div>
@@ -213,7 +213,7 @@ export function ReportsPage() {
               : monthName}
           </div>
         </div>
-        <div className="dash-card">
+        <div className="dash-card card-accent-savings">
           <div className="card-icon icon-savings">🎯</div>
           <div className="card-label">{t('Savings rate', 'Tasa de ahorro')}</div>
           <div className="card-value" style={{ color: savingsRate >= 20 ? 'var(--income)' : savingsRate > 0 ? '#F59E0B' : 'var(--text3)' }}>
@@ -228,7 +228,7 @@ export function ReportsPage() {
           </div>
         </div>
         <div className="dash-card">
-          <div className="card-icon">📊</div>
+          <div className="card-icon" style={{ background: 'rgba(99,102,241,0.1)', boxShadow: '0 2px 8px rgba(99,102,241,0.12)' }}>📊</div>
           <div className="card-label">{t('6-mo avg spend', 'Prom. gasto 6m')}</div>
           <div className="card-value">{fmt(avgMonthlyExpenses, currency)}</div>
           <div className="card-sub">

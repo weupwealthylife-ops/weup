@@ -117,28 +117,28 @@ export function HomePage() {
   const saveRate = income > 0 ? Math.round((saved / income) * 100) : 0
   const expRate  = income > 0 ? Math.round((expenses / income) * 100) : 0
 
-  // ── Weekly ── (compare date strings directly to avoid UTC timezone shifts)
-  const { weekSpent, weekBadge, weekClass } = useMemo(() => {
-    const now = new Date()
-    const startOfWeek = new Date(now)
-    startOfWeek.setDate(now.getDate() - now.getDay())
-    startOfWeek.setHours(0, 0, 0, 0)
-    const weekTxs = transactions.filter(t => {
-      const [y, mo, d] = t.date.split('-').map(Number)
-      const txDate = new Date(y, mo - 1, d) // local midnight — no UTC shift
-      return txDate >= startOfWeek && txDate <= now
-    })
-    const ws = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)
-    const avgWeekly = expenses / 4.3
+  // ── Previous month expenses (for MoM comparison in monthly spending widget) ──
+  const prevMonthExp = useMemo(() => {
+    const prevMonth = viewMonth === 0 ? 11 : viewMonth - 1
+    const prevYear  = viewMonth === 0 ? viewYear - 1 : viewYear
+    return transactions
+      .filter(t => {
+        const [y, m] = t.date.split('-').map(Number)
+        return (m - 1) === prevMonth && y === prevYear && t.type === 'expense'
+      })
+      .reduce((s, t) => s + Number(t.amount), 0)
+  }, [transactions, viewMonth, viewYear])
+
+  // ── Monthly spending badge ──
+  const { monthBadge, monthBadgeClass } = useMemo(() => {
     const es = lang === 'es'
-    if (ws === 0)                                return { weekSpent: ws, weekBadge: es ? 'Sin gastos aún' : 'No expenses yet', weekClass: 'neutral' }
-    if (avgWeekly > 0 && ws <= avgWeekly * 0.85) return { weekSpent: ws, weekBadge: es ? '✓ Por debajo del promedio' : '✓ Under avg', weekClass: 'good' }
-    if (avgWeekly > 0 && ws >= avgWeekly * 1.15) {
-      const over = Math.round(((ws / avgWeekly) - 1) * 100)
-      return { weekSpent: ws, weekBadge: es ? `${over}% sobre el promedio` : `${over}% over avg`, weekClass: 'over' }
-    }
-    return { weekSpent: ws, weekBadge: es ? 'En línea' : 'On track', weekClass: 'good' }
-  }, [transactions, expenses, lang])
+    if (expenses === 0)     return { monthBadge: es ? 'Sin gastos' : 'No expenses', monthBadgeClass: 'neutral' }
+    if (prevMonthExp === 0) return { monthBadge: es ? 'Primer mes' : 'First data', monthBadgeClass: 'neutral' }
+    const diff = Math.round(((expenses - prevMonthExp) / prevMonthExp) * 100)
+    if (diff <= -10)  return { monthBadge: es ? `${Math.abs(diff)}% menos` : `${Math.abs(diff)}% less`, monthBadgeClass: 'good' }
+    if (diff >= 10)   return { monthBadge: es ? `${diff}% más` : `${diff}% more`, monthBadgeClass: 'over' }
+    return { monthBadge: es ? 'Similar al mes anterior' : 'Similar to last month', monthBadgeClass: 'good' }
+  }, [expenses, prevMonthExp, lang])
 
   // ── Category breakdown for sidebar list ──
   const catBreakdown = useMemo(() => {
@@ -209,32 +209,42 @@ export function HomePage() {
         <div className="dash-card card-hero">
           <div className="card-label">{t('Net Balance', 'Balance Neto')}</div>
           <div className="card-value">{fmt(balance, currency)}</div>
-          <div className="card-sub">{t('This month', 'Este mes')}</div>
+          <div className="card-sub">
+            {income > 0
+              ? <>{saveRate}% {t('saved this month', 'ahorrado este mes')}</>
+              : t('This month', 'Este mes')
+            }
+          </div>
         </div>
-        <div className="dash-card">
+        <div className="dash-card card-accent-income">
           <div className="card-icon icon-income">💰</div>
           <div className="card-label">{t('Income', 'Ingresos')}</div>
           <div className="card-value" style={{ color: 'var(--income)' }}>{fmt(income, currency)}</div>
           <div className="card-sub">
-            {monthTxs.filter(tx => tx.type === 'income').length} {t('entries', 'entradas')}
+            {monthTxs.filter(tx => tx.type === 'income').length} {t('transactions', 'transacciones')}
           </div>
         </div>
-        <div className="dash-card">
+        <div className="dash-card card-accent-expense">
           <div className="card-icon icon-expense">💸</div>
           <div className="card-label">{t('Expenses', 'Gastos')}</div>
           <div className="card-value" style={{ color: 'var(--expense)' }}>{fmt(expenses, currency)}</div>
           <div className="card-sub">
             {income > 0
               ? <><span className="badge badge-down">{expRate}%</span> {t('of income', 'de ingresos')}</>
-              : <>{monthTxs.filter(tx => tx.type === 'expense').length} {t('entries', 'gastos')}</>
+              : <>{monthTxs.filter(tx => tx.type === 'expense').length} {t('transactions', 'transacciones')}</>
             }
           </div>
         </div>
-        <div className="dash-card">
+        <div className="dash-card card-accent-savings">
           <div className="card-icon icon-savings">🎯</div>
           <div className="card-label">{t('Saved', 'Ahorrado')}</div>
           <div className="card-value" style={{ color: 'var(--purple)' }}>{fmt(saved, currency)}</div>
-          <div className="card-sub">{saveRate}% {t('savings rate', 'tasa de ahorro')}</div>
+          <div className="card-sub">
+            {saveRate > 0
+              ? <><span className="badge" style={{ background: 'var(--purple-l)', color: 'var(--purple)' }}>{saveRate}%</span> {t('savings rate', 'tasa de ahorro')}</>
+              : t('savings rate', 'tasa de ahorro')
+            }
+          </div>
         </div>
       </div>
 
@@ -267,14 +277,14 @@ export function HomePage() {
             </button>
           </div>
 
-          {/* Weekly spending — embedded, no longer a separate floating card */}
+          {/* Monthly spending — inline inside transactions card */}
           <div className="week-inline">
-            <div className="week-inline-icon">📅</div>
+            <div className="week-inline-icon">📆</div>
             <div className="week-inline-info">
-              <span className="week-inline-label">{t('This week', 'Esta semana')}</span>
-              <span className="week-inline-value">{fmt(weekSpent, currency)} {t('spent', 'gastado')}</span>
+              <span className="week-inline-label">{t('This month', 'Este mes')}</span>
+              <span className="week-inline-value">{fmt(expenses, currency)} {t('spent', 'gastado')}</span>
             </div>
-            <span className={`weekly-badge ${weekClass}`}>{weekBadge}</span>
+            <span className={`weekly-badge ${monthBadgeClass}`}>{monthBadge}</span>
           </div>
 
           <div className="tx-list">
