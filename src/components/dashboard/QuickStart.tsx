@@ -99,7 +99,7 @@ export function QuickStart() {
         <div>
           <div className="qs-complete-title">{t("You're all set!", '¡Todo listo!')}</div>
           <div className="qs-complete-sub">
-            {t('You've completed the quick start. WeUp is fully set up for you.', 'Completaste la guía rápida. WeUp está totalmente configurado para ti.')}
+            {t("You've completed the quick start. WeUp is fully set up for you.", 'Completaste la guía rápida. WeUp está totalmente configurado para ti.')}
           </div>
         </div>
         <button className="qs-dismiss" onClick={dismiss} title="Dismiss">✕</button>
