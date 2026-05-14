@@ -254,7 +254,11 @@ export default function UpgradePage() {
             <div className="plan-name">Pro</div>
             <div className="plan-price">{PRICES[billing].pro.label}</div>
             <div className="plan-period">{PRICES[billing].pro.period}</div>
-            <div className="plan-trial">Everything you need to take control</div>
+            <div className="plan-trial">
+              {billing === 'yearly'
+                ? <span style={{ color: 'var(--light)' }}>✦ You save $20.88/yr</span>
+                : 'Everything you need to take control'}
+            </div>
             <div className="plan-divider" />
             <ul className="plan-features">
               <li>Unlimited accounts</li>
@@ -284,7 +288,11 @@ export default function UpgradePage() {
             <div className="plan-name">Family</div>
             <div className="plan-price">{PRICES[billing].family.label}</div>
             <div className="plan-period">{PRICES[billing].family.period}</div>
-            <div className="plan-trial">For the whole household</div>
+            <div className="plan-trial">
+              {billing === 'yearly'
+                ? <span style={{ color: 'var(--light)' }}>✦ You save $40.88/yr</span>
+                : 'For the whole household'}
+            </div>
             <div className="plan-divider" />
             <ul className="plan-features">
               <li>Everything in Pro</li>
