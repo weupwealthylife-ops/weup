@@ -8,7 +8,10 @@ interface Props {
   onClose: () => void
 }
 
-const today = () => new Date().toISOString().split('T')[0]
+const today = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
 
 const QUICK_DESCS: Record<string, string[]> = {
   expense: ['Uber','Netflix','Spotify','Groceries','Restaurant','Coffee','Amazon','Gym'],
