@@ -94,8 +94,9 @@ export default function DashboardPage() {
   }, [loadTransactions, loadBudgets])
 
   useEffect(() => {
-    sb.auth.onAuthStateChange((event) => {
+    sb.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') window.location.href = '/'
+      if (event === 'USER_UPDATED' && session?.user) setUser(session.user)
     })
 
     ;(async () => {

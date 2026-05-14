@@ -58,6 +58,7 @@ function Sidebar() {
                 || user.email?.split('@')[0] || '?'
   const initials = name.slice(0, 2).toUpperCase()
   const email    = user.email || ''
+  const avatarUrl = user.user_metadata?.avatar_url as string | undefined
 
   async function signOut() { await sb.auth.signOut() }
 
@@ -100,8 +101,11 @@ function Sidebar() {
       </div>
 
       <div className="sidebar-footer">
-        <div className="user-chip">
-          <div className="user-avatar">{initials}</div>
+        <div className="user-chip" onClick={() => setView('settings')} title={t('Go to settings', 'Ir a ajustes')}>
+          {avatarUrl
+            ? <img src={avatarUrl} className="user-avatar" style={{ objectFit: 'cover' }} alt="" />
+            : <div className="user-avatar">{initials}</div>
+          }
           <div>
             <div className="user-name">{name}</div>
             <div className="user-email">{email}</div>
