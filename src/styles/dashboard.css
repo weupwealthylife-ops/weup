@@ -199,7 +199,6 @@
   margin-bottom: 32px;
 }
 .topbar-left h1 {
-  font-family: 'Fraunces', Georgia, serif;
   font-size: 26px; font-weight: 700; letter-spacing: -0.025em; color: var(--text);
   line-height: 1.2;
 }
@@ -385,7 +384,6 @@
   margin-bottom: 16px;
 }
 .dashboard-root .section-title {
-  font-family: 'Fraunces', Georgia, serif;
   font-size: 16px; font-weight: 700; color: var(--text);
   letter-spacing: -0.02em;
 }
