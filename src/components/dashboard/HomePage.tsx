@@ -117,22 +117,36 @@ export function HomePage() {
   const saveRate = income > 0 ? Math.round((saved / income) * 100) : 0
   const expRate  = income > 0 ? Math.round((expenses / income) * 100) : 0
 
-  // ── Weekly ──
+  // ── Weekly ── (parse as local noon to avoid UTC timezone shifts)
   const { weekSpent, weekBadge, weekClass } = useMemo(() => {
     const now = new Date()
-    const startOfWeek = new Date(now); startOfWeek.setDate(now.getDate() - now.getDay()); startOfWeek.setHours(0,0,0,0)
-    const weekTxs = transactions.filter(t => { const d = new Date(t.date); return d >= startOfWeek && d <= now })
+    const startOfWeek = new Date(now)
+    startOfWeek.setDate(now.getDate() - now.getDay())
+    startOfWeek.setHours(0, 0, 0, 0)
+    const weekTxs = transactions.filter(t => {
+      const d = new Date(t.date + 'T12:00:00')
+      return d >= startOfWeek && d <= now
+    })
     const ws = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)
     const avgWeekly = expenses / 4.3
     const es = lang === 'es'
-    if (ws === 0)                           return { weekSpent: ws, weekBadge: es ? 'Sin gastos aún' : 'No expenses yet', weekClass: 'neutral' }
-    if (avgWeekly > 0 && ws <= avgWeekly * 0.85) return { weekSpent: ws, weekBadge: es ? '✓ Por debajo del promedio' : '✓ Under weekly avg', weekClass: 'good' }
+    if (ws === 0)                                return { weekSpent: ws, weekBadge: es ? 'Sin gastos aún' : 'No expenses yet', weekClass: 'neutral' }
+    if (avgWeekly > 0 && ws <= avgWeekly * 0.85) return { weekSpent: ws, weekBadge: es ? '✓ Por debajo del promedio' : '✓ Under avg', weekClass: 'good' }
     if (avgWeekly > 0 && ws >= avgWeekly * 1.15) {
       const over = Math.round(((ws / avgWeekly) - 1) * 100)
       return { weekSpent: ws, weekBadge: es ? `${over}% sobre el promedio` : `${over}% over avg`, weekClass: 'over' }
     }
     return { weekSpent: ws, weekBadge: es ? 'En línea' : 'On track', weekClass: 'good' }
   }, [transactions, expenses, lang])
+
+  // ── Category breakdown for sidebar list ──
+  const catBreakdown = useMemo(() => {
+    const map: Record<string, number> = {}
+    monthTxs.filter(t => t.type === 'expense').forEach(t => {
+      map[t.category] = (map[t.category] || 0) + Number(t.amount)
+    })
+    return Object.entries(map).sort(([, a], [, b]) => b - a).slice(0, 5)
+  }, [monthTxs])
 
   // ── Donut chart ──
   const donutData = useMemo(() => {
@@ -242,19 +256,7 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* Weekly summary */}
-      <div className="weekly-card">
-        <div className="weekly-left">
-          <div className="weekly-icon">📅</div>
-          <div>
-            <div className="weekly-label">{t('This week', 'Esta semana')}</div>
-            <div className="weekly-value">{fmt(weekSpent, currency)} {t('spent', 'gastado')}</div>
-          </div>
-        </div>
-        <span className={`weekly-badge ${weekClass}`}>{weekBadge}</span>
-      </div>
-
-      {/* Recent transactions + Donut chart */}
+      {/* Recent transactions + Category breakdown */}
       <div className="two-col">
         <div className="dash-card">
           <div className="section-header">
@@ -263,6 +265,17 @@ export function HomePage() {
               {t('View all', 'Ver todas')}
             </button>
           </div>
+
+          {/* Weekly spending — embedded, no longer a separate floating card */}
+          <div className="week-inline">
+            <div className="week-inline-icon">📅</div>
+            <div className="week-inline-info">
+              <span className="week-inline-label">{t('This week', 'Esta semana')}</span>
+              <span className="week-inline-value">{fmt(weekSpent, currency)} {t('spent', 'gastado')}</span>
+            </div>
+            <span className={`weekly-badge ${weekClass}`}>{weekBadge}</span>
+          </div>
+
           <div className="tx-list">
             {monthTxs.length === 0 ? (
               <div className="empty">
@@ -280,7 +293,7 @@ export function HomePage() {
                 </div>
               </div>
             ) : (
-              monthTxs.slice(0, 8).map(tx => (
+              monthTxs.slice(0, 6).map(tx => (
                 <TxRow key={tx.id} tx={tx} lang={lang} currency={currency} onEdit={openEditModal} onDelete={handleDelete} />
               ))
             )}
@@ -291,23 +304,59 @@ export function HomePage() {
           <div className="section-header">
             <div className="section-title">{t('Spending by category', 'Gastos por categoría')}</div>
           </div>
-          <div className="chart-wrap donut-wrap" style={{ height: 220 }}>
-            <Doughnut
-              data={donutData}
-              options={{
-                responsive: true, maintainAspectRatio: false,
-                cutout: '68%',
-                plugins: {
-                  legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 14, usePointStyle: true, pointStyle: 'circle' } },
-                  tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.parsed, currency)}` } },
-                },
-              }}
-            />
-            <div className="donut-center">
-              <div className="donut-center-val">{totalExp > 0 ? fmt(totalExp, currency) : '$0'}</div>
-              <div className="donut-center-lbl">{t('expenses', 'gastos')}</div>
+
+          {totalExp > 0 ? (
+            <>
+              <div className="donut-wrap" style={{ height: 190 }}>
+                <Doughnut
+                  data={donutData}
+                  options={{
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.parsed, currency)}` } },
+                    },
+                  }}
+                />
+                <div className="donut-center">
+                  <div className="donut-center-val">{fmt(totalExp, currency)}</div>
+                  <div className="donut-center-lbl">{t('total', 'total')}</div>
+                </div>
+              </div>
+
+              {/* Category breakdown list */}
+              <div className="cat-breakdown">
+                {catBreakdown.map(([cat, amount]) => {
+                  const pct = Math.round((amount / totalExp) * 100)
+                  const labels = lang === 'es' ? CAT_LABELS_ES : CAT_LABELS_EN
+                  return (
+                    <div key={cat} className="cat-breakdown-item">
+                      <div className="cat-breakdown-left">
+                        <span className="cat-breakdown-icon">{CAT_ICONS[cat] || '📦'}</span>
+                        <div>
+                          <div className="cat-breakdown-name">{labels[cat] || cat}</div>
+                          <div className="cat-breakdown-bar-bg">
+                            <div className="cat-breakdown-bar-fill" style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="cat-breakdown-right">
+                        <span className="cat-breakdown-amount">{fmt(amount, currency)}</span>
+                        <span className="cat-breakdown-pct">{pct}%</span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
+          ) : (
+            <div className="empty" style={{ padding: '32px 16px' }}>
+              <span className="empty-icon" style={{ fontSize: 32 }}>📊</span>
+              <h3 style={{ fontSize: 15 }}>{t('No expenses yet', 'Sin gastos aún')}</h3>
+              <p style={{ fontSize: 13 }}>{t('Add an expense to see your breakdown.', 'Agrega un gasto para ver el desglose.')}</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
