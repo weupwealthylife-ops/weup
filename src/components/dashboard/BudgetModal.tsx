@@ -37,7 +37,8 @@ export function BudgetModal({ open, onClose }: Props) {
         const n = parseFloat(v)
         if (!isNaN(n) && n >= 0) newBudgets[k] = n
       }
-      await sb.from('profiles').upsert({ id: user.id, budgets: newBudgets })
+      const { error } = await sb.from('profiles').upsert({ id: user.id, budgets: newBudgets })
+      if (error) throw error
       setBudgets(newBudgets)
       showToast(t('✅ Budgets saved!', '✅ ¡Presupuestos guardados!'))
       onClose()

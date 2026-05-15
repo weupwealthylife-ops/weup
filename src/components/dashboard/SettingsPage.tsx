@@ -80,7 +80,8 @@ export function SettingsPage() {
     setUploadingAvatar(true)
     try {
       const dataUrl = await resizeImage(file, 256)
-      await sb.auth.updateUser({ data: { avatar_url: dataUrl } })
+      const { error } = await sb.auth.updateUser({ data: { avatar_url: dataUrl } })
+      if (error) throw error
       setLocalAvatar(dataUrl)
       showToast(t('✅ Photo updated', '✅ Foto actualizada'))
     } catch {
@@ -95,7 +96,8 @@ export function SettingsPage() {
     if (!displayName.trim() || displayName === rawName) { setEditingName(false); return }
     setSavingName(true)
     try {
-      await sb.auth.updateUser({ data: { full_name: displayName.trim() } })
+      const { error } = await sb.auth.updateUser({ data: { full_name: displayName.trim() } })
+      if (error) throw error
       showToast(t('✅ Name updated', '✅ Nombre actualizado'))
       setEditingName(false)
     } catch {

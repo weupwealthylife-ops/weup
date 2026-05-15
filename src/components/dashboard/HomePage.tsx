@@ -10,6 +10,14 @@ import type { Transaction } from '../../types/dashboard'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
+// ── Safe renderer for insight text containing <strong> tags ──────────────────
+function renderInsight(text: string) {
+  return text.split(/(<strong>.*?<\/strong>)/g).map((part, i) => {
+    const m = part.match(/^<strong>(.*?)<\/strong>$/)
+    return m ? <strong key={i} style={{ color: '#fff', fontWeight: 600 }}>{m[1]}</strong> : part
+  })
+}
+
 // ── AI Insights (calculated fallback — same as original) ──────────────────────
 function useAIInsights(income: number, expenses: number, balance: number, txs: Transaction[], lang: 'en' | 'es') {
   const [insights, setInsights] = useState([
@@ -261,7 +269,7 @@ export function HomePage() {
           {insights.map((ins, i) => (
             <div key={i} className="ai-insight">
               <div className="ai-insight-icon">{ins.icon}</div>
-              <div className="ai-insight-text" dangerouslySetInnerHTML={{ __html: ins.text }} />
+              <div className="ai-insight-text">{renderInsight(ins.text)}</div>
             </div>
           ))}
         </div>

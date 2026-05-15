@@ -37,10 +37,9 @@ export function AuthGate({ step, error }: AuthGateProps) {
       {!error && <div className="gate-spinner" />}
 
       {error && (
-        <div
-          className="gate-error"
-          dangerouslySetInnerHTML={{ __html: error }}
-        />
+        <div className="gate-error">
+          {error}
+        </div>
       )}
     </div>
   )

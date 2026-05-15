@@ -614,11 +614,12 @@ export default function AuthPage() {
       setPendingEmail(email)
       setView('confirm-sent')
       // Auto-advance when user confirms in another tab
-      sb.auth.onAuthStateChange((event, session) => {
+      const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' && session) {
           setTimeout(() => { window.location.href = '/onboarding' }, 1200)
         }
       })
+      return () => subscription.unsubscribe()
     } else {
       window.location.href = '/'
     }

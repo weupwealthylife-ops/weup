@@ -39,9 +39,10 @@ export default function UpgradePage() {
   const [toast, setToast] = useState('')
 
   useEffect(() => {
-    // Handle MercadoPago return status
-    const status = searchParams.get('status') || searchParams.get('collection_status')
-    if (status === 'approved') { setPageState('success'); updateUserPlan(); return }
+    // Handle MercadoPago return status — require collection_id to guard against forged URLs
+    const status       = searchParams.get('status') || searchParams.get('collection_status')
+    const collectionId = searchParams.get('collection_id') || searchParams.get('payment_id')
+    if (status === 'approved' && collectionId) { setPageState('success'); updateUserPlan(); return }
     if (status === 'pending' || status === 'in_process') { setPageState('pending'); return }
     if (status === 'rejected' || status === 'failure') { setPageState('failure'); return }
 
@@ -76,7 +77,7 @@ export default function UpgradePage() {
     if (!data.session) return
     const user = data.session.user
 
-    await sb.from('profiles').upsert({
+    const { error: upsertErr } = await sb.from('profiles').upsert({
       id: user.id,
       plan,
       plan_billing: planBilling,
@@ -84,6 +85,7 @@ export default function UpgradePage() {
       plan_activated_at: new Date().toISOString(),
       trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
     }, { onConflict: 'id' })
+    if (upsertErr) console.error('Plan upgrade DB error:', upsertErr)
 
     // Notify owner of new plan purchase
     const webhookUrl = import.meta.env.VITE_NOTIFY_WEBHOOK
