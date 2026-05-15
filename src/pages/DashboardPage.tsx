@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js'
 import { sb } from '../lib/supabase'
 import { DEFAULT_BUDGETS } from '../lib/categories'
 import { DashboardContext } from '../contexts/DashboardContext'
+import type { PlanType } from '../contexts/DashboardContext'
 import type { Transaction, DashboardView, Lang, Currency } from '../types/dashboard'
 import { AuthGate } from '../components/dashboard/AuthGate'
 import { AppLayout } from '../components/dashboard/Layout'
@@ -19,6 +20,7 @@ export default function DashboardPage() {
 
   // ── App state ──
   const [user, setUser] = useState<User | null>(null)
+  const [plan, setPlan] = useState<PlanType>('free')
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [budgets, setBudgets] = useState<Record<string, number>>(DEFAULT_BUDGETS)
 
@@ -56,12 +58,13 @@ export default function DashboardPage() {
   const loadBudgets = useCallback(async (uid: string) => {
     const { data } = await sb
       .from('profiles')
-      .select('budgets')
+      .select('budgets, plan')
       .eq('id', uid)
       .single()
     if (data?.budgets && Object.keys(data.budgets).length > 0) {
       setBudgets(data.budgets)
     }
+    if (data?.plan) setPlan(data.plan as PlanType)
   }, [])
 
   const reloadData = useCallback(async () => {
@@ -149,6 +152,7 @@ export default function DashboardPage() {
   return (
     <DashboardContext.Provider value={{
       user: user!,
+      plan,
       transactions, budgets, setBudgets,
       lang, setLang,
       currency, setCurrency,

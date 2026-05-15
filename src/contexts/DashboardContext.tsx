@@ -2,8 +2,11 @@ import { createContext, useContext } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { Transaction, DashboardView, Lang, Currency } from '../types/dashboard'
 
+export type PlanType = 'free' | 'pro' | 'family'
+
 export interface DashboardContextType {
   user: User
+  plan: PlanType
   transactions: Transaction[]
   budgets: Record<string, number>
   lang: Lang

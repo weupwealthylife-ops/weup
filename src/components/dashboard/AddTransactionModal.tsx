@@ -19,7 +19,16 @@ const QUICK_DESCS: Record<string, string[]> = {
 }
 
 export function AddTransactionModal({ open, onClose }: Props) {
-  const { user, lang, reloadData, showToast } = useDashboard()
+  const { user, plan, transactions, lang, reloadData, showToast } = useDashboard()
+
+  // ── Free plan: count this month's transactions ──
+  const now = new Date()
+  const thisMonthCount = transactions.filter(t => {
+    const [y, m] = t.date.split('-').map(Number)
+    return (m - 1) === now.getMonth() && y === now.getFullYear()
+  }).length
+  const atFreeLimit = plan === 'free' && thisMonthCount >= 30
+
   const [type, setType]         = useState<'expense' | 'income'>('expense')
   const [amount, setAmount]     = useState('')
   const [desc, setDesc]         = useState('')
@@ -88,6 +97,35 @@ export function AddTransactionModal({ open, onClose }: Props) {
           <button className="modal-close" onClick={handleClose}>✕</button>
         </div>
 
+        {/* Free plan limit wall */}
+        {atFreeLimit ? (
+          <div style={{ textAlign: 'center', padding: '24px 8px 16px' }}>
+            <div style={{ fontSize: 36, marginBottom: 12 }}>🔒</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>
+              {t('Monthly limit reached', 'Límite mensual alcanzado')}
+            </div>
+            <div style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6, marginBottom: 20 }}>
+              {t(
+                `You've used all 30 free transactions this month. Upgrade to Pro for unlimited transactions and AI insights.`,
+                `Usaste las 30 transacciones gratuitas de este mes. Mejora a Pro para transacciones ilimitadas e insights IA.`
+              )}
+            </div>
+            <a
+              href="/upgrade"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                background: '#3DA06A', color: '#fff', borderRadius: 12,
+                padding: '12px 24px', fontSize: 15, fontWeight: 600,
+                textDecoration: 'none', fontFamily: 'inherit',
+              }}
+            >
+              ⭐ {t('Upgrade to Pro', 'Mejorar a Pro')}
+            </a>
+            <div style={{ marginTop: 12, fontSize: 12, color: '#94A3B8' }}>
+              {t('Resets on the 1st of next month', 'Se reinicia el 1 del próximo mes')}
+            </div>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit}>
           {/* Type toggle */}
           <div className="type-toggle">
@@ -199,6 +237,7 @@ export function AddTransactionModal({ open, onClose }: Props) {
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   )
