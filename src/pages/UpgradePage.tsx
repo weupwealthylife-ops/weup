@@ -39,130 +39,104 @@ export default function UpgradePage() {
   const [toast, setToast] = useState('')
 
   useEffect(() => {
-    // Handle MercadoPago return status — require collection_id to guard against forged URLs
     const status       = searchParams.get('status') || searchParams.get('collection_status')
     const collectionId = searchParams.get('collection_id') || searchParams.get('payment_id')
     if (status === 'approved' && collectionId) { setPageState('success'); updateUserPlan(); return }
     if (status === 'pending' || status === 'in_process') { setPageState('pending'); return }
     if (status === 'rejected' || status === 'failure') { setPageState('failure'); return }
 
-    // Pre-highlight plan from URL
     const urlPlan = searchParams.get('plan')
     if (urlPlan === 'family') setFeaturedPlan('family')
 
-    // Load session
     sb.auth.getSession().then(async ({ data }) => {
-      if (!data.session) {
-        navigate('/', { replace: true })
-        return
-      }
+      if (!data.session) { navigate('/', { replace: true }); return }
       const user = data.session.user
       setUserId(user.id)
       setUserEmail(user.email ?? '')
-      const name = user.user_metadata?.full_name?.split(' ')[0] || (user.email ?? '').split('@')[0]
-      setUserName(name)
-
-      // Check if already on a paid plan
+      setUserName(user.user_metadata?.full_name?.split(' ')[0] || (user.email ?? '').split('@')[0])
       const { data: profile } = await sb.from('profiles').select('plan').eq('id', user.id).single()
       if (profile?.plan) setCurrentPlan(profile.plan as PlanType)
     })
   }, [navigate, searchParams])
 
   async function updateUserPlan() {
-    // Read plan + billing from URL params (persisted through MercadoPago redirect)
     const plan        = searchParams.get('plan') || 'pro'
     const planBilling = (searchParams.get('billing') as Billing) || 'monthly'
-
     const { data } = await sb.auth.getSession()
     if (!data.session) return
     const user = data.session.user
-
     const { error: upsertErr } = await sb.from('profiles').upsert({
-      id: user.id,
-      plan,
-      plan_billing: planBilling,
-      onboarding_completed: true,
+      id: user.id, plan, plan_billing: planBilling, onboarding_completed: true,
       plan_activated_at: new Date().toISOString(),
       trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
     }, { onConflict: 'id' })
     if (upsertErr) console.error('Plan upgrade DB error:', upsertErr)
-
-    // Notify owner of new plan purchase
     const webhookUrl = import.meta.env.VITE_NOTIFY_WEBHOOK
     if (webhookUrl) {
       fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'PLAN_PURCHASED',
-          email: user.email,
-          name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-          plan,
-          billing: planBilling,
-          timestamp: new Date().toISOString(),
-        }),
+        body: JSON.stringify({ event: 'PLAN_PURCHASED', email: user.email,
+          name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+          plan, billing: planBilling, timestamp: new Date().toISOString() }),
       }).catch(() => {})
     }
   }
 
   async function startCheckout(plan: 'pro' | 'family') {
-    if (!userId) {
-      sessionStorage.setItem('planIntent', plan)
-      navigate(`/?plan=${plan}`)
-      return
-    }
-
+    if (!userId) { sessionStorage.setItem('planIntent', plan); navigate(`/?plan=${plan}`); return }
     setLoadingPlan(plan)
     try {
-      const res = await fetch(`${SUPA_URL}/functions/v1/dynamic-endpoint`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPA_KEY}`,
-          'apikey': SUPA_KEY,
-        },
-        body: JSON.stringify({ plan, billing, userId, userEmail, userName, origin: window.location.origin }),
-      })
+      const controller = new AbortController()
+      const timeoutId  = setTimeout(() => controller.abort(), 12000)
+      let res: Response
+      try {
+        res = await fetch(`${SUPA_URL}/functions/v1/dynamic-endpoint`, {
+          method: 'POST', signal: controller.signal,
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}`, 'apikey': SUPA_KEY },
+          body: JSON.stringify({ plan, billing, userId, userEmail, userName, origin: window.location.origin }),
+        })
+      } catch (fetchErr: unknown) {
+        const isTimeout = fetchErr instanceof Error && fetchErr.name === 'AbortError'
+        throw new Error(isTimeout ? 'Request timed out. Please try again.' : 'Could not reach the payment server. Check your connection.')
+      } finally { clearTimeout(timeoutId) }
+
+      const contentType = res.headers.get('content-type') || ''
+      if (!contentType.includes('application/json'))
+        throw new Error(`Payment service unavailable (${res.status}). Please try again in a moment.`)
 
       const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `Payment error (${res.status}). Please try again.`)
 
       if (data.url) {
-        await sb.from('profiles').upsert({
-          id: userId,
-          plan_intent: plan,
-          plan_billing: billing,
-          onboarding_completed: true,
-        }, { onConflict: 'id' })
+        await sb.from('profiles').upsert(
+          { id: userId, plan_intent: plan, plan_billing: billing, onboarding_completed: true },
+          { onConflict: 'id' }
+        )
         window.location.href = data.url
       } else {
-        throw new Error(data.error || 'Could not create checkout')
+        throw new Error(data.error || 'Could not create payment link. Please try again.')
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Checkout error'
-      showToast('Could not start checkout: ' + msg)
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+      console.error('[startCheckout]', msg)
+      showToast(msg)
       setLoadingPlan(null)
     }
   }
 
-  function showToast(msg: string) {
-    setToast(msg)
-    setTimeout(() => setToast(''), 4000)
-  }
+  function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 5000) }
 
   const faqs: FaqItem[] = [
     { q: 'Can I cancel anytime?', a: 'Yes. Cancel anytime from Settings. You keep Pro access until end of your billing period. No cancellation fees, ever.' },
-    { q: 'What payment methods are accepted?', a: 'PSE, Nequi, Daviplata, credit and debit cards (Visa, Mastercard, Amex) through MercadoPago — Colombia\'s most trusted payment platform.' },
+    { q: 'What payment methods are accepted?', a: "PSE, Nequi, Daviplata, credit and debit cards (Visa, Mastercard, Amex) through MercadoPago — Colombia's most trusted payment platform." },
     { q: 'Is my financial data safe?', a: <>All data is encrypted with AES-256. We never store card details — payments are handled by MercadoPago. Read our <Link to="/privacy" style={{ color: 'var(--light)' }}>Privacy Policy</Link>.</> },
     { q: 'Do you offer refunds?', a: <>7-day money-back guarantee for first-time subscribers. Contact <a href="mailto:legal@weup.app">legal@weup.app</a> within 7 days of payment.</> },
     { q: 'Can I switch between plans?', a: 'Yes. Upgrade, downgrade, or switch between monthly and yearly billing anytime from Settings.' },
   ]
 
-  // ── State pages ────────────────────────────────────────────────────────────
-
   if (pageState === 'success') return (
-    <div className="upgrade-root">
-      <div className="upgrade-bg" />
-      <UpgradeNav userName={userName} />
+    <div className="upgrade-root"><div className="upgrade-bg" /><UpgradeNav userName={userName} />
       <div className="state-page">
         <div className="state-circle success">🎉</div>
         <h1 className="state-title">Payment successful!</h1>
@@ -173,9 +147,7 @@ export default function UpgradePage() {
   )
 
   if (pageState === 'pending') return (
-    <div className="upgrade-root">
-      <div className="upgrade-bg" />
-      <UpgradeNav userName={userName} />
+    <div className="upgrade-root"><div className="upgrade-bg" /><UpgradeNav userName={userName} />
       <div className="state-page">
         <div className="state-circle pending">⏳</div>
         <h1 className="state-title">Payment pending</h1>
@@ -186,9 +158,7 @@ export default function UpgradePage() {
   )
 
   if (pageState === 'failure') return (
-    <div className="upgrade-root">
-      <div className="upgrade-bg" />
-      <UpgradeNav userName={userName} />
+    <div className="upgrade-root"><div className="upgrade-bg" /><UpgradeNav userName={userName} />
       <div className="state-page">
         <div className="state-circle error">❌</div>
         <h1 className="state-title">Payment failed</h1>
@@ -198,38 +168,29 @@ export default function UpgradePage() {
     </div>
   )
 
-  // ── Main upgrade page ──────────────────────────────────────────────────────
-
   return (
     <div className="upgrade-root">
       <div className="upgrade-bg" />
       <UpgradeNav userName={userName} />
-
       <div className="upgrade-page">
-        {/* Header */}
+
         <div className="upgrade-header">
           <div className="upgrade-badge">⭐ Upgrade WeUp</div>
           <h1 className="upgrade-title">Unlock your <em>full potential</em></h1>
           <p className="upgrade-sub">Get unlimited transactions, AI-powered insights, bank sync and everything you need to master your finances.</p>
         </div>
 
-        {/* Billing toggle */}
         <div className="billing-toggle">
           <span className={`toggle-label${billing === 'monthly' ? ' active' : ''}`}>Monthly</span>
-          <button
-            className={`toggle-track${billing === 'yearly' ? ' yearly' : ''}`}
-            onClick={() => setBilling(b => b === 'monthly' ? 'yearly' : 'monthly')}
-            aria-label="Toggle billing period"
-          >
+          <button className={`toggle-track${billing === 'yearly' ? ' yearly' : ''}`}
+            onClick={() => setBilling(b => b === 'monthly' ? 'yearly' : 'monthly')} aria-label="Toggle billing period">
             <div className="toggle-knob" />
           </button>
           <span className={`toggle-label${billing === 'yearly' ? ' active' : ''}`}>Yearly</span>
           {billing === 'yearly' && <span className="save-badge">Save 35%</span>}
         </div>
 
-        {/* Plans */}
         <div className="plans-grid">
-          {/* Free */}
           <div className="plan-card">
             <div className="plan-name">Free</div>
             <div className="plan-price">$0</div>
@@ -245,81 +206,58 @@ export default function UpgradePage() {
               <li className="off">Bank sync</li>
               <li className="off">Savings goals</li>
             </ul>
-            <button className="btn-upgrade ghost" disabled>
-              Get started free
-            </button>
+            <button className="btn-upgrade ghost" disabled>Get started free</button>
           </div>
 
-          {/* Pro */}
           <div className={`plan-card${featuredPlan === 'pro' ? ' featured' : ''}`}>
             {featuredPlan === 'pro' && <div className="plan-badge">Most popular</div>}
             <div className="plan-name">Pro</div>
             <div className="plan-price">{PRICES[billing].pro.label}</div>
             <div className="plan-period">{PRICES[billing].pro.period}</div>
             <div className="plan-trial">
-              {billing === 'yearly'
-                ? <span style={{ color: 'var(--light)' }}>✦ You save $20.88/yr</span>
-                : 'Everything you need to take control'}
+              {billing === 'yearly' ? <span style={{ color: 'var(--light)' }}>✦ You save $20.88/yr</span> : 'Everything you need to take control'}
             </div>
             <div className="plan-divider" />
             <ul className="plan-features">
-              <li>Unlimited accounts</li>
-              <li>Unlimited transactions</li>
-              <li>AI-powered insights</li>
-              <li>Bank sync (CO & MX)</li>
-              <li>Savings goals & budgets</li>
-              <li>Advanced visual reports</li>
+              <li>Unlimited accounts</li><li>Unlimited transactions</li>
+              <li>AI-powered insights</li><li>Bank sync (CO &amp; MX)</li>
+              <li>Savings goals &amp; budgets</li><li>Advanced visual reports</li>
               <li>Priority support</li>
             </ul>
             {currentPlan === 'pro' ? (
               <button className="btn-upgrade current" disabled>Current plan</button>
             ) : (
-              <button
-                className="btn-upgrade primary"
-                onClick={() => startCheckout('pro')}
-                disabled={loadingPlan !== null}
-              >
-                {loadingPlan === 'pro' ? 'Setting up…' : 'Start Pro free 14 days'}
+              <button className="btn-upgrade primary" onClick={() => startCheckout('pro')} disabled={loadingPlan !== null}>
+                {loadingPlan === 'pro' ? <><div className="btn-spinner" /> Setting up…</> : 'Start Pro free 14 days'}
               </button>
             )}
           </div>
 
-          {/* Family */}
           <div className={`plan-card${featuredPlan === 'family' ? ' featured' : ''}`}>
             {featuredPlan === 'family' && <div className="plan-badge">Most popular</div>}
             <div className="plan-name">Family</div>
             <div className="plan-price">{PRICES[billing].family.label}</div>
             <div className="plan-period">{PRICES[billing].family.period}</div>
             <div className="plan-trial">
-              {billing === 'yearly'
-                ? <span style={{ color: 'var(--light)' }}>✦ You save $40.88/yr</span>
-                : 'For the whole household'}
+              {billing === 'yearly' ? <span style={{ color: 'var(--light)' }}>✦ You save $40.88/yr</span> : 'For the whole household'}
             </div>
             <div className="plan-divider" />
             <ul className="plan-features">
-              <li>Everything in Pro</li>
-              <li>Up to 5 members</li>
-              <li>Shared household budget</li>
-              <li>Individual privacy per member</li>
-              <li>Family financial reports</li>
-              <li>Dedicated support</li>
+              <li>Everything in Pro</li><li>Up to 5 members</li>
+              <li>Shared household budget</li><li>Individual privacy per member</li>
+              <li>Family financial reports</li><li>Dedicated support</li>
               <li>Early access to new features</li>
             </ul>
             {currentPlan === 'family' ? (
               <button className="btn-upgrade current" disabled>Current plan</button>
             ) : (
-              <button
-                className="btn-upgrade ghost"
-                onClick={() => startCheckout('family')}
-                disabled={loadingPlan !== null}
-              >
-                {loadingPlan === 'family' ? 'Setting up…' : 'Start free 14 days'}
+              <button className="btn-upgrade ghost" onClick={() => startCheckout('family')} disabled={loadingPlan !== null}>
+                {loadingPlan === 'family' ? <><div className="btn-spinner" /> Setting up…</> : 'Start free 14 days'}
               </button>
             )}
           </div>
         </div>
 
-        {/* Trust row */}
         <div className="trust-row">
           {[
             { icon: '🔒', text: 'Secure payments with MercadoPago' },
@@ -334,14 +272,12 @@ export default function UpgradePage() {
           ))}
         </div>
 
-        {/* FAQ */}
         <h2 className="faq-title">Frequently asked questions</h2>
         <div className="faq-list">
           {faqs.map((faq, i) => (
             <div className={`faq-item${openFaq === i ? ' open' : ''}`} key={i}>
               <button className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                <span>{faq.q}</span>
-                <span className="faq-chevron">▼</span>
+                <span>{faq.q}</span><span className="faq-chevron">▼</span>
               </button>
               {openFaq === i && <div className="faq-a">{faq.a}</div>}
             </div>
@@ -349,14 +285,11 @@ export default function UpgradePage() {
         </div>
       </div>
 
-      {/* Toast */}
       {toast && (
-        <div style={{
-          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+        <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
           background: '#0D2B1E', border: '0.5px solid rgba(95,220,154,0.3)',
           color: '#fff', padding: '12px 24px', borderRadius: 12,
-          fontSize: 14, zIndex: 999, boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-        }}>
+          fontSize: 14, zIndex: 999, boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
           {toast}
         </div>
       )}
