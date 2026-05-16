@@ -77,9 +77,9 @@
 .upgrade-page {
   position: relative;
   z-index: 1;
-  max-width: 1000px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 72px 32px 96px;
+  padding: 72px 40px 96px;
 }
 
 /* ── Header ── */
@@ -180,9 +180,10 @@
 .plans-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 24px;
   margin-bottom: 56px;
   align-items: start;
+  padding-top: 24px;
 }
 
 @keyframes planFadeUp {
@@ -194,12 +195,13 @@
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.09);
   border-radius: 24px;
-  padding: 32px 26px;
+  padding: 36px 28px 28px;
   position: relative;
   display: flex;
   flex-direction: column;
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
   animation: planFadeUp 0.5s ease both;
+  overflow: visible;
 }
 
 .plan-card:nth-child(1) { animation-delay: 0.05s; }
@@ -467,7 +469,7 @@
 .faq-a a { color: var(--light); text-decoration: none; }
 .faq-a a:hover { text-decoration: underline; }
 
-/* ── State pages (success / pending / failure) ── */
+/* ── State pages ── */
 .state-page {
   min-height: 60vh;
   display: flex;
@@ -534,17 +536,37 @@
 .state-btn.ghost:hover { color: var(--w); border-color: var(--w50); }
 
 /* ── Responsive ── */
-@media (max-width: 900px) {
-  .plans-grid { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; }
+@media (max-width: 960px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 28px;
+  }
   .plan-card.featured { transform: none; }
   .plan-card.featured:hover { transform: translateY(-3px); }
 }
 
 @media (max-width: 768px) {
   .upgrade-nav  { padding: 14px 20px; }
-  .upgrade-page { padding: 40px 16px 80px; }
+  .upgrade-page { padding: 48px 20px 80px; }
   .trust-row    { flex-direction: column; gap: 0; padding: 20px; }
   .trust-item   { border-right: none; border-bottom: 0.5px solid rgba(255,255,255,0.08); width: 100%; justify-content: center; }
   .trust-item:last-child { border-bottom: none; }
   .upgrade-title { font-size: clamp(32px, 8vw, 44px); }
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
 }
