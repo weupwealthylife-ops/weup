@@ -447,7 +447,7 @@ export default function LandingPage() {
               </button>
               <span className={`toggle-label${yearly ? ' active' : ''}`}>{t('Yearly', 'Anual')}</span>
               <span className={`pricing-badge-discount${yearly ? ' visible' : ''}`}>
-                {t('Save 35%', 'Ahorra 35%')}
+                {t('Save 33%', 'Ahorra 33%')}
               </span>
             </div>
 
@@ -479,7 +479,7 @@ export default function LandingPage() {
                 <div className="pricing-popular-badge">{t('MOST POPULAR', 'MÁS POPULAR')}</div>
                 <div className="pricing-plan-label">{t('PRO', 'PRO')}</div>
                 <div className="pricing-price-row">
-                  <span className="pricing-amount">${yearly ? '3.25' : '4.99'}</span>
+                  <span className="pricing-amount">${yearly ? '2' : '3'}</span>
                   <span className="pricing-period-inline">/{t('month', 'mes')}</span>
                 </div>
                 <div className="pricing-desc">{t('Everything you need to take control', 'Todo lo que necesitas para tomar control')}</div>
@@ -501,7 +501,7 @@ export default function LandingPage() {
               <div className="pricing-card">
                 <div className="pricing-plan-label">{t('FAMILY', 'FAMILIA')}</div>
                 <div className="pricing-price-row">
-                  <span className="pricing-amount">${yearly ? '6.58' : '9.99'}</span>
+                  <span className="pricing-amount">${yearly ? '3.50' : '5'}</span>
                   <span className="pricing-period-inline">/{t('month', 'mes')}</span>
                 </div>
                 <div className="pricing-desc">{t('For the whole household', 'Para todo el hogar')}</div>

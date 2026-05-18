@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
-import { sb, SUPA_URL, SUPA_KEY } from '../lib/supabase'
+import { sb } from '../lib/supabase'
 import '../styles/upgrade.css'
 
 type Billing = 'monthly' | 'yearly'
@@ -9,14 +9,25 @@ type PageState = 'upgrade' | 'success' | 'pending' | 'failure'
 
 const PRICES: Record<Billing, Record<'pro' | 'family', { label: string; period: string }>> = {
   monthly: {
-    pro:    { label: '$4.99', period: '/month' },
-    family: { label: '$9.99', period: '/month' },
+    pro:    { label: '$3',    period: '/month' },
+    family: { label: '$5',    period: '/month' },
   },
   yearly: {
-    pro:    { label: '$3.25', period: '/month · billed $39/yr' },
-    family: { label: '$6.58', period: '/month · billed $79/yr' },
+    pro:    { label: '$2',    period: '/month · billed $24/yr' },
+    family: { label: '$3.50', period: '/month · billed $42/yr' },
   },
 }
+
+const MP_LINKS = {
+  pro: {
+    monthly: 'https://www.mercadopago.com.co/subscriptions/checkout?preapproval_plan_id=2c93808497eec1c00197f263e1d801bb',
+    yearly:  'https://www.mercadopago.com.co/subscriptions/checkout?preapproval_plan_id=2c93808497eec1c00197f2654dd301bc',
+  },
+  family: {
+    monthly: 'https://www.mercadopago.com.co/subscriptions/checkout?preapproval_plan_id=ad59e8a0c6ab4fefbfcb27be03b59f20',
+    yearly:  'https://www.mercadopago.com.co/subscriptions/checkout?preapproval_plan_id=bb0831d124ad4154ba19dcfbd93a301d',
+  },
+} as const
 
 interface FaqItem {
   q: string
@@ -33,10 +44,7 @@ export default function UpgradePage() {
   const [featuredPlan, setFeaturedPlan] = useState<'pro' | 'family'>('pro')
   const [userName, setUserName] = useState('')
   const [userId, setUserId] = useState('')
-  const [userEmail, setUserEmail] = useState('')
-  const [loadingPlan, setLoadingPlan] = useState<'pro' | 'family' | null>(null)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [toast, setToast] = useState('')
 
   useEffect(() => {
     const status       = searchParams.get('status') || searchParams.get('collection_status')
@@ -52,7 +60,6 @@ export default function UpgradePage() {
       if (!data.session) { navigate('/', { replace: true }); return }
       const user = data.session.user
       setUserId(user.id)
-      setUserEmail(user.email ?? '')
       setUserName(user.user_metadata?.full_name?.split(' ')[0] || (user.email ?? '').split('@')[0])
       const { data: profile } = await sb.from('profiles').select('plan').eq('id', user.id).single()
       if (profile?.plan) setCurrentPlan(profile.plan as PlanType)
@@ -83,49 +90,14 @@ export default function UpgradePage() {
     }
   }
 
-  async function startCheckout(plan: 'pro' | 'family') {
+  function startCheckout(plan: 'pro' | 'family') {
     if (!userId) { sessionStorage.setItem('planIntent', plan); navigate(`/?plan=${plan}`); return }
-    setLoadingPlan(plan)
-    try {
-      const controller = new AbortController()
-      const timeoutId  = setTimeout(() => controller.abort(), 12000)
-      let res: Response
-      try {
-        res = await fetch(`${SUPA_URL}/functions/v1/dynamic-endpoint`, {
-          method: 'POST', signal: controller.signal,
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}`, 'apikey': SUPA_KEY },
-          body: JSON.stringify({ plan, billing, userId, userEmail, userName, origin: window.location.origin }),
-        })
-      } catch (fetchErr: unknown) {
-        const isTimeout = fetchErr instanceof Error && fetchErr.name === 'AbortError'
-        throw new Error(isTimeout ? 'Request timed out. Please try again.' : 'Could not reach the payment server. Check your connection.')
-      } finally { clearTimeout(timeoutId) }
-
-      const contentType = res.headers.get('content-type') || ''
-      if (!contentType.includes('application/json'))
-        throw new Error(`Payment service unavailable (${res.status}). Please try again in a moment.`)
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || `Payment error (${res.status}). Please try again.`)
-
-      if (data.url) {
-        await sb.from('profiles').upsert(
-          { id: userId, plan_intent: plan, plan_billing: billing, onboarding_completed: true },
-          { onConflict: 'id' }
-        )
-        window.location.href = data.url
-      } else {
-        throw new Error(data.error || 'Could not create payment link. Please try again.')
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.'
-      console.error('[startCheckout]', msg)
-      showToast(msg)
-      setLoadingPlan(null)
-    }
+    sb.from('profiles').upsert(
+      { id: userId, plan_intent: plan, plan_billing: billing, onboarding_completed: true },
+      { onConflict: 'id' }
+    ).then(() => {})
+    window.location.href = MP_LINKS[plan][billing]
   }
-
-  function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 5000) }
 
   const faqs: FaqItem[] = [
     { q: 'Can I cancel anytime?', a: 'Yes. Cancel anytime from Settings. You keep Pro access until end of your billing period. No cancellation fees, ever.' },
@@ -187,7 +159,7 @@ export default function UpgradePage() {
             <div className="toggle-knob" />
           </button>
           <span className={`toggle-label${billing === 'yearly' ? ' active' : ''}`}>Yearly</span>
-          {billing === 'yearly' && <span className="save-badge">Save 35%</span>}
+          {billing === 'yearly' && <span className="save-badge">Save 33%</span>}
         </div>
 
         <div className="plans-grid">
@@ -215,7 +187,7 @@ export default function UpgradePage() {
             <div className="plan-price">{PRICES[billing].pro.label}</div>
             <div className="plan-period">{PRICES[billing].pro.period}</div>
             <div className="plan-trial">
-              {billing === 'yearly' ? <span style={{ color: 'var(--light)' }}>✦ You save $20.88/yr</span> : 'Everything you need to take control'}
+              {billing === 'yearly' ? <span style={{ color: 'var(--light)' }}>✦ You save $12/yr</span> : 'Everything you need to take control'}
             </div>
             <div className="plan-divider" />
             <ul className="plan-features">
@@ -227,8 +199,8 @@ export default function UpgradePage() {
             {currentPlan === 'pro' ? (
               <button className="btn-upgrade current" disabled>Current plan</button>
             ) : (
-              <button className="btn-upgrade primary" onClick={() => startCheckout('pro')} disabled={loadingPlan !== null}>
-                {loadingPlan === 'pro' ? <><div className="btn-spinner" /> Setting up…</> : 'Start Pro free 14 days'}
+              <button className="btn-upgrade primary" onClick={() => startCheckout('pro')}>
+                Start Pro free 14 days
               </button>
             )}
           </div>
@@ -239,7 +211,7 @@ export default function UpgradePage() {
             <div className="plan-price">{PRICES[billing].family.label}</div>
             <div className="plan-period">{PRICES[billing].family.period}</div>
             <div className="plan-trial">
-              {billing === 'yearly' ? <span style={{ color: 'var(--light)' }}>✦ You save $40.88/yr</span> : 'For the whole household'}
+              {billing === 'yearly' ? <span style={{ color: 'var(--light)' }}>✦ You save $18/yr</span> : 'For the whole household'}
             </div>
             <div className="plan-divider" />
             <ul className="plan-features">
@@ -251,8 +223,8 @@ export default function UpgradePage() {
             {currentPlan === 'family' ? (
               <button className="btn-upgrade current" disabled>Current plan</button>
             ) : (
-              <button className="btn-upgrade ghost" onClick={() => startCheckout('family')} disabled={loadingPlan !== null}>
-                {loadingPlan === 'family' ? <><div className="btn-spinner" /> Setting up…</> : 'Start free 14 days'}
+              <button className="btn-upgrade ghost" onClick={() => startCheckout('family')}>
+                Start free 14 days
               </button>
             )}
           </div>
@@ -284,15 +256,6 @@ export default function UpgradePage() {
           ))}
         </div>
       </div>
-
-      {toast && (
-        <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: '#0D2B1E', border: '0.5px solid rgba(95,220,154,0.3)',
-          color: '#fff', padding: '12px 24px', borderRadius: 12,
-          fontSize: 14, zIndex: 999, boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
-          {toast}
-        </div>
-      )}
     </div>
   )
 }

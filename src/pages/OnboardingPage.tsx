@@ -464,7 +464,7 @@ function PlanStep({ lang, selectedPlan, onPlanSelect, onNext, onBack }: PlanStep
         >
           <div className="plan-badge">{t('POPULAR', 'POPULAR', lang)}</div>
           <div className="plan-name">Pro</div>
-          <div className="plan-price">$4.99</div>
+          <div className="plan-price">$3</div>
           <div className="plan-period">{t('/ month', '/ mes', lang)}</div>
           <div className="plan-trial">{t('14-day free trial', 'Prueba gratis 14 días', lang)}</div>
           <ul className="plan-features">
@@ -609,22 +609,18 @@ export default function OnboardingPage() {
 
   // ── Auth gate ──
   useEffect(() => {
-    // Detect language
     const detectedLang: Lang = navigator.language?.startsWith('es') ? 'es' : 'en'
     setLang(detectedLang)
 
-    // Detect currency
     const detectedCurrency: Currency = navigator.language?.includes('MX') ? 'MXN' : 'COP'
     setSelectedCurrency(detectedCurrency)
 
-    // Plan intent from sessionStorage
     const intent = sessionStorage.getItem('weup_plan_intent')
     if (intent) {
       setPlanIntent(intent)
       if (intent !== 'free') setSelectedPlan('pro')
     }
 
-    // Auth check
     sb.auth.getSession().then(({ data }) => {
       const session = data.session
       if (!session) {
@@ -636,7 +632,6 @@ export default function OnboardingPage() {
       const user = session.user
       setCurrentUser(user)
 
-      // Check if already onboarded
       sb.from('profiles')
         .select('lang')
         .eq('id', user.id)
@@ -649,31 +644,26 @@ export default function OnboardingPage() {
           }
         })
         .catch(() => {
-          // If profiles table query fails, still allow onboarding
           setIsLoading(false)
         })
     })
   }, [])
 
-  // ── Navigation helpers ──
   const goToStep = (step: number) => setCurrentStep(step)
   const goNext = () => setCurrentStep((s) => s + 1)
   const goBack = () => setCurrentStep((s) => Math.max(1, s - 1))
 
-  // ── Currency change resets income selection ──
   const handleCurrencyChange = (c: Currency) => {
     setSelectedCurrency(c)
     setSelectedIncome(null)
   }
 
-  // ── Toggle category ──
   const toggleCat = (id: string) => {
     setSelectedCats((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
     )
   }
 
-  // ── Finish onboarding (upsert profile, go to step 6) ──
   const finishOnboarding = async () => {
     if (!currentUser) return
     setIsSaving(true)
@@ -701,7 +691,6 @@ export default function OnboardingPage() {
     }
   }
 
-  // ── Skip onboarding ──
   const skipOnboarding = async () => {
     if (!currentUser) {
       window.location.href = '/dashboard'
@@ -714,32 +703,26 @@ export default function OnboardingPage() {
         lang: 'done',
       })
     } catch {
-      // Ignore error on skip
+      // ignore
     }
     window.location.href = '/dashboard'
   }
 
-  // ── Progress bar ──
   const progressPct = currentStep === 6 ? 100 : ((currentStep - 1) / 5) * 100
 
-  // ── Nav step state ──
   const getNavStepClass = (navIndex: number): string => {
-    // navIndex is 1-based (1..5)
     if (currentStep === 6) return 'nav-step done'
     if (navIndex < currentStep) return 'nav-step done'
     if (navIndex === currentStep) return 'nav-step active'
     return 'nav-step'
   }
 
-  // ── Auth gate loading screen ──
   if (isLoading || noSession) {
     return <AuthGateScreen noSession={noSession} />
   }
 
-  // ── Render ──
   return (
     <div className="onboard-root">
-      {/* Navigation Bar */}
       <nav className="onboard-nav" aria-label="Onboarding navigation">
         <a href="/" className="nav-logo" aria-label="WeUp home">
           <img src="/Logo_WeUp.png" alt="" aria-hidden="true" />
@@ -769,19 +752,14 @@ export default function OnboardingPage() {
         {currentStep === 6 && <div style={{ width: 50 }} aria-hidden="true" />}
       </nav>
 
-      {/* Progress Bar */}
       <div className="progress-bar" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
         <div className="progress-fill" style={{ width: `${progressPct}%` }} />
       </div>
 
-      {/* Pages */}
       <main className="pages">
-        {/* Step 1 — Welcome */}
         <div className={`step-page${currentStep === 1 ? ' active' : ''}`} aria-hidden={currentStep !== 1}>
           <WelcomeStep lang={lang} user={currentUser} onNext={goNext} />
         </div>
-
-        {/* Step 2 — Income */}
         <div className={`step-page${currentStep === 2 ? ' active' : ''}`} aria-hidden={currentStep !== 2}>
           <IncomeStep
             lang={lang}
@@ -793,8 +771,6 @@ export default function OnboardingPage() {
             onBack={goBack}
           />
         </div>
-
-        {/* Step 3 — Goals */}
         <div className={`step-page${currentStep === 3 ? ' active' : ''}`} aria-hidden={currentStep !== 3}>
           <GoalsStep
             lang={lang}
@@ -804,8 +780,6 @@ export default function OnboardingPage() {
             onBack={goBack}
           />
         </div>
-
-        {/* Step 4 — Categories */}
         <div className={`step-page${currentStep === 4 ? ' active' : ''}`} aria-hidden={currentStep !== 4}>
           <CategoriesStep
             lang={lang}
@@ -815,8 +789,6 @@ export default function OnboardingPage() {
             onBack={goBack}
           />
         </div>
-
-        {/* Step 5 — Plan */}
         <div className={`step-page${currentStep === 5 ? ' active' : ''}`} aria-hidden={currentStep !== 5}>
           <PlanStep
             lang={lang}
@@ -826,8 +798,6 @@ export default function OnboardingPage() {
             onBack={goBack}
           />
         </div>
-
-        {/* Step 6 — Completion */}
         <div className={`step-page${currentStep === 6 ? ' active' : ''}`} aria-hidden={currentStep !== 6}>
           <CompletionStep
             lang={lang}
@@ -841,7 +811,6 @@ export default function OnboardingPage() {
         </div>
       </main>
 
-      {/* Toast */}
       <div
         className={`toast${toastVisible ? ' show' : ''}`}
         role="status"
@@ -851,7 +820,6 @@ export default function OnboardingPage() {
         {toastMsg}
       </div>
 
-      {/* Saving overlay (non-blocking subtle indicator) */}
       {isSaving && (
         <div
           style={{
